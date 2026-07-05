@@ -1,0 +1,45 @@
+name: TandemApp
+options:
+  bundleIdPrefix: com.tandem
+  deploymentTarget:
+    macOS: '14.0'
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: '6.0'
+    MACOSX_DEPLOYMENT_TARGET: '14.0'
+    GENERATE_INFOPLIST_FILE: YES
+    CODE_SIGN_STYLE: Automatic
+
+targets:
+  TandemApp:
+    type: application
+    platform: macOS
+    sources:
+      - path: TandemApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tandem.TandemApp
+        INFOPLIST_KEY_NSHumanReadableCopyright: ''
+        ENABLE_HARDENED_RUNTIME: YES
+    scheme:
+      testTargets:
+        - TandemAppTests
+        - TandemAppUITests
+
+  TandemAppTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: TandemAppTests
+    dependencies:
+      - target: TandemApp
+
+  TandemAppUITests:
+    type: bundle.ui-testing
+    platform: macOS
+    sources:
+      - path: TandemAppUITests
+    dependencies:
+      - target: TandemApp

@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# Node / pnpm (backend/)
+node_modules/
+dist/
+coverage/
+.pnpm-store/
+*.log
+.env
+.env.local
+
+# Xcode / Swift (frontend/)
+DerivedData/
+build/
+*.xcuserstate
+*.xcuserdatad/
+*.xcscmblueprint
+*.xccheckout
+.build/
+.swiftpm/
