@@ -1,0 +1,103 @@
+schema: spec-driven
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+# Add your tech stack, conventions, style guides, domain knowledge, etc.
+context: |
+  Producto: Tandem — plataforma para centralizar la planificación, ejecución y
+  seguimiento del desarrollo de software entre Product Owners, Developers,
+  Team Leads/Tech Leads, Reviewers y Administrators. Ver docs/prd.md (PRD
+  completo) y docs/modelo-datos.md (modelo de datos y reglas de negocio) para
+  el detalle; este contexto resume lo que hay que tener presente al proponer
+  cambios.
+
+  Arquitectura: backend que expone una API con la lógica de negocio del
+  dominio, y frontend de aplicación de escritorio nativa para macOS que la
+  consume. Stack decidido con versiones fijadas (ver docs/backend.md y
+  docs/frontend.md para el detalle completo y la justificación de cada
+  elección): backend en TypeScript 5.7.x + NestJS 11.x sobre Node.js 22.x
+  LTS, PostgreSQL 17.x con Prisma 6.x como ORM, IDs ULID, autenticación JWT
+  (access+refresh, `@nestjs/jwt` + `argon2`) con autorización derivada del
+  array `roles` del usuario, API REST documentada con OpenAPI vía
+  `@nestjs/swagger` (contrato usado para generar el cliente Swift),
+  contenedores Docker, pnpm 10.x, ESLint 9 + Prettier 3; hosting/proveedor de
+  infraestructura aún no decidido, se tratará como su propio change.
+  Arquitectura del backend: no es hexagonal/DDD estricto en todos los
+  módulos. El núcleo con máquina de estados e invariantes reales
+  (Deliverable, Requirement/WorkItemRequirement, TechnicalAnalysis,
+  WorkItem, Blocker) usa DDD ligero (entidades ricas, puertos de
+  repositorio) + CQRS con `@nestjs/cqrs` (comandos por cada transición,
+  queries separadas, eventos de dominio para desacoplar side-effects como
+  notificaciones). El resto de módulos (Auth, Users, Workstreams,
+  RequirementTypes, Forms, WorkItemTypes, Comments, Attachments,
+  Notifications, Search) son CRUD simple: Controller -> Service -> Prisma,
+  sin capa de dominio propia. Ver docs/backend.md §3 para el detalle y la
+  regla práctica de cuándo un módulo nuevo va a "núcleo" o "soporte".
+  Frontend
+  nativo en Swift 6.1 + SwiftUI (Xcode 16.x, MVVM con `@Observable`), cliente
+  API generado desde el OpenAPI del backend con swift-openapi-generator
+  1.6.x, persistencia/caché local con SwiftData, tokens en Keychain, macOS
+  14+ como versión mínima, SwiftLint 0.55.x. CI en ambos repos/paquetes con
+  GitHub Actions (lint + typecheck/build + tests en cada PR; CD pendiente de
+  la decisión de hosting). Todo cambio que afecte el stack, sus versiones o
+  la arquitectura debe mantener consistencia con esos dos documentos (o
+  actualizarlos explícitamente si la decisión cambia).
+
+  Entidades clave del dominio (ver docs/modelo-datos.md para atributos y
+  relaciones completas): User (con roles admin, product_owner, developer,
+  team_lead, acumulables), Workstream (contenedor de alto nivel), Deliverable
+  (entregable, con status draft/ready_for_review/blocked/
+  ready_for_development/in_technical_analysis/in_progress/done/cancelled),
+  Requirement + RequirementType + Form + FormField (requisitos funcionales
+  configurables por tipo/formulario), TechnicalAnalysis (1:1 con Deliverable),
+  WorkItemType + WorkItem (unidad ejecutable, status draft/to_do/in_progress/
+  blocked/done), WorkItemRequirement (traza WorkItem draft <-> Requirement),
+  Comment, Attachment, Blocker, Notification.
+
+  Flujo de un entregable (núcleo del dominio, ver PRD §9): el Product Owner
+  crea requisitos funcionales tipados en un Deliverable dentro de un
+  Workstream; al completarlos lo marca "Listo para revisión"; el Tech Lead
+  aprueba ("Listo para desarrollo") o bloquea con comentarios; el Product
+  Owner asigna developers/reviewers; los developers elaboran el análisis
+  técnico y crean work items en borrador (implementation steps, cada uno
+  ligado a ≥1 Requirement); los reviewers aprueban o piden cambios sobre el
+  análisis técnico; al aprobarse, el Deliverable pasa a "En progreso" y los
+  work items en borrador se publican automáticamente a "to_do". Los work
+  items creados directamente sobre un Workstream se saltan todo este flujo.
+
+  Reglas de negocio importantes a respetar en cualquier cambio: un WorkItem
+  pertenece exactamente a un Deliverable o a un Workstream, nunca ambos ni
+  ninguno; un Deliverable solo pasa a ready_for_review con todos sus
+  Requirements completados; solo un team_lead aprueba
+  ready_for_development; in_technical_analysis requiere al menos un
+  assignee y un reviewer asignados; solo un reviewer del entregable
+  aprueba/pide cambios sobre el TechnicalAnalysis; los WorkItem draft solo
+  existen mientras el TechnicalAnalysis no está aprobado y siempre deben
+  tener ≥1 Requirement asociado; un WorkItem no puede pasar a done con
+  FormFields obligatorios sin completar; un Blocker abierto fuerza status
+  blocked en su WorkItem; las fechas de planificación (start_date/
+  target_date) solo existen a nivel Deliverable.
+
+  Alcance MVP (ver PRD §6): gestión de usuarios/roles básicos; Workstreams,
+  Deliverables y WorkItems; tipos de requisito y de work item con
+  formularios configurables; el flujo completo de revisión funcional +
+  análisis técnico descrito arriba; board Kanban; roadmap simple; comentarios,
+  historial y adjuntos. Explícitamente fuera de alcance inicial:
+  integraciones con Git/CI-CD, automatizaciones avanzadas, dashboards de
+  negocio sofisticados, dependencias avanzadas entre equipos, y estados de
+  flujo configurables por tipo/equipo más allá del enum fijo.
+
+  Requisitos no funcionales a considerar: UX de app de escritorio nativa de
+  macOS, buen rendimiento con volúmenes moderados de datos muy
+  relacionados, autenticación y permisos por rol, consistencia en
+  transiciones de estado, disponibilidad backend objetivo ≥99.5%.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
