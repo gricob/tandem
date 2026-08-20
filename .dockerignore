@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/*.tsbuildinfo
+**/coverage
+**/.git
+**/.env
+**/.env.local
+frontend
+docs
+openspec
+.claude
