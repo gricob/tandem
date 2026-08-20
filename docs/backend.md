@@ -7,133 +7,85 @@ Este documento define el stack tecnológico y la arquitectura del backend de **T
 
 | Capa | Elección | Versión fijada | Justificación |
 |------|----------|-----------------|----------------|
-| Lenguaje | TypeScript | 6.0.x | Tipado fuerte, ecosistema maduro, facilita validar la estructura dinámica de `form_data`. |
+| Lenguaje | TypeScript | 6.0.x | Tipado fuerte, ecosistema maduro, facilita validar la estructura dinámica de `response_data`. |
 | Runtime | Node.js | 24.x (LTS) | Estándar de facto para TypeScript en backend; LTS con soporte hasta abril de 2027. |
-| Framework | NestJS | 11.x | Estructura modular con inyección de dependencias, encaja bien con dominios ricos como el de Tandem (Workstream, Deliverable, Requirement, TechnicalAnalysis, WorkItem...). |
-| Base de datos | PostgreSQL | 18.x | Soporta JSONB (para `form_data`), fuerte en integridad relacional, madura para un dominio con muchas relaciones. |
+| Framework | NestJS | 11.x | Estructura modular con inyección de dependencias; el dominio de Tandem (FormType, FormField, Form, FormResponse) es esencialmente CRUD, para el que Nest ofrece una estructura simple y suficiente. |
+| Base de datos | PostgreSQL | 18.x | Soporta JSONB (para `response_data` y `options`), fuerte en integridad relacional. |
 | ORM / migraciones | Prisma | 7.x | Migraciones versionadas, cliente tipado a partir del esquema, buen encaje con TypeScript + PostgreSQL. |
 | Identificadores | `ulid` (npm) | ^3.0.x | Generados en la aplicación, `char(26)`, ordenables por tiempo de creación, consistente con el modelo de datos ([docs/modelo-datos.md](modelo-datos.md)). |
-| Autenticación | `@nestjs/jwt` + `argon2` | `@nestjs/jwt` ^11.x, `argon2` ^0.44.x | JWT (access + refresh token) para sesión stateless; contraseñas con Argon2, adecuado para un cliente de escritorio que mantiene el token en Keychain. |
-| Autorización | Guards de NestJS derivando permisos del array `roles` del `User` | — | No existe entidad de roles independiente; los permisos se calculan directamente de los roles acumulados del usuario (ver modelo de datos §3.1). |
-| Validación | `class-validator` / `class-transformer` | ^0.15.x / ^0.5.x | Integración nativa con NestJS (DTOs) para validar payloads y el contenido dinámico de formularios. |
-| Documentación de API | `@nestjs/swagger` | ^11.x | Genera el OpenAPI que sirve de contrato para el cliente Swift del frontend ([docs/frontend.md](frontend.md)) vía `swift-openapi-generator`. |
+| Validación | `class-validator` / `class-transformer` | ^0.15.x / ^0.5.x | Integración nativa con NestJS (DTOs) para validar payloads y el contenido dinámico de respuestas. |
+| Documentación de API | `@nestjs/swagger` | ^11.x | Genera el OpenAPI que sirve de contrato para el cliente TypeScript del frontend web ([docs/frontend.md](frontend.md)), generado con `openapi-typescript`. |
+| Autenticación | `@nestjs/jwt` | ^11.x | Emite y valida el token de sesión tras validar la contraseña compartida (ver §5); evita reenviar la contraseña en cada petición. |
 | Testing | Jest + Supertest | Jest ^30.x, Supertest ^7.x | Estándar en el ecosistema Nest/TypeScript. |
 | Contenedores | Docker + Docker Compose | Docker Engine ≥ 26, Compose v2 | Entorno de desarrollo reproducible; despliegue agnóstico de proveedor mientras no se decida el hosting. |
 | Gestor de paquetes | pnpm | 11.x | Instalaciones más rápidas y eficientes en disco que npm/yarn para el tamaño de proyecto esperado. |
 | Lint / formato | ESLint + Prettier | ESLint ^10.x (flat config), Prettier ^3.x | Consistencia de estilo. |
-| Almacenamiento de adjuntos | Interfaz de storage abstracta (adapter local en desarrollo, compatible S3 en producción) | — | Permite no atarse a un proveedor de object storage hasta decidir el hosting. |
-| CQRS / eventos de dominio | `@nestjs/cqrs` | ^11.x | Command/query/event bus para el núcleo del dominio (ver §3). |
-| CI/CD | GitHub Actions | — | Ver §9. |
+| CI/CD | GitHub Actions | — | Ver §8. |
 | Hosting / despliegue | **Pendiente de decisión** | — | Se evaluará como su propio change de openspec cuando corresponda; el backend se diseña containerizado para no acoplarse a un proveedor concreto. |
 
 > Las versiones fijadas son las vigentes a la fecha de este documento. Cualquier actualización (major o minor con cambios relevantes) debe hacerse mediante un change de openspec explícito, no de forma incidental dentro de otro cambio.
 
-## 3. Arquitectura: DDD ligero + CQRS en el núcleo, capas simples en el resto
-No se aplica hexagonal/DDD estricto a todos los módulos por igual: la mayoría de entidades del modelo de datos son esencialmente CRUD y forzar puertos/adaptadores ahí solo añadiría indirección sin beneficio. En cambio, hay un subconjunto de entidades con una máquina de estados y varias invariantes no triviales (ver [docs/modelo-datos.md](modelo-datos.md) §5) donde sí merece la pena proteger las reglas de negocio dentro de entidades ricas, aisladas de HTTP y de Prisma.
+> No hay autenticación real de usuarios ni autorización por roles: todos los endpoints comparten el mismo nivel de acceso (ver [docs/prd.md](prd.md) §12). Desde el MVP, toda la API (salvo el propio endpoint de login) requiere una contraseña general compartida en lugar de autenticación real (ver §5); esta última se abordará como su propio change de openspec si en el futuro se necesita distinguir usuarios.
 
-### 3.1 Núcleo del dominio (DDD ligero + CQRS)
-Módulos: `DeliverablesModule`, `RequirementsModule` (incluye `WorkItemRequirement`), `TechnicalAnalysesModule`, `WorkItemsModule`, `BlockersModule`.
+## 3. Arquitectura: capas simples (Controller → Service → Prisma)
+El dominio de Tandem es esencialmente CRUD, sin máquina de estados ni reglas de negocio complejas. Por eso todos los módulos siguen el mismo patrón simple de NestJS: `Controller` → `Service` → acceso directo a Prisma, sin capa de dominio ni repositorio propio.
 
-- **Entidades ricas**: encapsulan sus propias invariantes y transiciones de estado (p. ej. `Deliverable.markReadyForReview()`, `TechnicalAnalysis.approve()`, `WorkItem.publish()`); no hay setters libres que permitan estados inconsistentes.
-- **CQRS con `@nestjs/cqrs`**: cada transición del flujo se modela como un comando explícito (`MarkDeliverableReadyForReviewCommand`, `ApproveDeliverableCommand`, `BlockDeliverableCommand`, `AssignDeliverableCommand`, `SubmitTechnicalAnalysisCommand`, `ApproveTechnicalAnalysisCommand`, `RequestTechnicalAnalysisChangesCommand`, `CreateDraftWorkItemCommand`...), gestionado por un `CommandHandler` que carga el agregado vía su repositorio, invoca el método de dominio correspondiente y persiste el resultado. Las lecturas (listados, detalle, board Kanban) se resuelven como `Query`/`QueryHandler` independientes, sin pasar por los agregados de escritura.
-- **Puertos y adaptadores solo aquí**: cada agregado define una interfaz de repositorio (puerto) en su capa de dominio; la implementación con Prisma vive en infraestructura. Esto permite testear las reglas de negocio (los 12 puntos de [docs/modelo-datos.md](modelo-datos.md) §5) sin levantar base de datos.
-- **Eventos de dominio**: transiciones relevantes emiten eventos (`DeliverableBlockedEvent`, `TechnicalAnalysisApprovedEvent`, `WorkItemPublishedEvent`...) a través del `EventBus` de `@nestjs/cqrs`. Módulos de soporte como `NotificationsModule` se suscriben a estos eventos para generar notificaciones, sin que el núcleo conozca su existencia (desacopla el "qué pasó" del "quién debe enterarse").
+Módulos: `FormTypesModule`, `FormFieldsModule`, `FormsModule`, `FormResponsesModule`.
 
-### 3.2 Módulos de soporte (capas simples)
-Módulos: `AuthModule`, `UsersModule`, `WorkstreamsModule`, `RequirementTypesModule`, `FormsModule`, `WorkItemTypesModule`, `CommentsModule`, `AttachmentsModule`, `NotificationsModule`, `SearchModule`.
-
-Siguen el patrón estándar de NestJS: `Controller` → `Service` → acceso directo a Prisma (sin capa de dominio ni repositorio propio). Son entidades sin máquina de estados relevante; añadir DDD/hexagonal aquí sería sobre-ingeniería para el alcance del MVP.
-
-> Regla práctica para nuevos módulos: si la entidad tiene una transición de estado con invariantes que puedan violarse (como las de §6), va al núcleo con DDD ligero + CQRS; si es esencialmente CRUD, va a soporte con el patrón simple. Ante la duda, empezar simple y migrar al núcleo solo si aparecen invariantes reales.
+> Regla práctica: si en el futuro aparecen reglas de negocio no triviales (por ejemplo, si se reintroducen cuentas de usuario con permisos), evaluar entonces introducir una capa de dominio o de autorización explícita solo donde se necesite; no anticiparla mientras el dominio siga siendo CRUD abierto.
 
 ## 4. Persistencia
 - Cada entidad de [docs/modelo-datos.md](modelo-datos.md) §3 se modela como tabla en `schema.prisma`, con `id` (ULID), `created_at`, `updated_at` (y `deleted_at` si se adopta soft delete).
-- `form_data` se almacena como columna `JSONB`; su validación contra los `FormField` del `Form` asociado ocurre en la capa de aplicación, no como constraint de base de datos.
-- En los módulos del núcleo (§3.1), el acceso a datos pasa por el puerto de repositorio del agregado (implementado con Prisma en infraestructura); en los módulos de soporte (§3.2), el `Service` usa `PrismaService` directamente.
+- `response_data` (en `FormResponse`) y `options` (en `FormField`) se almacenan como columnas `JSONB`; la validación de `response_data` contra los `FormField` del `FormType` asociado al `Form` correspondiente ocurre en la capa de aplicación (`FormResponsesModule`), no como constraint de base de datos.
+- El `Service` de cada módulo usa `PrismaService` directamente.
 - Las migraciones se gestionan con Prisma Migrate y se versionan en el repositorio.
 
 ## 5. API
-- Estilo REST, recursos alineados a las entidades del dominio (`/api/v1/workstreams`, `/api/v1/deliverables`, `/api/v1/work-items`, etc.).
-- Autenticación mediante Bearer JWT en el header `Authorization`; refresh tokens rotativos con revocación.
-- La especificación OpenAPI generada automáticamente es el contrato entre backend y el cliente Swift del frontend.
+- Estilo REST, recursos alineados a las entidades del dominio:
+  - `/api/v1/form-types`
+  - `/api/v1/form-types/:formTypeId/fields`
+  - `/api/v1/forms`
+  - `/api/v1/forms/:formId/response` (recurso singular: un Form admite como máximo una FormResponse; `PUT` funciona como upsert para crearla o editarla)
+  - `/api/v1/auth/login` (único endpoint público; recibe la contraseña compartida y devuelve el token de sesión)
+- Autenticación por contraseña compartida: no hay usuarios ni permisos diferenciados, pero toda la API (excepto `POST /api/v1/auth/login`) exige un token de sesión válido.
+  1. El frontend envía la contraseña introducida por el usuario a `POST /api/v1/auth/login`.
+  2. El backend la compara contra la variable de entorno `APP_PASSWORD` y, si coincide, devuelve un token firmado con `@nestjs/jwt` (secreto en `APP_JWT_SECRET`); no distingue usuarios, por lo que no necesita expiración corta.
+  3. El frontend adjunta el token en cada petición posterior vía cabecera `Authorization: Bearer <token>`.
+  4. Un `AuthGuard` global de NestJS valida el token en todos los endpoints salvo el de login; una petición sin token o con token inválido responde `401`.
+- CORS habilitado para el/los origen(es) del frontend web (configurable por entorno).
+- La especificación OpenAPI generada automáticamente es el contrato entre backend y el cliente TypeScript del frontend web ([docs/frontend.md](frontend.md)).
 
-## 6. Reglas de negocio del núcleo
-Las transiciones de estado y reglas de [docs/modelo-datos.md](modelo-datos.md) §5 se implementan dentro de las entidades de dominio del núcleo (§3.1) y se disparan a través de sus `CommandHandler`, no en controllers ni como simples constraints de BD:
-- Un `WorkItem` pertenece exactamente a un `Deliverable` o a un `Workstream`, nunca a ambos ni a ninguno.
-- `Deliverable` solo pasa a `ready_for_review` con todos sus `Requirement` en `is_completed = true`.
-- Solo un usuario con rol `team_lead` puede aprobar `ready_for_development` o bloquear con comentarios.
-- `in_technical_analysis` requiere al menos un `assignee` y un `reviewer` asignados.
-- Solo un `reviewer_id` del `Deliverable` puede aprobar o solicitar cambios sobre su `TechnicalAnalysis`.
-- Los `WorkItem` en `draft` solo existen mientras el `TechnicalAnalysis` no está `approved`, y siempre deben tener ≥1 `Requirement` asociado vía `WorkItemRequirement`.
-- Al aprobarse el `TechnicalAnalysis`, todos los `WorkItem` `draft` del `Deliverable` transicionan automáticamente a `to_do` (orquestado por el `CommandHandler` de `ApproveTechnicalAnalysisCommand`, reaccionando al agregado `TechnicalAnalysis` aprobado).
-- Un `WorkItem` no puede pasar a `done` con `FormField` obligatorios de su `WorkItemType` sin completar.
-- Un `Blocker` abierto asociado fuerza el status `blocked` en su entidad.
+## 6. Reglas de negocio
+Implementada en el `Service` de `FormResponsesModule` (ver [docs/modelo-datos.md](modelo-datos.md) §5):
+- Un `Form` solo tiene una `FormResponse`: guardarla es una operación de upsert sobre ese mismo recurso (se crea en el primer guardado, se actualiza en los siguientes), sin crear filas nuevas ni bloquear guardados posteriores.
+- `response_data` se puede guardar de forma incremental, sin necesidad de incluir un valor para cada `FormField` con `is_required = true` en cada guardado; esa validación determina si la respuesta se considera completa, no si el guardado se acepta.
 
-La autorización basada en rol (p. ej. "solo `team_lead`", "solo un `reviewer_id` del Deliverable") se valida en el `CommandHandler` antes de invocar el método de dominio, no dentro de la entidad, para mantener el dominio libre de dependencias de sesión/autenticación.
+## 7. Testing y calidad
+- Tests unitarios por servicio (Jest), cubriendo especialmente la validación de campos obligatorios (§6).
+- Tests e2e (Supertest) cubriendo los flujos críticos de extremo a extremo: creación de un tipo de formulario, creación de un formulario a partir de él, guardado incremental y edición posterior de la respuesta, y consulta de la respuesta.
 
-## 7. Notificaciones y tiempo real
-- MVP: las `Notification` se generan reaccionando a los eventos de dominio del núcleo (`DeliverableBlockedEvent`, `TechnicalAnalysisApprovedEvent`, etc. — ver §3.1) mediante un `EventHandler` en `NotificationsModule`, y se consultan vía REST (pull/polling desde el cliente).
-- Evolución futura (fuera de alcance MVP): push en tiempo real del board Kanban vía WebSocket (`@nestjs/websockets`), suscrito a los mismos eventos de dominio.
-
-## 8. Testing y calidad
-- Núcleo (§3.1): tests unitarios de las entidades de dominio (reglas de §6) sin infraestructura, y tests de los `CommandHandler`/`QueryHandler` con el repositorio en memoria o mockeado.
-- Soporte (§3.2): tests unitarios por servicio (Jest).
-- Tests e2e (Supertest) cubriendo los flujos críticos de extremo a extremo: revisión funcional del Tech Lead, ciclo de análisis técnico, publicación automática de work items en borrador.
-
-## 9. CI/CD: GitHub Actions
+## 8. CI/CD: GitHub Actions
 El repositorio usa **GitHub Actions** como proveedor de CI. Workflow propuesto (`.github/workflows/backend-ci.yml`), disparado en push/PR sobre rutas de `backend/`:
 
 1. Checkout del repo (`actions/checkout@v4`).
-2. Setup de Node.js 22.x (`actions/setup-node@v4`) con caché de pnpm.
+2. Setup de Node.js 24.x (`actions/setup-node@v4`) con caché de pnpm.
 3. Instalación de dependencias (`pnpm install --frozen-lockfile`).
 4. Lint (`pnpm lint`) y chequeo de tipos (`tsc --noEmit`).
-5. Tests unitarios y e2e (`pnpm test`, `pnpm test:e2e`) contra un servicio de PostgreSQL 17 levantado como `services:` del job.
+5. Tests unitarios y e2e (`pnpm test`, `pnpm test:e2e`) contra un servicio de PostgreSQL 18 levantado como `services:` del job.
 6. (En rama principal) build y push de la imagen Docker a un registro de contenedores, como paso previo a un despliegue que se definirá junto con el hosting.
 
-El despliegue efectivo (CD) a un entorno concreto queda pendiente hasta decidir el proveedor de hosting (§11); el workflow de CI es independiente de esa decisión.
+El despliegue efectivo (CD) a un entorno concreto queda pendiente hasta decidir el proveedor de hosting (§10); el workflow de CI es independiente de esa decisión.
 
-## 10. Estructura de carpetas propuesta
+## 9. Estructura de carpetas propuesta
 ```
 backend/
   src/
-    core/                       # DDD ligero + CQRS (§3.1)
-      deliverables/
-        domain/                # entidad Deliverable, value objects, eventos, puerto del repositorio
-        application/            # command handlers, query handlers
-        infrastructure/         # repositorio Prisma (adaptador), mappers
-        interface/               # controller, DTOs de la API
-      requirements/              # Requirement + WorkItemRequirement
-        domain/
-        application/
-        infrastructure/
-        interface/
-      technical-analyses/
-        domain/
-        application/
-        infrastructure/
-        interface/
-      work-items/
-        domain/
-        application/
-        infrastructure/
-        interface/
-      blockers/
-        domain/
-        application/
-        infrastructure/
-        interface/
-    modules/                    # capas simples, Controller -> Service -> Prisma (§3.2)
-      auth/
-      users/
-      workstreams/
-      requirement-types/
+    modules/
+      form-types/
+      form-fields/
       forms/
-      work-item-types/
-      comments/
-      attachments/
-      notifications/
-      search/
-    common/          # guards, decorators, filters, pipes
+      form-responses/
+    common/          # filters, pipes
     prisma/          # schema.prisma, migrations
   test/
   docker-compose.yml
@@ -143,8 +95,5 @@ backend/
     backend-ci.yml
 ```
 
-## 11. Pendiente de decisión
+## 10. Pendiente de decisión
 - Proveedor de hosting/infra (cloud gestionado vs self-hosted) — se decidirá como su propio change de openspec.
-- Proveedor definitivo de almacenamiento de adjuntos (S3, GCS, MinIO, etc.) una vez definido el hosting.
-- Necesidad de WebSockets para actualizaciones en tiempo real (evaluar después del MVP).
-- CD (despliegue continuo) al entorno de hosting, una vez decidido el proveedor.
