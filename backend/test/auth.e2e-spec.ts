@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
 
-describe('HealthController (e2e)', () => {
+describe('Auth (e2e)', () => {
   let app: INestApplication<App>;
-  let jwtService: JwtService;
 
   beforeEach(async () => {
+    process.env.APP_PASSWORD = 'correct-password';
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -17,20 +17,31 @@ describe('HealthController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/v1');
     await app.init();
-
-    jwtService = moduleFixture.get(JwtService);
   });
 
-  it('/api/v1/health (GET) without a session token is rejected', () => {
+  it('rejects a protected route without a session token', () => {
     return request(app.getHttpServer()).get('/api/v1/health').expect(401);
   });
 
-  it('/api/v1/health (GET) with a valid session token', async () => {
-    const token = await jwtService.signAsync({ sub: 'shared' });
+  it('rejects login with the wrong password', () => {
+    return request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ password: 'wrong-password' })
+      .expect(401);
+  });
+
+  it('logs in and then reaches a protected route with the returned token', async () => {
+    const loginResponse = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ password: 'correct-password' })
+      .expect(200);
+
+    const { accessToken } = loginResponse.body as { accessToken: string };
+    expect(accessToken).toEqual(expect.any(String));
 
     return request(app.getHttpServer())
       .get('/api/v1/health')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect(200)
       .expect({ status: 'ok' });
   });
