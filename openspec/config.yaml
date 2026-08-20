@@ -4,93 +4,88 @@ schema: spec-driven
 # This is shown to AI when creating artifacts.
 # Add your tech stack, conventions, style guides, domain knowledge, etc.
 context: |
-  Producto: Tandem — plataforma para centralizar la planificación, ejecución y
-  seguimiento del desarrollo de software entre Product Owners, Developers,
-  Team Leads/Tech Leads, Reviewers y Administrators. Ver docs/prd.md (PRD
-  completo) y docs/modelo-datos.md (modelo de datos y reglas de negocio) para
-  el detalle; este contexto resume lo que hay que tener presente al proponer
-  cambios.
+  Producto: Tandem — plataforma para crear formularios configurables,
+  compartirlos para que cualquiera los rellene, y consultar las respuestas
+  recibidas en un mismo lugar. Sin cuentas de usuario ni roles en el MVP:
+  el acceso a la app (web y API) está protegido por una contraseña general
+  compartida. Ver docs/prd.md (PRD completo) y docs/modelo-datos.md (modelo
+  de datos y reglas de negocio) para el detalle; este contexto resume lo que
+  hay que tener presente al proponer cambios.
 
-  Arquitectura: backend que expone una API con la lógica de negocio del
-  dominio, y frontend de aplicación de escritorio nativa para macOS que la
-  consume. Stack decidido con versiones fijadas (ver docs/backend.md y
-  docs/frontend.md para el detalle completo y la justificación de cada
-  elección): backend en TypeScript 5.7.x + NestJS 11.x sobre Node.js 22.x
-  LTS, PostgreSQL 17.x con Prisma 6.x como ORM, IDs ULID, autenticación JWT
-  (access+refresh, `@nestjs/jwt` + `argon2`) con autorización derivada del
-  array `roles` del usuario, API REST documentada con OpenAPI vía
-  `@nestjs/swagger` (contrato usado para generar el cliente Swift),
-  contenedores Docker, pnpm 10.x, ESLint 9 + Prettier 3; hosting/proveedor de
-  infraestructura aún no decidido, se tratará como su propio change.
-  Arquitectura del backend: no es hexagonal/DDD estricto en todos los
-  módulos. El núcleo con máquina de estados e invariantes reales
-  (Deliverable, Requirement/WorkItemRequirement, TechnicalAnalysis,
-  WorkItem, Blocker) usa DDD ligero (entidades ricas, puertos de
-  repositorio) + CQRS con `@nestjs/cqrs` (comandos por cada transición,
-  queries separadas, eventos de dominio para desacoplar side-effects como
-  notificaciones). El resto de módulos (Auth, Users, Workstreams,
-  RequirementTypes, Forms, WorkItemTypes, Comments, Attachments,
-  Notifications, Search) son CRUD simple: Controller -> Service -> Prisma,
-  sin capa de dominio propia. Ver docs/backend.md §3 para el detalle y la
-  regla práctica de cuándo un módulo nuevo va a "núcleo" o "soporte".
-  Frontend
-  nativo en Swift 6.1 + SwiftUI (Xcode 16.x, MVVM con `@Observable`), cliente
-  API generado desde el OpenAPI del backend con swift-openapi-generator
-  1.6.x, persistencia/caché local con SwiftData, tokens en Keychain, macOS
-  14+ como versión mínima, SwiftLint 0.55.x. CI en ambos repos/paquetes con
-  GitHub Actions (lint + typecheck/build + tests en cada PR; CD pendiente de
-  la decisión de hosting). Todo cambio que afecte el stack, sus versiones o
-  la arquitectura debe mantener consistencia con esos dos documentos (o
+  Arquitectura: backend que expone la API REST del dominio, y frontend web
+  (SPA) que la consume. Stack decidido con versiones fijadas (ver
+  docs/backend.md y docs/frontend.md para el detalle completo y la
+  justificación de cada elección):
+  - Backend: TypeScript 6.0.x + NestJS 11.x sobre Node.js 24.x LTS,
+    PostgreSQL 18.x con Prisma 7.x como ORM, IDs ULID (`ulid` npm),
+    validación con `class-validator`/`class-transformer`, API REST
+    documentada con OpenAPI vía `@nestjs/swagger` (contrato usado para
+    generar el cliente TypeScript del frontend con `openapi-typescript`),
+    autenticación por contraseña compartida (`APP_PASSWORD`) con token de
+    sesión JWT (`@nestjs/jwt`) validado por un `AuthGuard` global en todos
+    los endpoints salvo `POST /api/v1/auth/login`, contenedores Docker,
+    pnpm 11.x, ESLint 10 (flat config) + Prettier 3, testing con Jest +
+    Supertest.
+  - Arquitectura del backend: dominio esencialmente CRUD (FormType,
+    FormField, Form, FormResponse), sin máquina de estados ni reglas de
+    negocio complejas; todos los módulos siguen el mismo patrón simple
+    Controller -> Service -> Prisma, sin capa de dominio ni repositorio
+    propio. Módulos: FormTypesModule, FormFieldsModule, FormsModule,
+    FormResponsesModule. Ver docs/backend.md §3.
+  - Frontend: React 19.x + Vite 7.x como SPA (client-side rendering, sin
+    SSR), TanStack Router (rutas tipadas) + TanStack Query (data fetching/
+    caché de servidor), cliente API tipado generado con `openapi-typescript`
+    a partir del contrato del backend, Mantine 8.x como librería de
+    componentes UI, formularios con `@mantine/form` + Zod, testing con
+    Vitest + React Testing Library (unit/componentes) y Playwright (e2e),
+    ESLint 10 + Prettier 3, pnpm 11.x. Distribución como build estático
+    (`vite build`), sin runtime Node en producción. Ver docs/frontend.md.
+  - CI/CD: GitHub Actions en ambos (lint + typecheck + tests en cada PR);
+    CD pendiente de la decisión de hosting/infra, que se tratará como su
+    propio change de openspec (ver docs/backend.md §10 y docs/frontend.md
+    §9).
+
+  Todo cambio que afecte el stack, sus versiones o la arquitectura debe
+  mantener consistencia con docs/backend.md y docs/frontend.md (o
   actualizarlos explícitamente si la decisión cambia).
 
-  Entidades clave del dominio (ver docs/modelo-datos.md para atributos y
-  relaciones completas): User (con roles admin, product_owner, developer,
-  team_lead, acumulables), Workstream (contenedor de alto nivel), Deliverable
-  (entregable, con status draft/ready_for_review/blocked/
-  ready_for_development/in_technical_analysis/in_progress/done/cancelled),
-  Requirement + RequirementType + Form + FormField (requisitos funcionales
-  configurables por tipo/formulario), TechnicalAnalysis (1:1 con Deliverable),
-  WorkItemType + WorkItem (unidad ejecutable, status draft/to_do/in_progress/
-  blocked/done), WorkItemRequirement (traza WorkItem draft <-> Requirement),
-  Comment, Attachment, Blocker, Notification.
+  Entidades del dominio (ver docs/modelo-datos.md para atributos y
+  relaciones completas): FormType (tipo de formulario reutilizable, define
+  la lista ordenada de campos), FormField (campo individual de un FormType:
+  label, field_type [text/textarea/number/boolean/select/multi_select/
+  date], is_required, options, order_index), Form (instancia de un
+  FormType, se comparte para recibir una respuesta), FormResponse (como
+  máximo una por Form; response_data en JSON indexado por field_id,
+  guardable de forma incremental y editable después).
 
-  Flujo de un entregable (núcleo del dominio, ver PRD §9): el Product Owner
-  crea requisitos funcionales tipados en un Deliverable dentro de un
-  Workstream; al completarlos lo marca "Listo para revisión"; el Tech Lead
-  aprueba ("Listo para desarrollo") o bloquea con comentarios; el Product
-  Owner asigna developers/reviewers; los developers elaboran el análisis
-  técnico y crean work items en borrador (implementation steps, cada uno
-  ligado a ≥1 Requirement); los reviewers aprueban o piden cambios sobre el
-  análisis técnico; al aprobarse, el Deliverable pasa a "En progreso" y los
-  work items en borrador se publican automáticamente a "to_do". Los work
-  items creados directamente sobre un Workstream se saltan todo este flujo.
+  Reglas de negocio clave (ver docs/modelo-datos.md §5 y docs/backend.md
+  §6): un Form admite como máximo una FormResponse (los guardados
+  sucesivos son upsert sobre esa misma fila, `PUT
+  /api/v1/forms/:formId/response`); response_data se puede guardar de
+  forma incremental sin necesidad de completar los campos `is_required`
+  en cada guardado, esa validación solo determina si la respuesta se
+  considera completa, no si el guardado se acepta; no existen
+  restricciones de acceso más allá de la contraseña compartida —
+  cualquiera puede crear, editar y eliminar FormTypes, FormFields y Forms,
+  y rellenar, editar y consultar la respuesta de cualquier Form.
 
-  Reglas de negocio importantes a respetar en cualquier cambio: un WorkItem
-  pertenece exactamente a un Deliverable o a un Workstream, nunca ambos ni
-  ninguno; un Deliverable solo pasa a ready_for_review con todos sus
-  Requirements completados; solo un team_lead aprueba
-  ready_for_development; in_technical_analysis requiere al menos un
-  assignee y un reviewer asignados; solo un reviewer del entregable
-  aprueba/pide cambios sobre el TechnicalAnalysis; los WorkItem draft solo
-  existen mientras el TechnicalAnalysis no está aprobado y siempre deben
-  tener ≥1 Requirement asociado; un WorkItem no puede pasar a done con
-  FormFields obligatorios sin completar; un Blocker abierto fuerza status
-  blocked en su WorkItem; las fechas de planificación (start_date/
-  target_date) solo existen a nivel Deliverable.
+  Alcance MVP (ver docs/prd.md §6): creación, edición y eliminación de
+  FormTypes (con sus FormFields); creación, edición y eliminación de Forms
+  a partir de un FormType; relleno y guardado incremental de
+  FormResponses; listado/consulta de respuestas por formulario; búsqueda
+  de formularios por nombre. Explícitamente fuera de alcance inicial:
+  cuentas de usuario, autenticación real y roles (la protección por
+  contraseña compartida sí es del MVP); control de acceso o visibilidad;
+  estados de publicación del formulario; formularios públicos con enlace
+  externo; lógica condicional entre campos; exportación de respuestas y
+  analítica/agregación; notificaciones; comentarios, adjuntos e historial
+  de cambios.
 
-  Alcance MVP (ver PRD §6): gestión de usuarios/roles básicos; Workstreams,
-  Deliverables y WorkItems; tipos de requisito y de work item con
-  formularios configurables; el flujo completo de revisión funcional +
-  análisis técnico descrito arriba; board Kanban; roadmap simple; comentarios,
-  historial y adjuntos. Explícitamente fuera de alcance inicial:
-  integraciones con Git/CI-CD, automatizaciones avanzadas, dashboards de
-  negocio sofisticados, dependencias avanzadas entre equipos, y estados de
-  flujo configurables por tipo/equipo más allá del enum fijo.
-
-  Requisitos no funcionales a considerar: UX de app de escritorio nativa de
-  macOS, buen rendimiento con volúmenes moderados de datos muy
-  relacionados, autenticación y permisos por rol, consistencia en
-  transiciones de estado, disponibilidad backend objetivo ≥99.5%.
+  Requisitos no funcionales a considerar: UX de app web moderna con foco
+  en escritorio/laptop (pero sin romperse en tablet); buen rendimiento con
+  volúmenes moderados de formularios y respuestas; minimizar pérdida de
+  información, especialmente de respuestas enviadas; accesibilidad básica
+  (teclado, contraste, semántica); disponibilidad backend objetivo ≥99.5%.
 
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.
