@@ -9,7 +9,7 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { zod4Resolver } from 'mantine-form-zod-resolver';
-import { useFormTypes } from '../../form-types/queries';
+import { useFormTemplates } from '../../form-templates/queries';
 import { createFormSchema, type CreateFormFormValues } from '../schemas';
 
 interface CreateFormModalProps {
@@ -25,10 +25,10 @@ export function CreateFormModal({
   onClose,
   onSubmit,
 }: CreateFormModalProps) {
-  const { data: formTypes } = useFormTypes();
+  const { data: formTemplates } = useFormTemplates();
 
   const form = useForm<CreateFormFormValues>({
-    initialValues: { formTypeId: '', name: '', description: '' },
+    initialValues: { formTemplateId: '', name: '', description: '' },
     validate: zod4Resolver(createFormSchema),
   });
 
@@ -42,14 +42,14 @@ export function CreateFormModal({
       <form onSubmit={form.onSubmit(onSubmit)}>
         <Stack gap="sm">
           <Select
-            label="Form type"
-            placeholder="Select a form type"
+            label="Form template"
+            placeholder="Select a form template"
             required
-            data={(formTypes ?? []).map((formType) => ({
-              value: formType.id,
-              label: formType.name,
+            data={(formTemplates ?? []).map((formTemplate) => ({
+              value: formTemplate.id,
+              label: formTemplate.name,
             }))}
-            {...form.getInputProps('formTypeId')}
+            {...form.getInputProps('formTemplateId')}
           />
           <TextInput
             label="Name"

@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { ResponseFields } from '../../src/features/form-responses/components/response-fields';
-import type { FormField } from '../../src/features/form-types/api';
+import type { FormField } from '../../src/features/forms/api';
 import type { ResponseValues } from '../../src/features/form-responses/value-utils';
 
 function getInput(path: string): HTMLElement {
@@ -18,7 +18,7 @@ function getInput(path: string): HTMLElement {
 function makeField(overrides: Partial<FormField>): FormField {
   return {
     id: 'field-1',
-    formTypeId: 'form-type-1',
+    formId: 'form-1',
     label: 'Field',
     fieldType: 'text',
     isRequired: false,

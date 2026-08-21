@@ -10,8 +10,8 @@ export function IndexPage() {
         receive.
       </Text>
       <Group>
-        <Link to="/form-types">
-          <Button component="span">Form types</Button>
+        <Link to="/form-templates">
+          <Button component="span">Form templates</Button>
         </Link>
         <Link to="/forms">
           <Button component="span" variant="default">

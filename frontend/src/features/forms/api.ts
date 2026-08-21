@@ -2,6 +2,7 @@ import { apiFetch, type ApiPaths } from '../../api/client';
 
 export type Form =
   ApiPaths['/api/v1/forms']['get']['responses'][200]['content']['application/json'][number];
+export type FormField = Form['fields'][number];
 
 type CreateFormBody =
   ApiPaths['/api/v1/forms']['post']['requestBody']['content']['application/json'];

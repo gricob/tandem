@@ -34,7 +34,7 @@ describe('FormResponsesService', () => {
 
   const requiredTextField = {
     id: 'field-name',
-    formTypeId: 'form-type-1',
+    formId: 'form-1',
     label: 'Name',
     fieldType: FormFieldType.text,
     isRequired: true,
@@ -45,7 +45,7 @@ describe('FormResponsesService', () => {
   };
   const optionalSelectField = {
     id: 'field-severity',
-    formTypeId: 'form-type-1',
+    formId: 'form-1',
     label: 'Severity',
     fieldType: FormFieldType.select,
     isRequired: false,
@@ -57,12 +57,12 @@ describe('FormResponsesService', () => {
 
   const form = {
     id: 'form-1',
-    formTypeId: 'form-type-1',
+    formTemplateId: 'form-template-1',
     name: 'Bug report #1',
     description: null,
     createdAt: new Date(),
     updatedAt: new Date(),
-    formType: { fields: [requiredTextField, optionalSelectField] },
+    fields: [requiredTextField, optionalSelectField],
   };
 
   beforeEach(async () => {

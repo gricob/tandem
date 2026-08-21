@@ -4,7 +4,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { FormsService } from './forms.service';
 
 type MockPrismaService = {
-  formType: {
+  formTemplate: {
     findUnique: jest.Mock;
   };
   form: {
@@ -14,11 +14,15 @@ type MockPrismaService = {
     update: jest.Mock;
     delete: jest.Mock;
   };
+  formField: {
+    create: jest.Mock;
+  };
+  $transaction: jest.Mock;
 };
 
 function createMockPrisma(): MockPrismaService {
   return {
-    formType: {
+    formTemplate: {
       findUnique: jest.fn(),
     },
     form: {
@@ -28,6 +32,10 @@ function createMockPrisma(): MockPrismaService {
       update: jest.fn(),
       delete: jest.fn(),
     },
+    formField: {
+      create: jest.fn(),
+    },
+    $transaction: jest.fn(),
   };
 }
 
@@ -35,15 +43,29 @@ describe('FormsService', () => {
   let service: FormsService;
   let prisma: MockPrismaService;
 
-  const formType = { id: 'form-type-1', name: 'Bug report' };
+  const formTemplate = {
+    id: 'form-template-1',
+    name: 'Bug report',
+    templateFields: [
+      {
+        id: 'template-field-1',
+        label: 'Severity',
+        fieldType: 'text',
+        isRequired: true,
+        options: null,
+        orderIndex: 0,
+      },
+    ],
+  };
   const form = {
     id: 'form-1',
-    formTypeId: formType.id,
+    formTemplateId: formTemplate.id,
     name: 'Bug report #1',
     description: null,
     createdAt: new Date(),
     updatedAt: new Date(),
-    formType: { name: formType.name },
+    formTemplate: { name: formTemplate.name },
+    fields: [],
   };
 
   beforeEach(async () => {
@@ -57,30 +79,39 @@ describe('FormsService', () => {
   });
 
   describe('createForm', () => {
-    it('rejects a form_type_id that does not exist', async () => {
-      prisma.formType.findUnique.mockResolvedValue(null);
+    it('rejects a form_template_id that does not exist', async () => {
+      prisma.formTemplate.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.createForm({ formTypeId: 'missing', name: 'A form' }),
+        service.createForm({ formTemplateId: 'missing', name: 'A form' }),
       ).rejects.toThrow(BadRequestException);
       expect(prisma.form.create).not.toHaveBeenCalled();
     });
 
-    it('creates a form and flattens the form type name into the response', async () => {
-      prisma.formType.findUnique.mockResolvedValue(formType);
-      prisma.form.create.mockResolvedValue(form);
+    it('creates a form, clones the template fields, and flattens the template name into the response', async () => {
+      prisma.formTemplate.findUnique.mockResolvedValue(formTemplate);
+      prisma.$transaction.mockResolvedValue([]);
+      prisma.form.findUnique.mockResolvedValue(form);
 
       await expect(
-        service.createForm({ formTypeId: formType.id, name: form.name }),
+        service.createForm({
+          formTemplateId: formTemplate.id,
+          name: form.name,
+        }),
       ).resolves.toEqual({
         id: form.id,
-        formTypeId: form.formTypeId,
-        formTypeName: formType.name,
+        formTemplateId: form.formTemplateId,
+        formTemplateName: formTemplate.name,
         name: form.name,
         description: form.description,
         createdAt: form.createdAt,
         updatedAt: form.updatedAt,
+        fields: form.fields,
       });
+
+      expect(prisma.$transaction).toHaveBeenCalledTimes(1);
+      const [operations] = prisma.$transaction.mock.calls[0] as [unknown[]];
+      expect(operations).toHaveLength(1 + formTemplate.templateFields.length);
     });
   });
 
@@ -94,7 +125,7 @@ describe('FormsService', () => {
         expect.objectContaining({ where: undefined }),
       );
       expect(result).toEqual([
-        expect.objectContaining({ formTypeName: formType.name }),
+        expect.objectContaining({ formTemplateName: formTemplate.name }),
       ]);
     });
 
@@ -109,6 +140,21 @@ describe('FormsService', () => {
         }),
       );
     });
+
+    it('reports a null template name for a form whose template was deleted', async () => {
+      prisma.form.findMany.mockResolvedValue([
+        { ...form, formTemplateId: null, formTemplate: null },
+      ]);
+
+      const result = await service.findAllForms();
+
+      expect(result).toEqual([
+        expect.objectContaining({
+          formTemplateId: null,
+          formTemplateName: null,
+        }),
+      ]);
+    });
   });
 
   describe('getForm', () => {
@@ -120,12 +166,12 @@ describe('FormsService', () => {
       );
     });
 
-    it('returns the form with its form type name when found', async () => {
+    it('returns the form with its template name when found', async () => {
       prisma.form.findUnique.mockResolvedValue(form);
 
       await expect(service.getForm(form.id)).resolves.toMatchObject({
         id: form.id,
-        formTypeName: formType.name,
+        formTemplateName: formTemplate.name,
       });
     });
   });

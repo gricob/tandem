@@ -3,38 +3,63 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Form, Prisma } from '@prisma/client';
+import { Form, FormField, Prisma } from '@prisma/client';
 import { ulid } from 'ulid';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateFormDto } from './dto/create-form.dto';
 import { UpdateFormDto } from './dto/update-form.dto';
 
-type FormWithFormTypeName = Form & { formType: { name: string } };
+type FormWithRelations = Form & {
+  formTemplate: { name: string } | null;
+  fields: FormField[];
+};
+
+const FORM_INCLUDE = {
+  formTemplate: { select: { name: true } },
+  fields: { orderBy: { orderIndex: 'asc' as const } },
+};
 
 @Injectable()
 export class FormsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createForm(dto: CreateFormDto) {
-    const formType = await this.prisma.formType.findUnique({
-      where: { id: dto.formTypeId },
+    const formTemplate = await this.prisma.formTemplate.findUnique({
+      where: { id: dto.formTemplateId },
+      include: { templateFields: { orderBy: { orderIndex: 'asc' } } },
     });
-    if (!formType) {
+    if (!formTemplate) {
       throw new BadRequestException(
-        `Form type ${dto.formTypeId} does not exist.`,
+        `Form template ${dto.formTemplateId} does not exist.`,
       );
     }
 
-    const form = await this.prisma.form.create({
-      data: {
-        id: ulid(),
-        formTypeId: dto.formTypeId,
-        name: dto.name,
-        description: dto.description,
-      },
-      include: { formType: { select: { name: true } } },
-    });
-    return this.toResponse(form);
+    const formId = ulid();
+    await this.prisma.$transaction([
+      this.prisma.form.create({
+        data: {
+          id: formId,
+          formTemplateId: dto.formTemplateId,
+          name: dto.name,
+          description: dto.description,
+        },
+      }),
+      ...formTemplate.templateFields.map((field) =>
+        this.prisma.formField.create({
+          data: {
+            id: ulid(),
+            formId,
+            label: field.label,
+            fieldType: field.fieldType,
+            isRequired: field.isRequired,
+            options: field.options === null ? Prisma.JsonNull : field.options,
+            orderIndex: field.orderIndex,
+          },
+        }),
+      ),
+    ]);
+
+    return this.getForm(formId);
   }
 
   async findAllForms(name?: string) {
@@ -42,7 +67,7 @@ export class FormsService {
       where: name
         ? { name: { contains: name, mode: Prisma.QueryMode.insensitive } }
         : undefined,
-      include: { formType: { select: { name: true } } },
+      include: FORM_INCLUDE,
       orderBy: { createdAt: 'asc' },
     });
     return forms.map((form) => this.toResponse(form));
@@ -51,7 +76,7 @@ export class FormsService {
   async getForm(formId: string) {
     const form = await this.prisma.form.findUnique({
       where: { id: formId },
-      include: { formType: { select: { name: true } } },
+      include: FORM_INCLUDE,
     });
     if (!form) {
       throw new NotFoundException(`Form ${formId} not found.`);
@@ -64,7 +89,7 @@ export class FormsService {
     const form = await this.prisma.form.update({
       where: { id: formId },
       data: { name: dto.name, description: dto.description },
-      include: { formType: { select: { name: true } } },
+      include: FORM_INCLUDE,
     });
     return this.toResponse(form);
   }
@@ -81,8 +106,8 @@ export class FormsService {
     }
   }
 
-  private toResponse(form: FormWithFormTypeName) {
-    const { formType, ...rest } = form;
-    return { ...rest, formTypeName: formType.name };
+  private toResponse(form: FormWithRelations) {
+    const { formTemplate, ...rest } = form;
+    return { ...rest, formTemplateName: formTemplate?.name ?? null };
   }
 }

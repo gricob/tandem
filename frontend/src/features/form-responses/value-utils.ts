@@ -1,4 +1,4 @@
-import type { FormField } from '../form-types/api';
+import type { FormField } from '../forms/api';
 
 export type ResponseValues = Record<string, unknown>;
 

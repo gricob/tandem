@@ -4,813 +4,807 @@
  */
 
 export interface paths {
-  '/api/v1/auth/login': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post: operations['AuthController_login'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/health': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["HealthController_check"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get: operations['HealthController_check'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/form-types': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/form-templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FormTemplatesController_findAllFormTemplates"];
+        put?: never;
+        post: operations["FormTemplatesController_createFormTemplate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get: operations['FormTypesController_findAllFormTypes'];
-    put?: never;
-    post: operations['FormTypesController_createFormType'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/form-types/{formTypeId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/form-templates/{formTemplateId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FormTemplatesController_getFormTemplate"];
+        put?: never;
+        post?: never;
+        delete: operations["FormTemplatesController_deleteFormTemplate"];
+        options?: never;
+        head?: never;
+        patch: operations["FormTemplatesController_updateFormTemplate"];
+        trace?: never;
     };
-    get: operations['FormTypesController_getFormType'];
-    put?: never;
-    post?: never;
-    delete: operations['FormTypesController_deleteFormType'];
-    options?: never;
-    head?: never;
-    patch: operations['FormTypesController_updateFormType'];
-    trace?: never;
-  };
-  '/api/v1/form-types/{formTypeId}/fields': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/form-templates/{formTemplateId}/fields": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FormTemplatesController_addField"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post: operations['FormTypesController_addField'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/form-types/{formTypeId}/fields/order': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/form-templates/{formTemplateId}/fields/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["FormTemplatesController_reorderFields"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put: operations['FormTypesController_reorderFields'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/form-types/{formTypeId}/fields/{fieldId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/form-templates/{formTemplateId}/fields/{fieldId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["FormTemplatesController_removeField"];
+        options?: never;
+        head?: never;
+        patch: operations["FormTemplatesController_updateField"];
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete: operations['FormTypesController_removeField'];
-    options?: never;
-    head?: never;
-    patch: operations['FormTypesController_updateField'];
-    trace?: never;
-  };
-  '/api/v1/forms': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/forms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FormsController_findAllForms"];
+        put?: never;
+        post: operations["FormsController_createForm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get: operations['FormsController_findAllForms'];
-    put?: never;
-    post: operations['FormsController_createForm'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/forms/{formId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/forms/{formId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FormsController_getForm"];
+        put?: never;
+        post?: never;
+        delete: operations["FormsController_deleteForm"];
+        options?: never;
+        head?: never;
+        patch: operations["FormsController_updateForm"];
+        trace?: never;
     };
-    get: operations['FormsController_getForm'];
-    put?: never;
-    post?: never;
-    delete: operations['FormsController_deleteForm'];
-    options?: never;
-    head?: never;
-    patch: operations['FormsController_updateForm'];
-    trace?: never;
-  };
-  '/api/v1/forms/{formId}/response': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/forms/{formId}/response": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FormResponsesController_getResponse"];
+        put: operations["FormResponsesController_saveResponse"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get: operations['FormResponsesController_getResponse'];
-    put: operations['FormResponsesController_saveResponse'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    LoginDto: {
-      /** @description The shared application password. */
-      password: string;
+    schemas: {
+        LoginDto: {
+            /** @description The shared application password. */
+            password: string;
+        };
+        LoginResponseDto: {
+            /** @description Signed JWT session token. */
+            accessToken: string;
+        };
+        CreateFormTemplateDto: {
+            /** @description Name of the form template. */
+            name: string;
+            /** @description Description of the form template. */
+            description?: string;
+        };
+        FormTemplateFieldResponseDto: {
+            id: string;
+            formTemplateId: string;
+            label: string;
+            /** @enum {string} */
+            fieldType: "text" | "textarea" | "number" | "boolean" | "select" | "multi_select" | "date";
+            isRequired: boolean;
+            options?: string[] | null;
+            orderIndex: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        FormTemplateResponseDto: {
+            id: string;
+            name: string;
+            description?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            templateFields: components["schemas"]["FormTemplateFieldResponseDto"][];
+        };
+        UpdateFormTemplateDto: {
+            /** @description Name of the form template. */
+            name?: string;
+            /** @description Description of the form template. */
+            description?: string;
+        };
+        CreateFormTemplateFieldDto: {
+            /** @description Label shown for the field. */
+            label: string;
+            /**
+             * @description Data type of the field.
+             * @enum {string}
+             */
+            fieldType: "text" | "textarea" | "number" | "boolean" | "select" | "multi_select" | "date";
+            /**
+             * @description Whether the field must be filled in to complete a response.
+             * @default false
+             */
+            isRequired: boolean;
+            /** @description Available options. Required (non-empty) for `select`/`multi_select`; must be omitted otherwise. */
+            options?: string[];
+        };
+        ReorderFieldsDto: {
+            /** @description Ordered list of field ids: must contain exactly the form template's current field ids, in the desired order. */
+            fieldIds: string[];
+        };
+        UpdateFormTemplateFieldDto: {
+            /** @description Label shown for the field. */
+            label?: string;
+            /**
+             * @description Data type of the field.
+             * @enum {string}
+             */
+            fieldType?: "text" | "textarea" | "number" | "boolean" | "select" | "multi_select" | "date";
+            /** @description Whether the field must be filled in to complete a response. */
+            isRequired?: boolean;
+            /** @description Available options. Required (non-empty) for `select`/`multi_select`; must be null/omitted otherwise. */
+            options?: string[] | null;
+        };
+        CreateFormDto: {
+            /** @description Id of the form template this form is created from. */
+            formTemplateId: string;
+            /** @description Name of the form. */
+            name: string;
+            /** @description Description of the form. */
+            description?: string;
+        };
+        FormFieldResponseDto: {
+            id: string;
+            formId: string;
+            label: string;
+            /** @enum {string} */
+            fieldType: "text" | "textarea" | "number" | "boolean" | "select" | "multi_select" | "date";
+            isRequired: boolean;
+            options?: string[] | null;
+            orderIndex: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        FormResponseDto: {
+            id: string;
+            formTemplateId?: string | null;
+            /** @description The source form template's name, or null if that template was deleted. */
+            formTemplateName?: string | null;
+            name: string;
+            description?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            fields: components["schemas"]["FormFieldResponseDto"][];
+        };
+        UpdateFormDto: {
+            /** @description Name of the form. */
+            name?: string;
+            /** @description Description of the form. */
+            description?: string;
+        };
+        SaveFormResponseDto: {
+            /** @description Field values to save, keyed by field id. Only include the ids being set; ids not present keep their previously saved value. Set a value to null to clear that field. */
+            responseData: {
+                [key: string]: unknown;
+            };
+        };
+        FormResponseResponseDto: {
+            id: string;
+            formId: string;
+            /** @description Saved field values, keyed by field id. */
+            responseData: {
+                [key: string]: unknown;
+            };
+            /** @description Whether every required field has a saved value. */
+            isComplete: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
     };
-    LoginResponseDto: {
-      /** @description Signed JWT session token. */
-      accessToken: string;
-    };
-    CreateFormTypeDto: {
-      /** @description Name of the form type. */
-      name: string;
-      /** @description Description of the form type. */
-      description?: string;
-    };
-    FormFieldResponseDto: {
-      id: string;
-      formTypeId: string;
-      label: string;
-      /** @enum {string} */
-      fieldType:
-        | 'text'
-        | 'textarea'
-        | 'number'
-        | 'boolean'
-        | 'select'
-        | 'multi_select'
-        | 'date';
-      isRequired: boolean;
-      options?: string[] | null;
-      orderIndex: number;
-      /** Format: date-time */
-      createdAt: string;
-      /** Format: date-time */
-      updatedAt: string;
-    };
-    FormTypeResponseDto: {
-      id: string;
-      name: string;
-      description?: string | null;
-      /** Format: date-time */
-      createdAt: string;
-      /** Format: date-time */
-      updatedAt: string;
-      fields: components['schemas']['FormFieldResponseDto'][];
-    };
-    UpdateFormTypeDto: {
-      /** @description Name of the form type. */
-      name?: string;
-      /** @description Description of the form type. */
-      description?: string;
-    };
-    CreateFormFieldDto: {
-      /** @description Label shown for the field. */
-      label: string;
-      /**
-       * @description Data type of the field.
-       * @enum {string}
-       */
-      fieldType:
-        | 'text'
-        | 'textarea'
-        | 'number'
-        | 'boolean'
-        | 'select'
-        | 'multi_select'
-        | 'date';
-      /**
-       * @description Whether the field must be filled in to complete a response.
-       * @default false
-       */
-      isRequired: boolean;
-      /** @description Available options. Required (non-empty) for `select`/`multi_select`; must be omitted otherwise. */
-      options?: string[];
-    };
-    ReorderFieldsDto: {
-      /** @description Ordered list of field ids: must contain exactly the form type's current field ids, in the desired order. */
-      fieldIds: string[];
-    };
-    UpdateFormFieldDto: {
-      /** @description Label shown for the field. */
-      label?: string;
-      /**
-       * @description Data type of the field.
-       * @enum {string}
-       */
-      fieldType?:
-        | 'text'
-        | 'textarea'
-        | 'number'
-        | 'boolean'
-        | 'select'
-        | 'multi_select'
-        | 'date';
-      /** @description Whether the field must be filled in to complete a response. */
-      isRequired?: boolean;
-      /** @description Available options. Required (non-empty) for `select`/`multi_select`; must be null/omitted otherwise. */
-      options?: string[] | null;
-    };
-    CreateFormDto: {
-      /** @description Id of the form type this form is created from. */
-      formTypeId: string;
-      /** @description Name of the form. */
-      name: string;
-      /** @description Description of the form. */
-      description?: string;
-    };
-    FormResponseDto: {
-      id: string;
-      formTypeId: string;
-      /** @description The source form type's name. */
-      formTypeName: string;
-      name: string;
-      description?: string | null;
-      /** Format: date-time */
-      createdAt: string;
-      /** Format: date-time */
-      updatedAt: string;
-    };
-    UpdateFormDto: {
-      /** @description Name of the form. */
-      name?: string;
-      /** @description Description of the form. */
-      description?: string;
-    };
-    SaveFormResponseDto: {
-      /** @description Field values to save, keyed by field id. Only include the ids being set; ids not present keep their previously saved value. Set a value to null to clear that field. */
-      responseData: {
-        [key: string]: unknown;
-      };
-    };
-    FormResponseResponseDto: {
-      id: string;
-      formId: string;
-      /** @description Saved field values, keyed by field id. */
-      responseData: {
-        [key: string]: unknown;
-      };
-      /** @description Whether every required field has a saved value. */
-      isComplete: boolean;
-      /** Format: date-time */
-      createdAt: string;
-      /** Format: date-time */
-      updatedAt: string;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  AuthController_login: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    AuthController_login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginDto"];
+            };
+        };
+        responses: {
+            /** @description Password matched the shared app password; returns a session token. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginResponseDto"];
+                };
+            };
+            /** @description Password didn't match the shared app password. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['LoginDto'];
-      };
+    HealthController_check: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The API is up and reachable. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-    responses: {
-      /** @description Password matched the shared app password; returns a session token. */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    FormTemplatesController_findAllFormTemplates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['LoginResponseDto'];
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormTemplateResponseDto"][];
+                };
+            };
         };
-      };
-      /** @description Password didn't match the shared app password. */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
     };
-  };
-  HealthController_check: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    FormTemplatesController_createFormTemplate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFormTemplateDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormTemplateResponseDto"];
+                };
+            };
+        };
     };
-    requestBody?: never;
-    responses: {
-      /** @description The API is up and reachable. */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    FormTemplatesController_getFormTemplate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                formTemplateId: string;
+            };
+            cookie?: never;
         };
-        content?: never;
-      };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormTemplateResponseDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-  };
-  FormTypesController_findAllFormTypes: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    FormTemplatesController_deleteFormTemplate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                formTemplateId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+    FormTemplatesController_updateFormTemplate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                formTemplateId: string;
+            };
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['FormTypeResponseDto'][];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFormTemplateDto"];
+            };
         };
-      };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormTemplateResponseDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-  };
-  FormTypesController_createFormType: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    FormTemplatesController_addField: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                formTemplateId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFormTemplateFieldDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormTemplateFieldResponseDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateFormTypeDto'];
-      };
+    FormTemplatesController_reorderFields: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                formTemplateId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReorderFieldsDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormTemplateResponseDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
+    FormTemplatesController_removeField: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                formTemplateId: string;
+                fieldId: string;
+            };
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['FormTypeResponseDto'];
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-      };
     };
-  };
-  FormTypesController_getFormType: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        formTypeId: string;
-      };
-      cookie?: never;
+    FormTemplatesController_updateField: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                formTemplateId: string;
+                fieldId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFormTemplateFieldDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormTemplateFieldResponseDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+    FormsController_findAllForms: {
+        parameters: {
+            query?: {
+                /** @description Case-insensitive substring filter on the form name. */
+                name?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['FormTypeResponseDto'];
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormResponseDto"][];
+                };
+            };
         };
-      };
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
     };
-  };
-  FormTypesController_deleteFormType: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        formTypeId: string;
-      };
-      cookie?: never;
+    FormsController_createForm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFormDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormResponseDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
+    FormsController_getForm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                formId: string;
+            };
+            cookie?: never;
         };
-        content?: never;
-      };
-      404: {
-        headers: {
-          [name: string]: unknown;
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormResponseDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-        content?: never;
-      };
     };
-  };
-  FormTypesController_updateFormType: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        formTypeId: string;
-      };
-      cookie?: never;
+    FormsController_deleteForm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                formId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateFormTypeDto'];
-      };
+    FormsController_updateForm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                formId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFormDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormResponseDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+    FormResponsesController_getResponse: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                formId: string;
+            };
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['FormTypeResponseDto'];
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormResponseResponseDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-      };
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
     };
-  };
-  FormTypesController_addField: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        formTypeId: string;
-      };
-      cookie?: never;
+    FormResponsesController_saveResponse: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                formId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveFormResponseDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormResponseResponseDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateFormFieldDto'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['FormFieldResponseDto'];
-        };
-      };
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  FormTypesController_reorderFields: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        formTypeId: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['ReorderFieldsDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['FormTypeResponseDto'];
-        };
-      };
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  FormTypesController_removeField: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        formTypeId: string;
-        fieldId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  FormTypesController_updateField: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        formTypeId: string;
-        fieldId: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateFormFieldDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['FormFieldResponseDto'];
-        };
-      };
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  FormsController_findAllForms: {
-    parameters: {
-      query?: {
-        /** @description Case-insensitive substring filter on the form name. */
-        name?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['FormResponseDto'][];
-        };
-      };
-    };
-  };
-  FormsController_createForm: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateFormDto'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['FormResponseDto'];
-        };
-      };
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  FormsController_getForm: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        formId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['FormResponseDto'];
-        };
-      };
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  FormsController_deleteForm: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        formId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  FormsController_updateForm: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        formId: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateFormDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['FormResponseDto'];
-        };
-      };
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  FormResponsesController_getResponse: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        formId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['FormResponseResponseDto'];
-        };
-      };
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  FormResponsesController_saveResponse: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        formId: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['SaveFormResponseDto'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['FormResponseResponseDto'];
-        };
-      };
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
 }

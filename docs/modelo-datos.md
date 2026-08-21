@@ -10,67 +10,87 @@ Este documento describe el modelo de datos lógico de **Tandem**: una aplicació
 
 ## 2. Principios del modelo
 
-- Un tipo de formulario (`FormType`) define, mediante una lista ordenada de campos configurables (tipo de dato, obligatoriedad, opciones), la estructura de datos que deben cumplir todos los formularios creados a partir de él.
-- Un formulario (`Form`) es una instancia de un `FormType`: hereda sus campos, de modo que se pueden crear varios formularios del mismo tipo sin tener que volver a definir la estructura cada vez.
+- Una plantilla de formulario (`FormTemplate`) define, mediante una lista ordenada de campos configurables (tipo de dato, obligatoriedad, opciones), la estructura de datos recomendada para los formularios que se creen a partir de ella.
+- Un formulario (`Form`) se crea a partir de una `FormTemplate`: en el momento de la creación, copia los campos de la plantilla como `FormField`s propios. A partir de ahí el formulario es independiente: editar o eliminar los campos de la plantilla, o incluso eliminar la propia plantilla, no afecta a los formularios ya creados ni a sus respuestas.
 - Un formulario admite como máximo una respuesta (`FormResponse`): no es una herramienta de encuestas para recoger una respuesta por cada persona que lo rellena, sino un formulario de recogida puntual de información sobre una funcionalidad. Esa respuesta se puede guardar de forma incremental (sin completarla toda de una vez) y editar tantas veces como haga falta después del primer guardado.
-- No existe concepto de usuario ni de autenticación: cualquiera con acceso a la aplicación puede crear tipos de formulario, formularios, rellenarlos y consultar sus respuestas.
+- No existe concepto de usuario ni de autenticación: cualquiera con acceso a la aplicación puede crear plantillas de formulario, formularios, rellenarlos y consultar sus respuestas.
 - El modelo es intencionadamente plano y mínimo: no hay autoría, permisos, ni flujos de revisión o aprobación.
 
 ---
 
 ## 3. Entidades principales
 
-### 3.1 FormType
-Representa un tipo de formulario reutilizable: define los campos que deben rellenar todos los formularios creados a partir de él.
+### 3.1 FormTemplate
+Representa una plantilla de formulario reutilizable: define, mediante sus `FormTemplateField`s, la estructura de campos recomendada para los formularios que se creen a partir de ella.
 
 | Propiedad | Tipo | Descripción |
 |-----------|------|-------------|
 | id | ULID | Identificador único |
-| name | String | Nombre del tipo de formulario |
-| description | String (nullable) | Descripción del tipo de formulario |
+| name | String | Nombre de la plantilla |
+| description | String (nullable) | Descripción de la plantilla |
 | created_at | Timestamp | Fecha de creación |
 | updated_at | Timestamp | Fecha de actualización |
 
 Propósito:
-- Agrupar los campos (`FormField`) que definen la estructura de datos a recoger.
-- Agrupar los formularios (`Form`) creados a partir de él, para que todos compartan la misma estructura sin redefinirla.
+- Agrupar los campos (`FormTemplateField`) que sirven de punto de partida para los formularios creados a partir de ella.
+- Servir de fuente para copiar campos en el momento de crear un `Form`; no tiene ninguna relación viva con los formularios ya creados.
 
-### 3.2 Form
-Representa un formulario concreto, creado a partir de un `FormType`, que se comparte para que cualquiera lo rellene.
+### 3.2 FormTemplateField
+Representa un campo individual configurado dentro de una plantilla de formulario.
 
 | Propiedad | Tipo | Descripción |
 |-----------|------|-------------|
 | id | ULID | Identificador único |
-| form_type_id | ULID | Tipo de formulario del que hereda los campos |
+| form_template_id | ULID | Plantilla contenedora |
+| label | String | Etiqueta del campo |
+| field_type | Enum(text, textarea, number, boolean, select, multi_select, date) | Tipo de dato del campo |
+| is_required | Boolean | Si el campo es obligatorio para poder enviar la respuesta |
+| options | JSON (nullable) | Opciones disponibles para campos `select` o `multi_select` |
+| order_index | Integer | Orden de presentación dentro de la plantilla |
+| created_at | Timestamp | Fecha de creación |
+| updated_at | Timestamp | Fecha de actualización |
+
+Propósito:
+- Definir los campos, tipo de dato y obligatoriedad de una plantilla.
+- Servir de blueprint que se copia sobre cada `Form` nuevo creado a partir de la plantilla, en el momento de su creación.
+
+### 3.3 Form
+Representa un formulario concreto, creado a partir de una `FormTemplate`, que se comparte para que cualquiera lo rellene.
+
+| Propiedad | Tipo | Descripción |
+|-----------|------|-------------|
+| id | ULID | Identificador único |
+| form_template_id | ULID (nullable) | Plantilla de la que se creó el formulario; queda a `null` si esa plantilla se elimina después |
 | name | String | Nombre del formulario |
 | description | String (nullable) | Descripción del formulario |
 | created_at | Timestamp | Fecha de creación |
 | updated_at | Timestamp | Fecha de actualización |
 
 Propósito:
-- Ser la instancia concreta que se comparte para recibir una respuesta, reutilizando los campos definidos en su `FormType`.
+- Ser la instancia concreta que se comparte para recibir una respuesta, con sus propios `FormField`s copiados de la `FormTemplate` en el momento de su creación.
 - Recibir, como máximo, una respuesta (`FormResponse`).
+- Seguir funcionando de forma autónoma aunque su `FormTemplate` de origen cambie o se elimine después.
 
-### 3.3 FormField
-Representa un campo individual configurado dentro de un tipo de formulario.
+### 3.4 FormField
+Representa un campo individual perteneciente a un formulario concreto, copiado de la plantilla en el momento de crear el formulario.
 
 | Propiedad | Tipo | Descripción |
 |-----------|------|-------------|
-| id | ULID | Identificador único |
-| form_type_id | ULID | Tipo de formulario contenedor |
+| id | ULID | Identificador único (distinto del `FormTemplateField` del que se copió) |
+| form_id | ULID | Formulario contenedor |
 | label | String | Etiqueta del campo |
 | field_type | Enum(text, textarea, number, boolean, select, multi_select, date) | Tipo de dato del campo |
 | is_required | Boolean | Si el campo es obligatorio para poder enviar la respuesta |
 | options | JSON (nullable) | Opciones disponibles para campos `select` o `multi_select` |
-| order_index | Integer | Orden de presentación dentro del tipo de formulario |
+| order_index | Integer | Orden de presentación dentro del formulario |
 | created_at | Timestamp | Fecha de creación |
 | updated_at | Timestamp | Fecha de actualización |
 
 Propósito:
-- Definir los campos, tipo de dato y obligatoriedad de un tipo de formulario.
-- Servir de esquema para renderizar cualquier `Form` de ese `FormType` y para validar el `response_data` de sus respuestas.
+- Definir los campos, tipo de dato y obligatoriedad de un formulario concreto, de forma independiente de su plantilla de origen.
+- Servir de esquema para renderizar el `Form` al que pertenece y para validar el `response_data` de su respuesta.
 
-### 3.4 FormResponse
+### 3.5 FormResponse
 Representa un envío de respuestas a un formulario.
 
 | Propiedad | Tipo | Descripción |
@@ -82,15 +102,16 @@ Representa un envío de respuestas a un formulario.
 | updated_at | Timestamp | Fecha de la última edición |
 
 Propósito:
-- Capturar y mantener actualizados los valores de los campos del `FormType` del formulario, permitiendo guardarlos de forma incremental y editarlos después.
+- Capturar y mantener actualizados los valores de los `FormField`s propios del formulario, permitiendo guardarlos de forma incremental y editarlos después.
 - Permitir consultar y revisar la respuesta recibida por un formulario.
 
 ---
 
 ## 4. Relaciones principales
 
-- Un FormType tiene muchos FormFields.
-- Un FormType tiene muchos Forms.
+- Una FormTemplate tiene muchos FormTemplateFields.
+- Una FormTemplate tiene muchos Forms (a través de `form_template_id`, opcional).
+- Un Form tiene muchos FormFields propios, copiados de su FormTemplate en el momento de su creación.
 - Un Form tiene como máximo una FormResponse (relación 1:0..1).
 
 ---
@@ -99,7 +120,8 @@ Propósito:
 
 1. Un FormResponse se puede guardar de forma incremental: no es necesario rellenar todos los campos en un único guardado. Los campos con `is_required = true` deben tener valor para que la respuesta se considere completa.
 2. Un Form tiene como máximo una FormResponse: los sucesivos guardados actualizan esa misma respuesta (no se crean filas nuevas) y sus valores se pueden seguir editando en cualquier momento, incluso una vez completa.
-3. No existen restricciones de acceso: cualquiera puede crear, editar y eliminar tipos de formulario, campos y formularios, y cualquiera puede rellenar, editar y consultar la respuesta de un formulario.
+3. Los `FormField`s de un `Form` se copian de su `FormTemplate` únicamente en el momento de crear el formulario: no hay ninguna sincronización posterior. Editar los `FormTemplateField`s de la plantilla, o eliminar la propia plantilla, nunca modifica los formularios ya creados a partir de ella ni sus respuestas guardadas.
+4. No existen restricciones de acceso: cualquiera puede crear, editar y eliminar plantillas de formulario, campos y formularios, y cualquiera puede rellenar, editar y consultar la respuesta de un formulario.
 
 ---
 
@@ -107,16 +129,24 @@ Propósito:
 
 ```mermaid
 classDiagram
-    class FormType {
+    class FormTemplate {
         +id
         +name
         +description
+    }
+
+    class FormTemplateField {
+        +id
+        +label
+        +field_type
+        +is_required
     }
 
     class Form {
         +id
         +name
         +description
+        +form_template_id (nullable)
     }
 
     class FormField {
@@ -132,8 +162,9 @@ classDiagram
         +updated_at
     }
 
-    FormType --> FormField : has
-    FormType --> Form : has
+    FormTemplate --> FormTemplateField : has
+    FormTemplate --> Form : seeds fields into (at creation only)
+    Form --> FormField : has (own copy)
     Form "1" --> "0..1" FormResponse : receives
 ```
 
@@ -143,8 +174,9 @@ classDiagram
 
 ```mermaid
 erDiagram
-    FORMTYPE ||--o{ FORMFIELD : has
-    FORMTYPE ||--o{ FORM : has
+    FORMTEMPLATE ||--o{ FORMTEMPLATEFIELD : has
+    FORMTEMPLATE |o--o{ FORM : "seeds fields into (nullable, SetNull on delete)"
+    FORM ||--o{ FORMFIELD : has
     FORM ||--o| FORMRESPONSE : receives
 ```
 
@@ -154,9 +186,10 @@ erDiagram
 
 Aunque la implementación exacta dependerá de la tecnología elegida, este es un esquema lógico recomendado:
 
-- form_types
-- form_fields
+- form_templates
+- form_template_fields
 - forms
+- form_fields
 - form_responses
 
 Cada tabla debe incluir:
@@ -172,11 +205,11 @@ En `form_responses`, `form_id` lleva una restricción de unicidad: un `form` adm
 ## 9. Consideraciones de implementación
 
 ### 9.1 MVP recomendado
-Para el MVP, conviene priorizar las cuatro entidades descritas: form_types, form_fields, forms, form_responses.
+Para el MVP, conviene priorizar las cinco entidades descritas: form_templates, form_template_fields, forms, form_fields, form_responses.
 
 ### 9.2 Evolución futura
 En fases posteriores se podrían añadir:
-- Cuentas de usuario y autenticación, si se necesita restringir quién crea tipos de formulario o formularios, o quién ve las respuestas.
+- Cuentas de usuario y autenticación, si se necesita restringir quién crea plantillas de formulario o formularios, o quién ve las respuestas.
 - Estados de publicación del formulario (borrador, publicado, cerrado) para controlar cuándo acepta respuestas.
 - Lógica condicional entre campos (mostrar/ocultar campos según respuestas previas).
 - Exportación de respuestas (CSV, XLSX).
@@ -187,4 +220,4 @@ En fases posteriores se podrían añadir:
 
 ## 10. Conclusión
 
-El modelo de datos propuesto reduce Tandem a lo mínimo indispensable de una aplicación de creación de formularios: tipos de formulario reutilizables que definen los campos, formularios creados a partir de ellos sin redefinir esa estructura, y la respuesta (como máximo una por formulario) que reciben — sin cuentas de usuario ni control de acceso.
+El modelo de datos propuesto reduce Tandem a lo mínimo indispensable de una aplicación de creación de formularios: plantillas de formulario reutilizables que definen una estructura de campos de partida, formularios creados a partir de ellas con su propia copia independiente de esos campos, y la respuesta (como máximo una por formulario) que reciben — sin cuentas de usuario ni control de acceso.

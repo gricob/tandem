@@ -4,12 +4,12 @@ import {
   buildInitialValues,
   isEmptyValue,
 } from '../../src/features/form-responses/value-utils';
-import type { FormField } from '../../src/features/form-types/api';
+import type { FormField } from '../../src/features/forms/api';
 
 function makeField(overrides: Partial<FormField>): FormField {
   return {
     id: 'field-1',
-    formTypeId: 'form-type-1',
+    formId: 'form-1',
     label: 'Field',
     fieldType: 'text',
     isRequired: false,

@@ -16,22 +16,53 @@ enum FormFieldType {
   date
 }
 
-model FormType {
-  id          String      @id @db.Char(26)
-  name        String
-  description String?
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
-  fields      FormField[]
-  forms       Form[]
+model FormTemplate {
+  id             String              @id @db.Char(26)
+  name           String
+  description    String?
+  createdAt      DateTime            @default(now()) @map("created_at")
+  updatedAt      DateTime            @updatedAt @map("updated_at")
+  templateFields FormTemplateField[]
+  forms          Form[]
 
-  @@map("form_types")
+  @@map("form_templates")
+}
+
+model FormTemplateField {
+  id             String        @id @db.Char(26)
+  formTemplateId String        @map("form_template_id") @db.Char(26)
+  formTemplate   FormTemplate  @relation(fields: [formTemplateId], references: [id], onDelete: Cascade)
+  label          String
+  fieldType      FormFieldType @map("field_type")
+  isRequired     Boolean       @default(false) @map("is_required")
+  options        Json?
+  orderIndex     Int           @map("order_index")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  @@index([formTemplateId])
+  @@map("form_template_fields")
+}
+
+model Form {
+  id             String        @id @db.Char(26)
+  formTemplateId String?       @map("form_template_id") @db.Char(26)
+  formTemplate   FormTemplate? @relation(fields: [formTemplateId], references: [id], onDelete: SetNull)
+  name           String
+  description    String?
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  fields         FormField[]
+  formResponse   FormResponse?
+
+  @@index([formTemplateId])
+  @@map("forms")
 }
 
 model FormField {
   id         String        @id @db.Char(26)
-  formTypeId String        @map("form_type_id") @db.Char(26)
-  formType   FormType      @relation(fields: [formTypeId], references: [id], onDelete: Cascade)
+  formId     String        @map("form_id") @db.Char(26)
+  form       Form          @relation(fields: [formId], references: [id], onDelete: Cascade)
   label      String
   fieldType  FormFieldType @map("field_type")
   isRequired Boolean       @default(false) @map("is_required")
@@ -40,22 +71,8 @@ model FormField {
   createdAt  DateTime      @default(now()) @map("created_at")
   updatedAt  DateTime      @updatedAt @map("updated_at")
 
-  @@index([formTypeId])
+  @@index([formId])
   @@map("form_fields")
-}
-
-model Form {
-  id           String        @id @db.Char(26)
-  formTypeId   String        @map("form_type_id") @db.Char(26)
-  formType     FormType      @relation(fields: [formTypeId], references: [id], onDelete: Cascade)
-  name         String
-  description  String?
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime      @updatedAt @map("updated_at")
-  formResponse FormResponse?
-
-  @@index([formTypeId])
-  @@map("forms")
 }
 
 model FormResponse {

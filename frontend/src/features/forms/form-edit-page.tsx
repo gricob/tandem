@@ -76,7 +76,11 @@ export function FormEditPage() {
       </Title>
 
       <Stack gap="lg" maw={480}>
-        <TextInput label="Form type" value={form.formTypeName} disabled />
+        <TextInput
+          label="Form template"
+          value={form.formTemplateName ?? '— deleted —'}
+          disabled
+        />
 
         <form onSubmit={editForm.onSubmit(handleSaveDetails)}>
           <Stack gap="sm">

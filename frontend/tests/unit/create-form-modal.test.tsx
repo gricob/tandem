@@ -4,11 +4,11 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { CreateFormModal } from '../../src/features/forms/components/create-form-modal';
 
-vi.mock('../../src/features/form-types/queries', () => ({
-  useFormTypes: () => ({
+vi.mock('../../src/features/form-templates/queries', () => ({
+  useFormTemplates: () => ({
     data: [
-      { id: 'form-type-1', name: 'Bug report', fields: [] },
-      { id: 'form-type-2', name: 'Feature request', fields: [] },
+      { id: 'form-template-1', name: 'Bug report', templateFields: [] },
+      { id: 'form-template-2', name: 'Feature request', templateFields: [] },
     ],
   }),
 }));
@@ -46,27 +46,29 @@ function getInput(path: string): HTMLElement {
 }
 
 describe('CreateFormModal', () => {
-  it('rejects submitting without a form type or name', async () => {
+  it('rejects submitting without a form template or name', async () => {
     const { onSubmit } = renderModal();
 
     submitForm();
 
-    expect(await screen.findByText('Form type is required')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Form template is required'),
+    ).toBeInTheDocument();
     expect(screen.getByText('Name is required')).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it('offers every available form type as an option', () => {
+  it('offers every available form template as an option', () => {
     renderModal();
 
-    expect(getInput('formTypeId')).toHaveAttribute(
+    expect(getInput('formTemplateId')).toHaveAttribute(
       'placeholder',
-      'Select a form type',
+      'Select a form template',
     );
   });
 
   // Selecting an option from Mantine's Select dropdown and submitting the
-  // resulting form type id is exercised in the Playwright e2e test instead
+  // resulting form template id is exercised in the Playwright e2e test instead
   // (Select's combobox options don't reliably render as queryable roles
   // under jsdom, matching the same limitation noted in FieldForm's tests).
 });

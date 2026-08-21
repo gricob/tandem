@@ -5,8 +5,8 @@ import {
 } from '@tanstack/react-router';
 import { FormResponseFillPage } from '../features/form-responses/form-response-fill-page';
 import { FormResponseViewPage } from '../features/form-responses/form-response-view-page';
-import { FormTypeEditPage } from '../features/form-types/form-type-edit-page';
-import { FormTypesListPage } from '../features/form-types/form-types-list-page';
+import { FormTemplateEditPage } from '../features/form-templates/form-template-edit-page';
+import { FormTemplatesListPage } from '../features/form-templates/form-templates-list-page';
 import { FormEditPage } from '../features/forms/form-edit-page';
 import { FormsListPage } from '../features/forms/forms-list-page';
 import { IndexPage } from './index-page';
@@ -19,16 +19,16 @@ const indexRoute = createRoute({
   component: IndexPage,
 });
 
-const formTypesRoute = createRoute({
+const formTemplatesRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/form-types',
-  component: FormTypesListPage,
+  path: '/form-templates',
+  component: FormTemplatesListPage,
 });
 
-const formTypeEditRoute = createRoute({
+const formTemplateEditRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/form-types/$formTypeId',
-  component: FormTypeEditPage,
+  path: '/form-templates/$formTemplateId',
+  component: FormTemplateEditPage,
 });
 
 const formsRoute = createRoute({
@@ -57,8 +57,8 @@ const formResponseViewRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  formTypesRoute,
-  formTypeEditRoute,
+  formTemplatesRoute,
+  formTemplateEditRoute,
   formsRoute,
   formEditRoute,
   formResponseFillRoute,

@@ -8,7 +8,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import type { UseFormReturnType } from '@mantine/form';
-import type { FormField } from '../../form-types/api';
+import type { FormField } from '../../forms/api';
 import type { ResponseValues } from '../value-utils';
 
 interface ResponseFieldsProps {

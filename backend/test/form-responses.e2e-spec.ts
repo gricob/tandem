@@ -38,28 +38,17 @@ describe('FormResponses (e2e)', () => {
       .set('Authorization', `Bearer ${token}`);
   }
 
-  async function createFormTypeWithFields(): Promise<{
-    formTypeId: string;
-    nameFieldId: string;
-    severityFieldId: string;
-  }> {
-    const formTypeResponse = await authed('post', '/api/v1/form-types')
+  async function createFormTemplateWithFields(): Promise<string> {
+    const formTemplateResponse = await authed('post', '/api/v1/form-templates')
       .send({ name: 'Bug report' })
       .expect(201);
-    const formTypeId = (formTypeResponse.body as { id: string }).id;
+    const formTemplateId = (formTemplateResponse.body as { id: string }).id;
 
-    const nameFieldResponse = await authed(
-      'post',
-      `/api/v1/form-types/${formTypeId}/fields`,
-    )
+    await authed('post', `/api/v1/form-templates/${formTemplateId}/fields`)
       .send({ label: 'Name', fieldType: 'text', isRequired: true })
       .expect(201);
-    const nameFieldId = (nameFieldResponse.body as { id: string }).id;
 
-    const severityFieldResponse = await authed(
-      'post',
-      `/api/v1/form-types/${formTypeId}/fields`,
-    )
+    await authed('post', `/api/v1/form-templates/${formTemplateId}/fields`)
       .send({
         label: 'Severity',
         fieldType: 'select',
@@ -67,16 +56,25 @@ describe('FormResponses (e2e)', () => {
         options: ['Low', 'High'],
       })
       .expect(201);
-    const severityFieldId = (severityFieldResponse.body as { id: string }).id;
 
-    return { formTypeId, nameFieldId, severityFieldId };
+    return formTemplateId;
   }
 
-  async function createForm(formTypeId: string): Promise<string> {
+  async function createForm(formTemplateId: string): Promise<{
+    formId: string;
+    nameFieldId: string;
+    severityFieldId: string;
+  }> {
     const response = await authed('post', '/api/v1/forms')
-      .send({ formTypeId, name: 'Login bug' })
+      .send({ formTemplateId, name: 'Login bug' })
       .expect(201);
-    return (response.body as { id: string }).id;
+    const body = response.body as {
+      id: string;
+      fields: { id: string; label: string }[];
+    };
+    const nameFieldId = body.fields.find((f) => f.label === 'Name')!.id;
+    const severityFieldId = body.fields.find((f) => f.label === 'Severity')!.id;
+    return { formId: body.id, nameFieldId, severityFieldId };
   }
 
   it('rejects requests without a session token', () => {
@@ -99,8 +97,8 @@ describe('FormResponses (e2e)', () => {
   });
 
   it('rejects a response value for an unknown field id', async () => {
-    const { formTypeId } = await createFormTypeWithFields();
-    const formId = await createForm(formTypeId);
+    const formTemplateId = await createFormTemplateWithFields();
+    const { formId } = await createForm(formTemplateId);
 
     return authed('put', `/api/v1/forms/${formId}/response`)
       .send({ responseData: { 'unknown-field': 'value' } })
@@ -108,8 +106,8 @@ describe('FormResponses (e2e)', () => {
   });
 
   it('rejects a response value whose shape does not match the field type', async () => {
-    const { formTypeId, severityFieldId } = await createFormTypeWithFields();
-    const formId = await createForm(formTypeId);
+    const formTemplateId = await createFormTemplateWithFields();
+    const { formId, severityFieldId } = await createForm(formTemplateId);
 
     return authed('put', `/api/v1/forms/${formId}/response`)
       .send({ responseData: { [severityFieldId]: 'Critical' } })
@@ -117,16 +115,16 @@ describe('FormResponses (e2e)', () => {
   });
 
   it('returns 404 getting a response for a form with none saved yet', async () => {
-    const { formTypeId } = await createFormTypeWithFields();
-    const formId = await createForm(formTypeId);
+    const formTemplateId = await createFormTemplateWithFields();
+    const { formId } = await createForm(formTemplateId);
 
     return authed('get', `/api/v1/forms/${formId}/response`).expect(404);
   });
 
   it('covers the incremental save flow: partial save, complete it, clear a field', async () => {
-    const { formTypeId, nameFieldId, severityFieldId } =
-      await createFormTypeWithFields();
-    const formId = await createForm(formTypeId);
+    const formTemplateId = await createFormTemplateWithFields();
+    const { formId, nameFieldId, severityFieldId } =
+      await createForm(formTemplateId);
 
     const partialSave = await authed('put', `/api/v1/forms/${formId}/response`)
       .send({ responseData: { [severityFieldId]: 'Low' } })

@@ -1,18 +1,19 @@
 import { expect, test } from '@playwright/test';
 
-interface FormType {
+interface FormTemplate {
   id: string;
   name: string;
   description: string | null;
-  fields: unknown[];
+  templateFields: unknown[];
 }
 
 interface Form {
   id: string;
-  formTypeId: string;
-  formTypeName: string;
+  formTemplateId: string | null;
+  formTemplateName: string | null;
   name: string;
   description: string | null;
+  fields: unknown[];
 }
 
 let nextId = 1;
@@ -20,19 +21,19 @@ function id(): string {
   return `id-${nextId++}`;
 }
 
-test('creates a form type, creates a form from it, searches, edits, and deletes it', async ({
+test('creates a form template, creates a form from it, searches, edits, and deletes it', async ({
   page,
 }) => {
-  const formTypes: FormType[] = [];
+  const formTemplates: FormTemplate[] = [];
   const forms: Form[] = [];
 
   await page.route('**/api/v1/auth/login', async (route) => {
     await route.fulfill({ status: 200, json: { accessToken: 'e2e-session-token' } });
   });
 
-  await page.route('**/api/v1/form-types', async (route) => {
+  await page.route('**/api/v1/form-templates', async (route) => {
     if (route.request().method() === 'GET') {
-      await route.fulfill({ status: 200, json: formTypes });
+      await route.fulfill({ status: 200, json: formTemplates });
       return;
     }
     if (route.request().method() === 'POST') {
@@ -40,27 +41,29 @@ test('creates a form type, creates a form from it, searches, edits, and deletes 
         name: string;
         description?: string;
       };
-      const formType: FormType = {
+      const formTemplate: FormTemplate = {
         id: id(),
         name: body.name,
         description: body.description ?? null,
-        fields: [],
+        templateFields: [],
       };
-      formTypes.push(formType);
-      await route.fulfill({ status: 201, json: formType });
+      formTemplates.push(formTemplate);
+      await route.fulfill({ status: 201, json: formTemplate });
       return;
     }
     await route.continue();
   });
 
-  await page.route(/\/api\/v1\/form-types\/[^/]+$/, async (route) => {
-    const formTypeId = new URL(route.request().url()).pathname.split('/').pop()!;
-    const formType = formTypes.find((ft) => ft.id === formTypeId);
-    if (!formType) {
+  await page.route(/\/api\/v1\/form-templates\/[^/]+$/, async (route) => {
+    const formTemplateId = new URL(route.request().url()).pathname
+      .split('/')
+      .pop()!;
+    const formTemplate = formTemplates.find((ft) => ft.id === formTemplateId);
+    if (!formTemplate) {
       await route.fulfill({ status: 404, json: {} });
       return;
     }
-    await route.fulfill({ status: 200, json: formType });
+    await route.fulfill({ status: 200, json: formTemplate });
   });
 
   await page.route('**/api/v1/forms**', async (route) => {
@@ -79,17 +82,20 @@ test('creates a form type, creates a form from it, searches, edits, and deletes 
     }
     if (route.request().method() === 'POST') {
       const body = route.request().postDataJSON() as {
-        formTypeId: string;
+        formTemplateId: string;
         name: string;
         description?: string;
       };
-      const formType = formTypes.find((ft) => ft.id === body.formTypeId)!;
+      const formTemplate = formTemplates.find(
+        (ft) => ft.id === body.formTemplateId,
+      )!;
       const form: Form = {
         id: id(),
-        formTypeId: body.formTypeId,
-        formTypeName: formType.name,
+        formTemplateId: body.formTemplateId,
+        formTemplateName: formTemplate.name,
         name: body.name,
         description: body.description ?? null,
+        fields: [],
       };
       forms.push(form);
       await route.fulfill({ status: 201, json: form });
@@ -131,27 +137,31 @@ test('creates a form type, creates a form from it, searches, edits, and deletes 
   await page.getByLabel(/password/i).fill('correct-password');
   await page.getByRole('button', { name: 'Enter' }).click();
 
-  await page.getByRole('link', { name: 'Form types' }).click();
-  await expect(page.getByRole('heading', { name: 'Form types' })).toBeVisible();
+  await page.getByRole('link', { name: 'Form templates' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Form templates' }),
+  ).toBeVisible();
 
-  await page.getByRole('button', { name: 'New form type' }).click();
+  await page.getByRole('button', { name: 'New form template' }).click();
   await page.getByLabel('Name').fill('Bug report');
   await page.getByRole('button', { name: 'Create' }).click();
-  await expect(page.getByRole('heading', { name: 'Edit form type' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Edit form template' }),
+  ).toBeVisible();
 
   await page.goto('/forms');
   await expect(page.getByRole('heading', { name: 'Forms' })).toBeVisible();
   await expect(page.getByText('No forms found.')).toBeVisible();
 
   await page.getByRole('button', { name: 'New form' }).click();
-  await page.getByRole('textbox', { name: 'Form type' }).click();
+  await page.getByRole('textbox', { name: 'Form template' }).click();
   await page.getByRole('option', { name: 'Bug report' }).click();
   await page.getByLabel('Name').fill('Login bug');
   await page.getByLabel('Description').fill('Info about the login bug');
   await page.getByRole('button', { name: 'Create' }).click();
 
   await expect(page.getByRole('heading', { name: 'Edit form' })).toBeVisible();
-  await expect(page.getByLabel('Form type')).toHaveValue('Bug report');
+  await expect(page.getByLabel('Form template')).toHaveValue('Bug report');
 
   await page.getByRole('link', { name: '← Forms' }).click();
   await expect(page.getByRole('link', { name: 'Login bug' })).toBeVisible();
