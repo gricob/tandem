@@ -45,14 +45,26 @@ model FormField {
 }
 
 model Form {
-  id          String   @id @db.Char(26)
-  formTypeId  String   @map("form_type_id") @db.Char(26)
-  formType    FormType @relation(fields: [formTypeId], references: [id], onDelete: Cascade)
-  name        String
-  description String?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id           String        @id @db.Char(26)
+  formTypeId   String        @map("form_type_id") @db.Char(26)
+  formType     FormType      @relation(fields: [formTypeId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  formResponse FormResponse?
 
   @@index([formTypeId])
   @@map("forms")
+}
+
+model FormResponse {
+  id           String   @id @db.Char(26)
+  formId       String   @unique @map("form_id") @db.Char(26)
+  form         Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  responseData Json     @default("{}") @map("response_data")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("form_responses")
 }
