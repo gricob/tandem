@@ -1,4 +1,11 @@
-import { Alert, Button, Container, PasswordInput, Stack, Title } from '@mantine/core';
+import {
+  Alert,
+  Button,
+  Container,
+  PasswordInput,
+  Stack,
+  Title,
+} from '@mantine/core';
 import { useState, type FormEvent } from 'react';
 import { login } from './api';
 import { setSessionToken } from './session-store';

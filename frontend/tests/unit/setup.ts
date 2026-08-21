@@ -40,6 +40,15 @@ Object.defineProperty(window, 'localStorage', {
   configurable: true,
 });
 
+class ResizeObserverStub {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+window.ResizeObserver ??= ResizeObserverStub;
+Element.prototype.scrollIntoView ??= () => {};
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: (query: string) => ({

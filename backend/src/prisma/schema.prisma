@@ -5,3 +5,40 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum FormFieldType {
+  text
+  textarea
+  number
+  boolean
+  select
+  multi_select
+  date
+}
+
+model FormType {
+  id          String      @id @db.Char(26)
+  name        String
+  description String?
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  fields      FormField[]
+
+  @@map("form_types")
+}
+
+model FormField {
+  id         String        @id @db.Char(26)
+  formTypeId String        @map("form_type_id") @db.Char(26)
+  formType   FormType      @relation(fields: [formTypeId], references: [id], onDelete: Cascade)
+  label      String
+  fieldType  FormFieldType @map("field_type")
+  isRequired Boolean       @default(false) @map("is_required")
+  options    Json?
+  orderIndex Int           @map("order_index")
+  createdAt  DateTime      @default(now()) @map("created_at")
+  updatedAt  DateTime      @updatedAt @map("updated_at")
+
+  @@index([formTypeId])
+  @@map("form_fields")
+}
