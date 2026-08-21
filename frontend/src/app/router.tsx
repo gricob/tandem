@@ -5,6 +5,8 @@ import {
 } from '@tanstack/react-router';
 import { FormTypeEditPage } from '../features/form-types/form-type-edit-page';
 import { FormTypesListPage } from '../features/form-types/form-types-list-page';
+import { FormEditPage } from '../features/forms/form-edit-page';
+import { FormsListPage } from '../features/forms/forms-list-page';
 import { IndexPage } from './index-page';
 
 const rootRoute = createRootRoute();
@@ -27,10 +29,24 @@ const formTypeEditRoute = createRoute({
   component: FormTypeEditPage,
 });
 
+const formsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/forms',
+  component: FormsListPage,
+});
+
+const formEditRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/forms/$formId',
+  component: FormEditPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   formTypesRoute,
   formTypeEditRoute,
+  formsRoute,
+  formEditRoute,
 ]);
 
 export const router = createRouter({ routeTree });
