@@ -1,7 +1,11 @@
-import { clearSessionToken, getSessionToken } from '../features/auth/session-store';
+import {
+  clearSessionToken,
+  getSessionToken,
+} from '../features/auth/session-store';
 import type { paths } from './schema';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
 
 export class ApiError extends Error {
   readonly status: number;
@@ -12,7 +16,10 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+export async function apiFetch<T>(
+  path: string,
+  init?: RequestInit,
+): Promise<T> {
   const token = getSessionToken();
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -33,6 +40,10 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
       response.status,
       `API request to ${path} failed with status ${response.status}`,
     );
+  }
+
+  if (response.status === 204) {
+    return undefined as T;
   }
 
   return response.json() as Promise<T>;

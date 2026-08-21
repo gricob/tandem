@@ -49,14 +49,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Generate Prisma client
+        run: pnpm --filter backend prisma:generate
+
+      - name: Run database migrations
+        run: pnpm --filter backend prisma:migrate:deploy
+
       - name: Lint
         run: pnpm --filter backend lint
 
       - name: Typecheck
         run: pnpm --filter backend typecheck
-
-      - name: Generate Prisma client
-        run: pnpm --filter backend prisma:generate
 
       - name: Unit tests
         run: pnpm --filter backend test
