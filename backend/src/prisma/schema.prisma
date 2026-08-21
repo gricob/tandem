@@ -23,6 +23,7 @@ model FormType {
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
   fields      FormField[]
+  forms       Form[]
 
   @@map("form_types")
 }
@@ -41,4 +42,17 @@ model FormField {
 
   @@index([formTypeId])
   @@map("form_fields")
+}
+
+model Form {
+  id          String   @id @db.Char(26)
+  formTypeId  String   @map("form_type_id") @db.Char(26)
+  formType    FormType @relation(fields: [formTypeId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([formTypeId])
+  @@map("forms")
 }
