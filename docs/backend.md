@@ -9,7 +9,7 @@ Este documento define el stack tecnológico y la arquitectura del backend de **T
 |------|----------|-----------------|----------------|
 | Lenguaje | TypeScript | 6.0.x | Tipado fuerte, ecosistema maduro, facilita validar la estructura dinámica de `response_data`. |
 | Runtime | Node.js | 24.x (LTS) | Estándar de facto para TypeScript en backend; LTS con soporte hasta abril de 2027. |
-| Framework | NestJS | 11.x | Estructura modular con inyección de dependencias; el dominio de Tandem (FormType, FormField, Form, FormResponse) es esencialmente CRUD, para el que Nest ofrece una estructura simple y suficiente. |
+| Framework | NestJS | 11.x | Estructura modular con inyección de dependencias; el dominio de Tandem (FormTemplate, FormTemplateField, Form, FormField, FormResponse) es esencialmente CRUD, para el que Nest ofrece una estructura simple y suficiente. |
 | Base de datos | PostgreSQL | 18.x | Soporta JSONB (para `response_data` y `options`), fuerte en integridad relacional. |
 | ORM / migraciones | Prisma | 7.x | Migraciones versionadas, cliente tipado a partir del esquema, buen encaje con TypeScript + PostgreSQL. |
 | Identificadores | `ulid` (npm) | ^3.0.x | Generados en la aplicación, `char(26)`, ordenables por tiempo de creación, consistente con el modelo de datos ([docs/modelo-datos.md](modelo-datos.md)). |
@@ -30,20 +30,20 @@ Este documento define el stack tecnológico y la arquitectura del backend de **T
 ## 3. Arquitectura: capas simples (Controller → Service → Prisma)
 El dominio de Tandem es esencialmente CRUD, sin máquina de estados ni reglas de negocio complejas. Por eso todos los módulos siguen el mismo patrón simple de NestJS: `Controller` → `Service` → acceso directo a Prisma, sin capa de dominio ni repositorio propio.
 
-Módulos: `FormTypesModule`, `FormFieldsModule`, `FormsModule`, `FormResponsesModule`.
+Módulos: `FormTemplatesModule`, `FormsModule`, `FormResponsesModule`.
 
 > Regla práctica: si en el futuro aparecen reglas de negocio no triviales (por ejemplo, si se reintroducen cuentas de usuario con permisos), evaluar entonces introducir una capa de dominio o de autorización explícita solo donde se necesite; no anticiparla mientras el dominio siga siendo CRUD abierto.
 
 ## 4. Persistencia
 - Cada entidad de [docs/modelo-datos.md](modelo-datos.md) §3 se modela como tabla en `schema.prisma`, con `id` (ULID), `created_at`, `updated_at` (y `deleted_at` si se adopta soft delete).
-- `response_data` (en `FormResponse`) y `options` (en `FormField`) se almacenan como columnas `JSONB`; la validación de `response_data` contra los `FormField` del `FormType` asociado al `Form` correspondiente ocurre en la capa de aplicación (`FormResponsesModule`), no como constraint de base de datos.
+- `response_data` (en `FormResponse`) y `options` (en `FormField`/`FormTemplateField`) se almacenan como columnas `JSONB`; la validación de `response_data` contra los `FormField` propios del `Form` correspondiente ocurre en la capa de aplicación (`FormResponsesModule`), no como constraint de base de datos.
 - El `Service` de cada módulo usa `PrismaService` directamente.
 - Las migraciones se gestionan con Prisma Migrate y se versionan en el repositorio.
 
 ## 5. API
 - Estilo REST, recursos alineados a las entidades del dominio:
-  - `/api/v1/form-types`
-  - `/api/v1/form-types/:formTypeId/fields`
+  - `/api/v1/form-templates`
+  - `/api/v1/form-templates/:formTemplateId/fields`
   - `/api/v1/forms`
   - `/api/v1/forms/:formId/response` (recurso singular: un Form admite como máximo una FormResponse; `PUT` funciona como upsert para crearla o editarla)
   - `/api/v1/auth/login` (único endpoint público; recibe la contraseña compartida y devuelve el token de sesión)
@@ -62,7 +62,7 @@ Implementada en el `Service` de `FormResponsesModule` (ver [docs/modelo-datos.md
 
 ## 7. Testing y calidad
 - Tests unitarios por servicio (Jest), cubriendo especialmente la validación de campos obligatorios (§6).
-- Tests e2e (Supertest) cubriendo los flujos críticos de extremo a extremo: creación de un tipo de formulario, creación de un formulario a partir de él, guardado incremental y edición posterior de la respuesta, y consulta de la respuesta.
+- Tests e2e (Supertest) cubriendo los flujos críticos de extremo a extremo: creación de una plantilla de formulario, creación de un formulario a partir de ella, guardado incremental y edición posterior de la respuesta, y consulta de la respuesta.
 
 ## 8. CI/CD: GitHub Actions
 El repositorio usa **GitHub Actions** como proveedor de CI. Workflow propuesto (`.github/workflows/backend-ci.yml`), disparado en push/PR sobre rutas de `backend/`:
@@ -81,8 +81,7 @@ El despliegue efectivo (CD) a un entorno concreto queda pendiente hasta decidir 
 backend/
   src/
     modules/
-      form-types/
-      form-fields/
+      form-templates/
       forms/
       form-responses/
     common/          # filters, pipes

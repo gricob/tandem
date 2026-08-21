@@ -10,8 +10,6 @@ import {
 import { useForm } from '@mantine/form';
 import { Link, useParams } from '@tanstack/react-router';
 import { useEffect } from 'react';
-import type { FormType } from '../form-types/api';
-import { useFormType } from '../form-types/queries';
 import type { Form } from '../forms/api';
 import { useForm as useFormQuery } from '../forms/queries';
 import { ResponseFields } from './components/response-fields';
@@ -32,17 +30,12 @@ export function FormResponseFillPage() {
     isError: formError,
   } = useFormQuery(formId);
   const {
-    data: formType,
-    isPending: formTypePending,
-    isError: formTypeError,
-  } = useFormType(form?.formTypeId ?? '', { enabled: Boolean(form) });
-  const {
     data: response,
     isPending: responsePending,
     isError: responseError,
   } = useFormResponse(formId);
 
-  if (formPending || formTypePending || responsePending) {
+  if (formPending || responsePending) {
     return (
       <Container py="xl">
         <Text c="dimmed">Loading form…</Text>
@@ -50,7 +43,7 @@ export function FormResponseFillPage() {
     );
   }
 
-  if (formError || formTypeError || responseError || !form || !formType) {
+  if (formError || responseError || !form) {
     return (
       <Container py="xl">
         <Alert color="red" title="Couldn't load form">
@@ -64,7 +57,6 @@ export function FormResponseFillPage() {
     <FormResponseFillForm
       formId={formId}
       form={form}
-      formType={formType}
       response={response ?? null}
     />
   );
@@ -73,18 +65,16 @@ export function FormResponseFillPage() {
 interface FormResponseFillFormProps {
   formId: string;
   form: Form;
-  formType: FormType;
   response: FormResponse | null;
 }
 
 function FormResponseFillForm({
   formId,
   form,
-  formType,
   response,
 }: FormResponseFillFormProps) {
   const saveResponse = useSaveFormResponse(formId);
-  const fields = formType.fields;
+  const fields = form.fields;
   const savedResponseData = response?.responseData ?? {};
 
   const responseForm = useForm<ResponseValues>({

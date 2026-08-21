@@ -2,8 +2,8 @@ import { MantineProvider } from '@mantine/core';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { FieldForm } from '../../src/features/form-types/components/field-form';
-import type { FieldFormValues } from '../../src/features/form-types/schemas';
+import { FieldForm } from '../../src/features/form-templates/components/field-form';
+import type { FieldFormValues } from '../../src/features/form-templates/schemas';
 
 // Mantine's generated `id`/`for` pair on labelled inputs is unreliable under
 // jsdom (confirmed working in a real browser), so fields are queried by the

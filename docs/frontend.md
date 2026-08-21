@@ -38,11 +38,11 @@ Basado en las user stories del PRD (§8) y las entidades del modelo de datos:
 | Pantalla | Contenido / responsabilidad |
 |----------|------------------------------|
 | Contraseña de acceso | Formulario mínimo (un único campo de contraseña) mostrado antes de cualquier otra pantalla si no hay una sesión válida; al validarse contra la API, guarda el token de sesión y da paso al resto de la aplicación. |
-| Tipos de formulario | Listado de todos los `FormType` existentes, con búsqueda por nombre y acceso a editar, eliminar o crear un formulario a partir de cada uno. |
-| Editor de tipo de formulario | Alta/edición de un `FormType` (nombre, descripción) y de sus `FormField` (añadir, editar, reordenar, eliminar campos; tipo, obligatoriedad, opciones). |
-| Formularios | Listado de todos los `Form` existentes (con su tipo), con búsqueda por nombre y acceso a editar, eliminar, rellenar o ver la respuesta de cada uno. |
-| Alta de formulario | Creación de un `Form` (nombre, descripción) a partir de un `FormType` existente, sin redefinir campos. |
-| Relleno de formulario | Renderizado dinámico de los `FormField` del `FormType` de un `Form`, guardado incremental de su `FormResponse` (única) y edición posterior; validación de campos obligatorios para indicar si está completa, sin bloquear guardados parciales. También se usa para editar una respuesta ya guardada. |
+| Plantillas de formulario | Listado de todas las `FormTemplate` existentes, con búsqueda por nombre y acceso a editar, eliminar o crear un formulario a partir de cada una. |
+| Editor de plantilla de formulario | Alta/edición de una `FormTemplate` (nombre, descripción) y de sus `FormTemplateField` (añadir, editar, reordenar, eliminar campos; tipo, obligatoriedad, opciones). |
+| Formularios | Listado de todos los `Form` existentes (con su plantilla de origen), con búsqueda por nombre y acceso a editar, eliminar, rellenar o ver la respuesta de cada uno. |
+| Alta de formulario | Creación de un `Form` (nombre, descripción) a partir de una `FormTemplate` existente; sus `FormField` se copian de la plantilla en ese momento y quedan fijos a partir de ahí. |
+| Relleno de formulario | Renderizado dinámico de los `FormField` propios de un `Form`, guardado incremental de su `FormResponse` (única) y edición posterior; validación de campos obligatorios para indicar si está completa, sin bloquear guardados parciales. También se usa para editar una respuesta ya guardada. |
 | Respuesta de un formulario | Vista de detalle de la `FormResponse` recibida por un `Form` (como máximo una), con acceso para editarla, o estado vacío si todavía no se ha guardado ninguna. |
 
 ## 5. Formularios dinámicos
@@ -60,7 +60,7 @@ Tanto el editor de campos del builder como el relleno de formularios usan el mis
 
 ## 6. Testing y calidad
 - Unit/component tests de hooks de features y componentes con Vitest + React Testing Library.
-- Tests e2e de flujos críticos (crear un tipo de formulario, crear un formulario a partir de él, rellenarlo de forma incremental, editar la respuesta y consultarla) con Playwright contra un navegador real.
+- Tests e2e de flujos críticos (crear una plantilla de formulario, crear un formulario a partir de ella, rellenarlo de forma incremental, editar la respuesta y consultarla) con Playwright contra un navegador real.
 - ESLint integrado en el flujo de desarrollo.
 
 ## 7. CI/CD: GitHub Actions
@@ -82,8 +82,8 @@ frontend/
     app/                  # entry point, providers (Mantine, TanStack Query, Router)
     features/
       auth/                # pantalla de contraseña, gestión del token de sesión
-      form-types/          # builder de tipos de formulario (definición de campos)
-      forms/               # creación de formularios a partir de un tipo
+      form-templates/      # builder de plantillas de formulario (definición de campos)
+      forms/               # creación de formularios a partir de una plantilla
       form-responses/      # relleno y consulta de respuestas
     api/                   # cliente generado (OpenAPI) + hooks de TanStack Query
     components/            # componentes UI reutilizables

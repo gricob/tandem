@@ -10,7 +10,6 @@ import {
   Title,
 } from '@mantine/core';
 import { Link, useParams } from '@tanstack/react-router';
-import { useFormType } from '../form-types/queries';
 import { useForm as useFormQuery } from '../forms/queries';
 import { useFormResponse } from './queries';
 import { formatValueForDisplay } from './value-utils';
@@ -23,17 +22,12 @@ export function FormResponseViewPage() {
     isError: formError,
   } = useFormQuery(formId);
   const {
-    data: formType,
-    isPending: formTypePending,
-    isError: formTypeError,
-  } = useFormType(form?.formTypeId ?? '', { enabled: Boolean(form) });
-  const {
     data: response,
     isPending: responsePending,
     isError: responseError,
   } = useFormResponse(formId);
 
-  if (formPending || formTypePending || responsePending) {
+  if (formPending || responsePending) {
     return (
       <Container py="xl">
         <Text c="dimmed">Loading response…</Text>
@@ -41,7 +35,7 @@ export function FormResponseViewPage() {
     );
   }
 
-  if (formError || formTypeError || responseError || !form || !formType) {
+  if (formError || responseError || !form) {
     return (
       <Container py="xl">
         <Alert color="red" title="Couldn't load response">
@@ -79,7 +73,7 @@ export function FormResponseViewPage() {
           </Group>
 
           <Stack gap="sm">
-            {formType.fields
+            {form.fields
               .filter((field) => response.responseData[field.id] != null)
               .map((field) => (
                 <div key={field.id}>

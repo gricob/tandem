@@ -14,16 +14,20 @@ vi.mock('../../src/features/form-responses/queries', () => ({
   useSaveFormResponse: () => useSaveFormResponseMock(),
 }));
 
-vi.mock('../../src/features/form-types/queries', () => ({
-  useFormType: () => ({
+vi.mock('../../src/features/forms/queries', () => ({
+  useForm: () => ({
     data: {
-      id: 'form-type-1',
-      name: 'Bug report',
+      id: 'form-1',
+      formTemplateId: 'form-template-1',
+      formTemplateName: 'Bug report',
+      name: 'Login bug',
       description: null,
+      createdAt: '',
+      updatedAt: '',
       fields: [
         {
           id: 'field-name',
-          formTypeId: 'form-type-1',
+          formId: 'form-1',
           label: 'Name',
           fieldType: 'text',
           isRequired: true,
@@ -34,7 +38,7 @@ vi.mock('../../src/features/form-types/queries', () => ({
         },
         {
           id: 'field-severity',
-          formTypeId: 'form-type-1',
+          formId: 'form-1',
           label: 'Severity',
           fieldType: 'select',
           isRequired: false,
@@ -44,24 +48,6 @@ vi.mock('../../src/features/form-types/queries', () => ({
           updatedAt: '',
         },
       ],
-      createdAt: '',
-      updatedAt: '',
-    },
-    isPending: false,
-    isError: false,
-  }),
-}));
-
-vi.mock('../../src/features/forms/queries', () => ({
-  useForm: () => ({
-    data: {
-      id: 'form-1',
-      formTypeId: 'form-type-1',
-      formTypeName: 'Bug report',
-      name: 'Login bug',
-      description: null,
-      createdAt: '',
-      updatedAt: '',
     },
     isPending: false,
     isError: false,

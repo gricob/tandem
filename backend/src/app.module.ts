@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from './modules/auth/auth.module';
 import { FormResponsesModule } from './modules/form-responses/form-responses.module';
-import { FormTypesModule } from './modules/form-types/form-types.module';
+import { FormTemplatesModule } from './modules/form-templates/form-templates.module';
 import { FormsModule } from './modules/forms/forms.module';
 import { HealthModule } from './modules/health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -11,7 +11,7 @@ import { PrismaModule } from './prisma/prisma.module';
     PrismaModule,
     AuthModule,
     HealthModule,
-    FormTypesModule,
+    FormTemplatesModule,
     FormsModule,
     FormResponsesModule,
   ],

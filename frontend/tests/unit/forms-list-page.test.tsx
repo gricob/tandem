@@ -13,8 +13,8 @@ vi.mock('../../src/features/forms/queries', () => ({
   useDeleteForm: () => ({ mutate: vi.fn(), isPending: false }),
 }));
 
-vi.mock('../../src/features/form-types/queries', () => ({
-  useFormTypes: () => ({ data: [] }),
+vi.mock('../../src/features/form-templates/queries', () => ({
+  useFormTemplates: () => ({ data: [] }),
 }));
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
@@ -30,12 +30,13 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
 const forms = [
   {
     id: 'form-1',
-    formTypeId: 'form-type-1',
-    formTypeName: 'Bug report',
+    formTemplateId: 'form-template-1',
+    formTemplateName: 'Bug report',
     name: 'Login bug',
     description: 'Info about the login bug',
     createdAt: '',
     updatedAt: '',
+    fields: [],
   },
 ];
 
@@ -48,12 +49,23 @@ function renderPage() {
 }
 
 describe('FormsListPage', () => {
-  it('lists forms with their source form type', () => {
+  it('lists forms with their source form template', () => {
     useFormsMock.mockReturnValue({ data: forms, isPending: false, isError: false });
     renderPage();
 
     expect(screen.getByText('Login bug')).toBeInTheDocument();
     expect(screen.getByText('Bug report')).toBeInTheDocument();
+  });
+
+  it('shows a fallback for a form whose template was deleted', () => {
+    useFormsMock.mockReturnValue({
+      data: [{ ...forms[0], formTemplateId: null, formTemplateName: null }],
+      isPending: false,
+      isError: false,
+    });
+    renderPage();
+
+    expect(screen.getByText('— deleted —')).toBeInTheDocument();
   });
 
   it('passes the typed search term through to the forms query', async () => {

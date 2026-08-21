@@ -7,7 +7,7 @@ TBD - created by syncing change create-form-response. Update Purpose after archi
 ## Requirements
 
 ### Requirement: Save a form's response
-The backend SHALL expose `PUT /api/v1/forms/:formId/response`, requiring a valid session token, that upserts the `FormResponse` for the given `Form`: creates it on the first call and updates the same row on every subsequent call. The request body carries a `response_data` object mapping `field_id` to value; each key is merged into the stored `response_data`, leaving previously saved keys not present in the request untouched, and clearing a field when its value is explicitly `null`. Each submitted key must reference an existing `FormField` on the form's `FormType`, and its value must match that field's `field_type` (string for `text`/`textarea`, number for `number`, boolean for `boolean`, one of the field's `options` for `select`, a subset of the field's `options` for `multi_select`, ISO date string for `date`). A response is never rejected for leaving `is_required` fields unanswered.
+The backend SHALL expose `PUT /api/v1/forms/:formId/response`, requiring a valid session token, that upserts the `FormResponse` for the given `Form`: creates it on the first call and updates the same row on every subsequent call. The request body carries a `response_data` object mapping `field_id` to value; each key is merged into the stored `response_data`, leaving previously saved keys not present in the request untouched, and clearing a field when its value is explicitly `null`. Each submitted key must reference an existing `FormField` owned by the `Form` itself, and its value must match that field's `field_type` (string for `text`/`textarea`, number for `number`, boolean for `boolean`, one of the field's `options` for `select`, a subset of the field's `options` for `multi_select`, ISO date string for `date`). A response is never rejected for leaving `is_required` fields unanswered.
 
 #### Scenario: First save creates the response
 - **WHEN** an authenticated client calls `PUT /api/v1/forms/:formId/response` for a form with no existing `FormResponse`, with a `response_data` object containing values for one or more of its fields
@@ -26,7 +26,7 @@ The backend SHALL expose `PUT /api/v1/forms/:formId/response`, requiring a valid
 - **THEN** the response is `200 OK`, the save succeeds, and the returned `is_complete` is `false`
 
 #### Scenario: Unknown field id is rejected
-- **WHEN** an authenticated client calls `PUT /api/v1/forms/:formId/response` with a `response_data` key that does not match any `FormField` on the form's `FormType`
+- **WHEN** an authenticated client calls `PUT /api/v1/forms/:formId/response` with a `response_data` key that does not match any `FormField` owned by that `Form`
 - **THEN** the response is `400 Bad Request` and the response is not modified
 
 #### Scenario: Value shape mismatch is rejected
@@ -38,7 +38,7 @@ The backend SHALL expose `PUT /api/v1/forms/:formId/response`, requiring a valid
 - **THEN** the response is `404 Not Found`
 
 ### Requirement: View a form's response
-The backend SHALL expose `GET /api/v1/forms/:formId/response`, requiring a valid session token, that returns the `Form`'s `FormResponse` including its computed `is_complete` (whether every `is_required` `FormField` on the form's `FormType` has a non-null value in `response_data`).
+The backend SHALL expose `GET /api/v1/forms/:formId/response`, requiring a valid session token, that returns the `Form`'s `FormResponse` including its computed `is_complete` (whether every `is_required` `FormField` owned by the `Form` has a non-null value in `response_data`).
 
 #### Scenario: Fetching an existing response
 - **WHEN** an authenticated client calls `GET /api/v1/forms/:formId/response` for a form that has a saved `FormResponse`
@@ -53,11 +53,11 @@ The backend SHALL expose `GET /api/v1/forms/:formId/response`, requiring a valid
 - **THEN** the response is `404 Not Found`
 
 ### Requirement: Frontend fills in and saves a form's response
-The frontend SHALL provide a screen that dynamically renders a `Form`'s fields based on its `FormType`'s `FormField`s (using each field's `field_type`, `label`, `is_required`, and `options`), lets the user enter or change values, and saves them via `PUT /api/v1/forms/:formId/response`. The screen SHALL work both for a form with no response yet and for re-opening a form to edit an already-saved response, pre-filling existing values.
+The frontend SHALL provide a screen that dynamically renders a `Form`'s fields based on the `Form`'s own `FormField`s (using each field's `field_type`, `label`, `is_required`, and `options`), lets the user enter or change values, and saves them via `PUT /api/v1/forms/:formId/response`. The screen SHALL work both for a form with no response yet and for re-opening a form to edit an already-saved response, pre-filling existing values.
 
 #### Scenario: Filling in a form with no prior response
 - **WHEN** a user opens the fill-in screen for a form with no saved `FormResponse`
-- **THEN** the frontend renders every field from the form's `FormType` empty, and calling `GET /api/v1/forms/:formId/response` returning `404` is treated as an empty starting state, not an error
+- **THEN** the frontend renders every field owned by the form empty, and calling `GET /api/v1/forms/:formId/response` returning `404` is treated as an empty starting state, not an error
 
 #### Scenario: Saving entered values
 - **WHEN** a user enters or changes one or more field values and triggers a save

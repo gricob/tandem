@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-interface FormField {
+interface FormTemplateField {
   id: string;
-  formTypeId: string;
+  formTemplateId: string;
   label: string;
   fieldType: string;
   isRequired: boolean;
@@ -10,19 +10,30 @@ interface FormField {
   orderIndex: number;
 }
 
-interface FormType {
+interface FormTemplate {
   id: string;
   name: string;
   description: string | null;
-  fields: FormField[];
+  templateFields: FormTemplateField[];
+}
+
+interface FormField {
+  id: string;
+  formId: string;
+  label: string;
+  fieldType: string;
+  isRequired: boolean;
+  options: string[] | null;
+  orderIndex: number;
 }
 
 interface Form {
   id: string;
-  formTypeId: string;
-  formTypeName: string;
+  formTemplateId: string | null;
+  formTemplateName: string | null;
   name: string;
   description: string | null;
+  fields: FormField[];
 }
 
 interface FormResponse {
@@ -40,15 +51,14 @@ function id(): string {
 test('fills in a form, views the response, and edits it', async ({
   page,
 }) => {
-  const formTypes: FormType[] = [];
+  const formTemplates: FormTemplate[] = [];
   const forms: Form[] = [];
   const responses = new Map<string, FormResponse>();
 
   function isComplete(formId: string): boolean {
     const form = forms.find((f) => f.id === formId)!;
-    const formType = formTypes.find((ft) => ft.id === form.formTypeId)!;
     const responseData = responses.get(formId)?.responseData ?? {};
-    return formType.fields
+    return form.fields
       .filter((field) => field.isRequired)
       .every((field) => responseData[field.id] != null);
   }
@@ -60,9 +70,9 @@ test('fills in a form, views the response, and edits it', async ({
     });
   });
 
-  await page.route('**/api/v1/form-types', async (route) => {
+  await page.route('**/api/v1/form-templates', async (route) => {
     if (route.request().method() === 'GET') {
-      await route.fulfill({ status: 200, json: formTypes });
+      await route.fulfill({ status: 200, json: formTemplates });
       return;
     }
     if (route.request().method() === 'POST') {
@@ -70,57 +80,62 @@ test('fills in a form, views the response, and edits it', async ({
         name: string;
         description?: string;
       };
-      const formType: FormType = {
+      const formTemplate: FormTemplate = {
         id: id(),
         name: body.name,
         description: body.description ?? null,
-        fields: [],
+        templateFields: [],
       };
-      formTypes.push(formType);
-      await route.fulfill({ status: 201, json: formType });
+      formTemplates.push(formTemplate);
+      await route.fulfill({ status: 201, json: formTemplate });
       return;
     }
     await route.continue();
   });
 
-  await page.route(/\/api\/v1\/form-types\/[^/]+\/fields$/, async (route) => {
-    if (route.request().method() !== 'POST') {
-      await route.continue();
-      return;
-    }
-    const formTypeId = new URL(route.request().url()).pathname
-      .split('/')
-      .at(-2)!;
-    const formType = formTypes.find((ft) => ft.id === formTypeId)!;
-    const body = route.request().postDataJSON() as {
-      label: string;
-      fieldType: string;
-      isRequired?: boolean;
-      options?: string[];
-    };
-    const field: FormField = {
-      id: id(),
-      formTypeId,
-      label: body.label,
-      fieldType: body.fieldType,
-      isRequired: body.isRequired ?? false,
-      options: body.options ?? null,
-      orderIndex: formType.fields.length,
-    };
-    formType.fields.push(field);
-    await route.fulfill({ status: 201, json: field });
-  });
+  await page.route(
+    /\/api\/v1\/form-templates\/[^/]+\/fields$/,
+    async (route) => {
+      if (route.request().method() !== 'POST') {
+        await route.continue();
+        return;
+      }
+      const formTemplateId = new URL(route.request().url()).pathname
+        .split('/')
+        .at(-2)!;
+      const formTemplate = formTemplates.find(
+        (ft) => ft.id === formTemplateId,
+      )!;
+      const body = route.request().postDataJSON() as {
+        label: string;
+        fieldType: string;
+        isRequired?: boolean;
+        options?: string[];
+      };
+      const field: FormTemplateField = {
+        id: id(),
+        formTemplateId,
+        label: body.label,
+        fieldType: body.fieldType,
+        isRequired: body.isRequired ?? false,
+        options: body.options ?? null,
+        orderIndex: formTemplate.templateFields.length,
+      };
+      formTemplate.templateFields.push(field);
+      await route.fulfill({ status: 201, json: field });
+    },
+  );
 
-  await page.route(/\/api\/v1\/form-types\/[^/]+$/, async (route) => {
-    const formTypeId = new URL(route.request().url()).pathname
+  await page.route(/\/api\/v1\/form-templates\/[^/]+$/, async (route) => {
+    const formTemplateId = new URL(route.request().url()).pathname
       .split('/')
       .pop()!;
-    const formType = formTypes.find((ft) => ft.id === formTypeId);
-    if (!formType) {
+    const formTemplate = formTemplates.find((ft) => ft.id === formTemplateId);
+    if (!formTemplate) {
       await route.fulfill({ status: 404, json: {} });
       return;
     }
-    await route.fulfill({ status: 200, json: formType });
+    await route.fulfill({ status: 200, json: formTemplate });
   });
 
   await page.route('**/api/v1/forms**', async (route) => {
@@ -135,17 +150,32 @@ test('fills in a form, views the response, and edits it', async ({
     }
     if (route.request().method() === 'POST') {
       const body = route.request().postDataJSON() as {
-        formTypeId: string;
+        formTemplateId: string;
         name: string;
         description?: string;
       };
-      const formType = formTypes.find((ft) => ft.id === body.formTypeId)!;
+      const formTemplate = formTemplates.find(
+        (ft) => ft.id === body.formTemplateId,
+      )!;
+      const formId = id();
+      const clonedFields: FormField[] = formTemplate.templateFields.map(
+        (templateField) => ({
+          id: id(),
+          formId,
+          label: templateField.label,
+          fieldType: templateField.fieldType,
+          isRequired: templateField.isRequired,
+          options: templateField.options,
+          orderIndex: templateField.orderIndex,
+        }),
+      );
       const form: Form = {
-        id: id(),
-        formTypeId: body.formTypeId,
-        formTypeName: formType.name,
+        id: formId,
+        formTemplateId: body.formTemplateId,
+        formTemplateName: formTemplate.name,
         name: body.name,
         description: body.description ?? null,
+        fields: clonedFields,
       };
       forms.push(form);
       await route.fulfill({ status: 201, json: form });
@@ -211,12 +241,12 @@ test('fills in a form, views the response, and edits it', async ({
   await page.getByLabel(/password/i).fill('correct-password');
   await page.getByRole('button', { name: 'Enter' }).click();
 
-  await page.getByRole('link', { name: 'Form types' }).click();
-  await page.getByRole('button', { name: 'New form type' }).click();
+  await page.getByRole('link', { name: 'Form templates' }).click();
+  await page.getByRole('button', { name: 'New form template' }).click();
   await page.getByLabel('Name').fill('Bug report');
   await page.getByRole('button', { name: 'Create' }).click();
   await expect(
-    page.getByRole('heading', { name: 'Edit form type' }),
+    page.getByRole('heading', { name: 'Edit form template' }),
   ).toBeVisible();
 
   await page.getByRole('button', { name: 'Add field' }).click();
@@ -232,7 +262,7 @@ test('fills in a form, views the response, and edits it', async ({
 
   await page.goto('/forms');
   await page.getByRole('button', { name: 'New form' }).click();
-  await page.getByRole('textbox', { name: 'Form type' }).click();
+  await page.getByRole('textbox', { name: 'Form template' }).click();
   await page.getByRole('option', { name: 'Bug report' }).click();
   await page.getByLabel('Name').fill('Login bug');
   await page.getByRole('button', { name: 'Create' }).click();
@@ -248,9 +278,7 @@ test('fills in a form, views the response, and edits it', async ({
   await expect(missingFieldsAlert).toBeVisible();
   await expect(page.getByText('Reporter', { exact: true })).toBeVisible();
 
-  const notesFieldId = formTypes[0]!.fields.find(
-    (f) => f.label === 'Notes',
-  )!.id;
+  const notesFieldId = forms[0]!.fields.find((f) => f.label === 'Notes')!.id;
   await page.locator(`[data-path="${notesFieldId}"]`).fill('First report');
   await page.getByRole('button', { name: 'Save' }).click();
   await expect(page.getByText('Saved')).toBeVisible();
@@ -261,7 +289,7 @@ test('fills in a form, views the response, and edits it', async ({
   await expect(page.getByText('First report')).toBeVisible();
 
   await page.getByRole('link', { name: 'Edit response' }).click();
-  const reporterFieldId = formTypes[0]!.fields.find(
+  const reporterFieldId = forms[0]!.fields.find(
     (f) => f.label === 'Reporter',
   )!.id;
   await page.locator(`[data-path="${reporterFieldId}"]`).fill('Alice');

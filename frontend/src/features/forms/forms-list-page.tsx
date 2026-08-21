@@ -32,7 +32,7 @@ export function FormsListPage() {
   function handleCreate(values: CreateFormFormValues) {
     createForm.mutate(
       {
-        formTypeId: values.formTypeId,
+        formTemplateId: values.formTemplateId,
         name: values.name,
         description: values.description || undefined,
       },
@@ -89,7 +89,7 @@ export function FormsListPage() {
             <Table.Tr>
               <Table.Th>Name</Table.Th>
               <Table.Th>Description</Table.Th>
-              <Table.Th>Form type</Table.Th>
+              <Table.Th>Form template</Table.Th>
               <Table.Th />
             </Table.Tr>
           </Table.Thead>
@@ -102,7 +102,7 @@ export function FormsListPage() {
                   </Link>
                 </Table.Td>
                 <Table.Td>{form.description}</Table.Td>
-                <Table.Td>{form.formTypeName}</Table.Td>
+                <Table.Td>{form.formTemplateName ?? '— deleted —'}</Table.Td>
                 <Table.Td>
                   <Group gap="xs" justify="flex-end">
                     <Link to="/forms/$formId" params={{ formId: form.id }}>

@@ -3,11 +3,11 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateFormDto {
   @ApiProperty({
-    description: 'Id of the form type this form is created from.',
+    description: 'Id of the form template this form is created from.',
   })
   @IsString()
   @IsNotEmpty()
-  formTypeId!: string;
+  formTemplateId!: string;
 
   @ApiProperty({ description: 'Name of the form.' })
   @IsString()

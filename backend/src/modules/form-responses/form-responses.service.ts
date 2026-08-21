@@ -7,7 +7,7 @@ import { Form, FormField, FormFieldType, Prisma } from '@prisma/client';
 import { ulid } from 'ulid';
 import { PrismaService } from '../../prisma/prisma.service';
 
-type FormWithFields = Form & { formType: { fields: FormField[] } };
+type FormWithFields = Form & { fields: FormField[] };
 
 type StoredResponse = {
   id: string;
@@ -23,7 +23,7 @@ export class FormResponsesService {
 
   async saveResponse(formId: string, submitted: Record<string, unknown>) {
     const form = await this.getFormWithFields(formId);
-    const fieldsById = new Map(form.formType.fields.map((f) => [f.id, f]));
+    const fieldsById = new Map(form.fields.map((f) => [f.id, f]));
 
     for (const [fieldId, value] of Object.entries(submitted)) {
       const field = fieldsById.get(fieldId);
@@ -63,7 +63,7 @@ export class FormResponsesService {
           data: { id: ulid(), formId, responseData },
         });
 
-    return this.toResponse(saved, form.formType.fields);
+    return this.toResponse(saved, form.fields);
   }
 
   async getResponse(formId: string) {
@@ -74,13 +74,13 @@ export class FormResponsesService {
     if (!response) {
       throw new NotFoundException(`Form ${formId} has no saved response.`);
     }
-    return this.toResponse(response, form.formType.fields);
+    return this.toResponse(response, form.fields);
   }
 
   private async getFormWithFields(formId: string): Promise<FormWithFields> {
     const form = await this.prisma.form.findUnique({
       where: { id: formId },
-      include: { formType: { include: { fields: true } } },
+      include: { fields: true },
     });
     if (!form) {
       throw new NotFoundException(`Form ${formId} not found.`);

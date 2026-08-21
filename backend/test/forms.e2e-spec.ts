@@ -39,8 +39,8 @@ describe('Forms (e2e)', () => {
       .set('Authorization', `Bearer ${token}`);
   }
 
-  async function createFormType(name: string) {
-    const response = await authed('post', '/api/v1/form-types')
+  async function createFormTemplate(name: string) {
+    const response = await authed('post', '/api/v1/form-templates')
       .send({ name })
       .expect(201);
     return (response.body as { id: string }).id;
@@ -51,23 +51,26 @@ describe('Forms (e2e)', () => {
   });
 
   it('rejects creating a form without a name', async () => {
-    const formTypeId = await createFormType('Bug report');
-    return authed('post', '/api/v1/forms').send({ formTypeId }).expect(400);
+    const formTemplateId = await createFormTemplate('Bug report');
+    return authed('post', '/api/v1/forms').send({ formTemplateId }).expect(400);
   });
 
-  it('rejects creating a form with a form_type_id that does not exist', () => {
+  it('rejects creating a form with a form_template_id that does not exist', () => {
     return authed('post', '/api/v1/forms')
-      .send({ formTypeId: '01ARZ3NDEKTSV4RRFFQ69G5FAV', name: 'A form' })
+      .send({
+        formTemplateId: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+        name: 'A form',
+      })
       .expect(400);
   });
 
-  it('covers the full lifecycle: create form type, create form, list/search, get, edit, delete', async () => {
-    const formTypeId = await createFormType('Bug report');
+  it('covers the full lifecycle: create form template, create form, list/search, get, edit, delete', async () => {
+    const formTemplateId = await createFormTemplate('Bug report');
     const uniqueName = `Login bug ${ulid()}`;
 
     const createResponse = await authed('post', '/api/v1/forms')
       .send({
-        formTypeId,
+        formTemplateId,
         name: uniqueName,
         description: 'Bug report for the login flow',
       })
@@ -75,13 +78,13 @@ describe('Forms (e2e)', () => {
 
     const form = createResponse.body as {
       id: string;
-      formTypeId: string;
-      formTypeName: string;
+      formTemplateId: string;
+      formTemplateName: string;
       name: string;
     };
     expect(form).toMatchObject({
-      formTypeId,
-      formTypeName: 'Bug report',
+      formTemplateId,
+      formTemplateName: 'Bug report',
       name: uniqueName,
       description: 'Bug report for the login flow',
     });
@@ -129,16 +132,57 @@ describe('Forms (e2e)', () => {
     await authed('delete', `/api/v1/forms/${formId}`).expect(204);
     await authed('get', `/api/v1/forms/${formId}`).expect(404);
 
-    const formTypeAfterDelete = await authed(
+    const formTemplateAfterDelete = await authed(
       'get',
-      `/api/v1/form-types/${formTypeId}`,
+      `/api/v1/form-templates/${formTemplateId}`,
     ).expect(200);
-    expect(formTypeAfterDelete.body).toMatchObject({ id: formTypeId });
+    expect(formTemplateAfterDelete.body).toMatchObject({ id: formTemplateId });
   });
 
   it('returns 404 for a non-existent form', () => {
     return authed('get', '/api/v1/forms/01ARZ3NDEKTSV4RRFFQ69G5FAV').expect(
       404,
     );
+  });
+
+  it("clones the template's fields onto the form at creation, independent of the template afterwards", async () => {
+    const formTemplateId = await createFormTemplate('Bug report');
+    const fieldResponse = await authed(
+      'post',
+      `/api/v1/form-templates/${formTemplateId}/fields`,
+    )
+      .send({ label: 'Severity', fieldType: 'text', isRequired: true })
+      .expect(201);
+    const templateFieldId = (fieldResponse.body as { id: string }).id;
+
+    const createResponse = await authed('post', '/api/v1/forms')
+      .send({ formTemplateId, name: 'Bug #1' })
+      .expect(201);
+    const form = createResponse.body as {
+      id: string;
+      fields: { id: string; label: string; isRequired: boolean }[];
+    };
+    expect(form.fields).toHaveLength(1);
+    const clonedFieldId = form.fields[0].id;
+    expect(clonedFieldId).not.toBe(templateFieldId);
+    expect(form.fields[0]).toMatchObject({
+      label: 'Severity',
+      isRequired: true,
+    });
+
+    await authed(
+      'patch',
+      `/api/v1/form-templates/${formTemplateId}/fields/${templateFieldId}`,
+    )
+      .send({ label: 'Severity (changed)' })
+      .expect(200);
+
+    const formAfterTemplateEdit = await authed(
+      'get',
+      `/api/v1/forms/${form.id}`,
+    ).expect(200);
+    expect(
+      (formAfterTemplateEdit.body as { fields: { label: string }[] }).fields[0],
+    ).toMatchObject({ label: 'Severity' });
   });
 });

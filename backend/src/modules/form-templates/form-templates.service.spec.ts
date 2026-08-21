@@ -1,0 +1,295 @@
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { FormFieldType } from '@prisma/client';
+import { PrismaService } from '../../prisma/prisma.service';
+import { FormTemplatesService } from './form-templates.service';
+
+type MockPrismaService = {
+  formTemplate: {
+    create: jest.Mock;
+    findMany: jest.Mock;
+    findUnique: jest.Mock;
+    update: jest.Mock;
+    delete: jest.Mock;
+  };
+  formTemplateField: {
+    create: jest.Mock;
+    findFirst: jest.Mock;
+    findMany: jest.Mock;
+    findUnique: jest.Mock;
+    update: jest.Mock;
+    delete: jest.Mock;
+  };
+  $transaction: jest.Mock;
+};
+
+function createMockPrisma(): MockPrismaService {
+  return {
+    formTemplate: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
+    formTemplateField: {
+      create: jest.fn(),
+      findFirst: jest.fn(),
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
+    $transaction: jest.fn(),
+  };
+}
+
+describe('FormTemplatesService', () => {
+  let service: FormTemplatesService;
+  let prisma: MockPrismaService;
+
+  const formTemplate = {
+    id: 'form-template-1',
+    name: 'Bug report',
+    description: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  beforeEach(async () => {
+    prisma = createMockPrisma();
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        FormTemplatesService,
+        { provide: PrismaService, useValue: prisma },
+      ],
+    }).compile();
+
+    service = module.get<FormTemplatesService>(FormTemplatesService);
+  });
+
+  describe('getFormTemplate', () => {
+    it('throws NotFoundException when the form template does not exist', async () => {
+      prisma.formTemplate.findUnique.mockResolvedValue(null);
+
+      await expect(service.getFormTemplate('missing')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('returns the form template with its fields when found', async () => {
+      const withFields = { ...formTemplate, templateFields: [] };
+      prisma.formTemplate.findUnique.mockResolvedValue(withFields);
+
+      await expect(service.getFormTemplate(formTemplate.id)).resolves.toEqual(
+        withFields,
+      );
+    });
+  });
+
+  describe('deleteFormTemplate', () => {
+    it('deletes an existing form template', async () => {
+      prisma.formTemplate.findUnique.mockResolvedValue({
+        ...formTemplate,
+        templateFields: [],
+      });
+      prisma.formTemplate.delete.mockResolvedValue(formTemplate);
+
+      await service.deleteFormTemplate(formTemplate.id);
+
+      expect(prisma.formTemplate.delete).toHaveBeenCalledWith({
+        where: { id: formTemplate.id },
+      });
+    });
+
+    it('throws NotFoundException instead of deleting a missing form template', async () => {
+      prisma.formTemplate.findUnique.mockResolvedValue(null);
+
+      await expect(service.deleteFormTemplate('missing')).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(prisma.formTemplate.delete).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('addField', () => {
+    beforeEach(() => {
+      prisma.formTemplate.findUnique.mockResolvedValue({
+        ...formTemplate,
+        templateFields: [],
+      });
+    });
+
+    it('appends a field after the last existing order_index', async () => {
+      prisma.formTemplateField.findFirst.mockResolvedValue({ orderIndex: 2 });
+      prisma.formTemplateField.create.mockResolvedValue({});
+
+      await service.addField(formTemplate.id, {
+        label: 'Notes',
+        fieldType: FormFieldType.text,
+      });
+
+      const [{ data }] = prisma.formTemplateField.create.mock.calls[0] as [
+        { data: { orderIndex: number } },
+      ];
+      expect(data.orderIndex).toBe(3);
+    });
+
+    it('starts at order_index 0 for the first field', async () => {
+      prisma.formTemplateField.findFirst.mockResolvedValue(null);
+      prisma.formTemplateField.create.mockResolvedValue({});
+
+      await service.addField(formTemplate.id, {
+        label: 'Notes',
+        fieldType: FormFieldType.text,
+      });
+
+      const [{ data }] = prisma.formTemplateField.create.mock.calls[0] as [
+        { data: { orderIndex: number } },
+      ];
+      expect(data.orderIndex).toBe(0);
+    });
+
+    it('rejects a select field with no options', async () => {
+      await expect(
+        service.addField(formTemplate.id, {
+          label: 'Severity',
+          fieldType: FormFieldType.select,
+        }),
+      ).rejects.toThrow(BadRequestException);
+      expect(prisma.formTemplateField.create).not.toHaveBeenCalled();
+    });
+
+    it('rejects a select field with an empty options array', async () => {
+      await expect(
+        service.addField(formTemplate.id, {
+          label: 'Severity',
+          fieldType: FormFieldType.multi_select,
+          options: [],
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('rejects a non-select field that has options', async () => {
+      await expect(
+        service.addField(formTemplate.id, {
+          label: 'Notes',
+          fieldType: FormFieldType.text,
+          options: ['a'],
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('accepts a select field with non-empty options', async () => {
+      prisma.formTemplateField.findFirst.mockResolvedValue(null);
+      prisma.formTemplateField.create.mockResolvedValue({});
+
+      await expect(
+        service.addField(formTemplate.id, {
+          label: 'Severity',
+          fieldType: FormFieldType.select,
+          options: ['low', 'high'],
+        }),
+      ).resolves.toBeDefined();
+    });
+  });
+
+  describe('updateField', () => {
+    const existingField = {
+      id: 'field-1',
+      formTemplateId: formTemplate.id,
+      label: 'Severity',
+      fieldType: FormFieldType.select,
+      isRequired: true,
+      options: ['low', 'high'],
+      orderIndex: 0,
+    };
+
+    it('throws NotFoundException when the field does not belong to the form template', async () => {
+      prisma.formTemplateField.findUnique.mockResolvedValue({
+        ...existingField,
+        formTemplateId: 'other-form-template',
+      });
+
+      await expect(
+        service.updateField(formTemplate.id, existingField.id, {}),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('validates options against the resulting field type when only fieldType changes', async () => {
+      prisma.formTemplateField.findUnique.mockResolvedValue({
+        ...existingField,
+        options: null,
+        fieldType: FormFieldType.text,
+      });
+
+      await expect(
+        service.updateField(formTemplate.id, existingField.id, {
+          fieldType: FormFieldType.select,
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('allows clearing options when switching to a non-select field type', async () => {
+      prisma.formTemplateField.findUnique.mockResolvedValue(existingField);
+      prisma.formTemplateField.update.mockResolvedValue({});
+
+      await expect(
+        service.updateField(formTemplate.id, existingField.id, {
+          fieldType: FormFieldType.text,
+          options: null,
+        }),
+      ).resolves.toBeDefined();
+    });
+  });
+
+  describe('reorderFields', () => {
+    beforeEach(() => {
+      prisma.formTemplate.findUnique.mockResolvedValue({
+        ...formTemplate,
+        templateFields: [],
+      });
+    });
+
+    it('rejects a payload missing one of the current field ids', async () => {
+      prisma.formTemplateField.findMany.mockResolvedValue([
+        { id: 'field-1' },
+        { id: 'field-2' },
+      ]);
+
+      await expect(
+        service.reorderFields(formTemplate.id, ['field-1']),
+      ).rejects.toThrow(BadRequestException);
+      expect(prisma.$transaction).not.toHaveBeenCalled();
+    });
+
+    it('rejects a payload with an id that does not belong to the form template', async () => {
+      prisma.formTemplateField.findMany.mockResolvedValue([{ id: 'field-1' }]);
+
+      await expect(
+        service.reorderFields(formTemplate.id, ['field-1', 'field-unknown']),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('rewrites order_index for a matching, reordered id list', async () => {
+      prisma.formTemplateField.findMany.mockResolvedValue([
+        { id: 'field-1' },
+        { id: 'field-2' },
+      ]);
+      prisma.$transaction.mockResolvedValue([]);
+
+      await service.reorderFields(formTemplate.id, ['field-2', 'field-1']);
+
+      expect(prisma.$transaction).toHaveBeenCalledTimes(1);
+      expect(prisma.formTemplateField.update).toHaveBeenNthCalledWith(1, {
+        where: { id: 'field-2' },
+        data: { orderIndex: 0 },
+      });
+      expect(prisma.formTemplateField.update).toHaveBeenNthCalledWith(2, {
+        where: { id: 'field-1' },
+        data: { orderIndex: 1 },
+      });
+    });
+  });
+});
