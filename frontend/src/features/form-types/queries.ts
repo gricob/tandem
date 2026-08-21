@@ -9,10 +9,14 @@ export function useFormTypes() {
   return useQuery({ queryKey: formTypesKey, queryFn: api.listFormTypes });
 }
 
-export function useFormType(formTypeId: string) {
+export function useFormType(
+  formTypeId: string,
+  options?: { enabled?: boolean },
+) {
   return useQuery({
     queryKey: formTypeKey(formTypeId),
     queryFn: () => api.getFormType(formTypeId),
+    enabled: options?.enabled,
   });
 }
 

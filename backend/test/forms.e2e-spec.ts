@@ -52,9 +52,7 @@ describe('Forms (e2e)', () => {
 
   it('rejects creating a form without a name', async () => {
     const formTypeId = await createFormType('Bug report');
-    return authed('post', '/api/v1/forms')
-      .send({ formTypeId })
-      .expect(400);
+    return authed('post', '/api/v1/forms').send({ formTypeId }).expect(400);
   });
 
   it('rejects creating a form with a form_type_id that does not exist', () => {

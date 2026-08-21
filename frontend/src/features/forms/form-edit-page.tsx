@@ -96,6 +96,19 @@ export function FormEditPage() {
             </Group>
           </Stack>
         </form>
+
+        <Group>
+          <Link to="/forms/$formId/fill" params={{ formId }}>
+            <Button component="span" variant="light">
+              Fill in form
+            </Button>
+          </Link>
+          <Link to="/forms/$formId/response" params={{ formId }}>
+            <Button component="span" variant="light">
+              View response
+            </Button>
+          </Link>
+        </Group>
       </Stack>
     </Container>
   );
