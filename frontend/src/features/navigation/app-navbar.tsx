@@ -6,6 +6,7 @@ export function AppNavbar() {
   const { pathname } = useLocation();
   const isFormTemplatesActive = pathname.startsWith('/form-templates');
   const isFormsActive = pathname.startsWith('/forms');
+  const isDeliverablesActive = pathname.startsWith('/deliverables');
 
   return (
     <AppShell.Header>
@@ -28,6 +29,14 @@ export function AppNavbar() {
             <Link to="/forms">
               <Button component="span" variant={isFormsActive ? 'light' : 'subtle'}>
                 Forms
+              </Button>
+            </Link>
+            <Link to="/deliverables">
+              <Button
+                component="span"
+                variant={isDeliverablesActive ? 'light' : 'subtle'}
+              >
+                Deliverables
               </Button>
             </Link>
           </Group>

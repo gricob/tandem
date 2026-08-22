@@ -85,3 +85,13 @@ model FormResponse {
 
   @@map("form_responses")
 }
+
+model Deliverable {
+  id          String   @id @db.Char(26)
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("deliverables")
+}

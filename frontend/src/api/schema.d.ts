@@ -164,6 +164,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/deliverables": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DeliverablesController_findAllDeliverables"];
+        put?: never;
+        post: operations["DeliverablesController_createDeliverable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/deliverables/{deliverableId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DeliverablesController_getDeliverable"];
+        put?: never;
+        post?: never;
+        delete: operations["DeliverablesController_deleteDeliverable"];
+        options?: never;
+        head?: never;
+        patch: operations["DeliverablesController_updateDeliverable"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -305,6 +337,27 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
+        };
+        CreateDeliverableDto: {
+            /** @description Name of the deliverable. */
+            name: string;
+            /** @description Description of the deliverable. */
+            description?: string;
+        };
+        DeliverableResponseDto: {
+            id: string;
+            name: string;
+            description?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        UpdateDeliverableDto: {
+            /** @description Name of the deliverable. */
+            name?: string;
+            /** @description Description of the deliverable. */
+            description?: string;
         };
     };
     responses: never;
@@ -798,6 +851,131 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DeliverablesController_findAllDeliverables: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeliverableResponseDto"][];
+                };
+            };
+        };
+    };
+    DeliverablesController_createDeliverable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateDeliverableDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeliverableResponseDto"];
+                };
+            };
+        };
+    };
+    DeliverablesController_getDeliverable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                deliverableId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeliverableResponseDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DeliverablesController_deleteDeliverable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                deliverableId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DeliverablesController_updateDeliverable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                deliverableId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateDeliverableDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeliverableResponseDto"];
+                };
             };
             404: {
                 headers: {

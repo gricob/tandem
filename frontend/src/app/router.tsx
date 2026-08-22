@@ -3,6 +3,8 @@ import {
   createRoute,
   createRouter,
 } from '@tanstack/react-router';
+import { DeliverableEditPage } from '../features/deliverables/deliverable-edit-page';
+import { DeliverablesListPage } from '../features/deliverables/deliverables-list-page';
 import { FormResponseFillPage } from '../features/form-responses/form-response-fill-page';
 import { FormResponseViewPage } from '../features/form-responses/form-response-view-page';
 import { FormTemplateEditPage } from '../features/form-templates/form-template-edit-page';
@@ -58,6 +60,18 @@ const formResponseViewRoute = createRoute({
   component: FormResponseViewPage,
 });
 
+const deliverablesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/deliverables',
+  component: DeliverablesListPage,
+});
+
+const deliverableEditRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/deliverables/$deliverableId',
+  component: DeliverableEditPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   formTemplatesRoute,
@@ -66,6 +80,8 @@ const routeTree = rootRoute.addChildren([
   formEditRoute,
   formResponseFillRoute,
   formResponseViewRoute,
+  deliverablesRoute,
+  deliverableEditRoute,
 ]);
 
 export const router = createRouter({ routeTree });
