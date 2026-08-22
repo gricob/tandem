@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { FieldForm } from '../../src/features/form-templates/components/field-form';
+import type { AvailableConditionField } from '../../src/features/form-templates/components/condition-builder';
 import type { FieldFormValues } from '../../src/features/form-templates/schemas';
 
 // Mantine's generated `id`/`for` pair on labelled inputs is unreliable under
@@ -16,13 +17,17 @@ function getInput(path: string): HTMLElement {
   return input as HTMLElement;
 }
 
-function renderForm(initialValues?: FieldFormValues) {
+function renderForm(
+  initialValues?: FieldFormValues,
+  availableFields: AvailableConditionField[] = [],
+) {
   const onSubmit = vi.fn();
 
   render(
     <MantineProvider>
       <FieldForm
         initialValues={initialValues}
+        availableFields={availableFields}
         submitLabel="Save"
         onSubmit={onSubmit}
       />
@@ -37,6 +42,14 @@ const selectFieldValues: FieldFormValues = {
   fieldType: 'select',
   isRequired: false,
   options: [],
+  condition: null,
+};
+
+const triggerField: AvailableConditionField = {
+  id: 'field-trigger',
+  label: 'Has manager',
+  fieldType: 'boolean',
+  options: null,
 };
 
 describe('FieldForm', () => {
@@ -72,6 +85,7 @@ describe('FieldForm', () => {
       fieldType: 'select',
       isRequired: false,
       options: ['Low', 'High'],
+      condition: null,
     });
   });
 
@@ -86,6 +100,44 @@ describe('FieldForm', () => {
       fieldType: 'text',
       isRequired: false,
       options: [],
+      condition: null,
+    });
+  });
+
+  it('disables the condition toggle when there are no other fields to depend on', () => {
+    renderForm();
+
+    expect(
+      screen.getByLabelText('Only show this field when a condition is met'),
+    ).toBeDisabled();
+  });
+
+  it('enables building a condition once other fields are available', async () => {
+    renderForm(undefined, [triggerField]);
+
+    await userEvent.click(
+      screen.getByLabelText('Only show this field when a condition is met'),
+    );
+
+    expect(screen.getByLabelText('Condition field')).toBeInTheDocument();
+    expect(screen.getByLabelText('Condition operator')).toBeInTheDocument();
+  });
+
+  it('submits the built condition alongside the field', async () => {
+    const { onSubmit } = renderForm(undefined, [triggerField]);
+
+    await userEvent.type(getInput('label'), 'Manager name');
+    await userEvent.click(
+      screen.getByLabelText('Only show this field when a condition is met'),
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(onSubmit.mock.calls[0]?.[0]).toMatchObject({
+      label: 'Manager name',
+      condition: {
+        op: 'AND',
+        clauses: [{ field: 'field-trigger', operator: 'equals', value: true }],
+      },
     });
   });
 });

@@ -121,6 +121,63 @@ describe('FormsService', () => {
       const [operations] = prisma.$transaction.mock.calls[0] as [unknown[]];
       expect(operations).toHaveLength(1 + formTemplate.templateFields.length);
     });
+
+    it("remaps a cloned field's condition to the new form's own field ids", async () => {
+      const templateWithCondition = {
+        id: 'form-template-2',
+        name: 'Onboarding',
+        templateFields: [
+          {
+            id: 'template-field-trigger',
+            label: 'Has manager',
+            fieldType: 'boolean',
+            isRequired: false,
+            options: null,
+            condition: null,
+            orderIndex: 0,
+          },
+          {
+            id: 'template-field-dependent',
+            label: "Manager's name",
+            fieldType: 'text',
+            isRequired: false,
+            options: null,
+            condition: {
+              field: 'template-field-trigger',
+              operator: 'equals',
+              value: true,
+            },
+            orderIndex: 1,
+          },
+        ],
+      };
+      prisma.formTemplate.findUnique.mockResolvedValue(templateWithCondition);
+      prisma.$transaction.mockResolvedValue([]);
+      prisma.form.findUnique.mockResolvedValue(form);
+
+      await service.createForm({
+        formTemplateId: templateWithCondition.id,
+        name: 'Onboarding #1',
+      });
+
+      const calls = prisma.formField.create.mock.calls as [
+        { data: { id: string; label: string; condition: unknown } },
+      ][];
+      const triggerCall = calls.find(
+        ([{ data }]) => data.label === 'Has manager',
+      )!;
+      const dependentCall = calls.find(
+        ([{ data }]) => data.label === "Manager's name",
+      )!;
+
+      const newTriggerId = triggerCall[0].data.id;
+      expect(newTriggerId).not.toBe('template-field-trigger');
+      expect(dependentCall[0].data.condition).toEqual({
+        field: newTriggerId,
+        operator: 'equals',
+        value: true,
+      });
+    });
   });
 
   describe('findAllForms', () => {

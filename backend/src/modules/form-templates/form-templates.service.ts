@@ -5,6 +5,12 @@ import {
 } from '@nestjs/common';
 import { FormFieldType, FormTemplateField, Prisma } from '@prisma/client';
 import { ulid } from 'ulid';
+import {
+  getReferencedFieldIds,
+  hasCycle,
+} from '../../condition/condition-tree';
+import { validateCondition } from '../../condition/condition-validator';
+import { ConditionNode } from '../../condition/condition.types';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateFormTemplateFieldDto } from './dto/create-form-template-field.dto';
 import { CreateFormTemplateDto } from './dto/create-form-template.dto';
@@ -66,6 +72,11 @@ export class FormTemplatesService {
     await this.getFormTemplate(formTemplateId);
     this.validateOptions(dto.fieldType, dto.options);
 
+    const id = ulid();
+    if (dto.condition) {
+      await this.assertValidCondition(formTemplateId, id, dto.condition);
+    }
+
     const lastField = await this.prisma.formTemplateField.findFirst({
       where: { formTemplateId },
       orderBy: { orderIndex: 'desc' },
@@ -73,12 +84,15 @@ export class FormTemplatesService {
 
     return this.prisma.formTemplateField.create({
       data: {
-        id: ulid(),
+        id,
         formTemplateId,
         label: dto.label,
         fieldType: dto.fieldType,
         isRequired: dto.isRequired ?? false,
         options: dto.options,
+        condition:
+          (dto.condition as unknown as Prisma.InputJsonValue) ??
+          Prisma.JsonNull,
         orderIndex: lastField ? lastField.orderIndex + 1 : 0,
       },
     });
@@ -98,6 +112,10 @@ export class FormTemplatesService {
         : (field.options as string[] | null);
     this.validateOptions(nextFieldType, nextOptions);
 
+    if (dto.condition !== undefined && dto.condition !== null) {
+      await this.assertValidCondition(formTemplateId, fieldId, dto.condition);
+    }
+
     return this.prisma.formTemplateField.update({
       where: { id: fieldId },
       data: {
@@ -108,12 +126,33 @@ export class FormTemplatesService {
           dto.options !== undefined
             ? (dto.options ?? Prisma.JsonNull)
             : undefined,
+        condition:
+          dto.condition !== undefined
+            ? ((dto.condition as unknown as Prisma.InputJsonValue) ??
+              Prisma.JsonNull)
+            : undefined,
       },
     });
   }
 
   async removeField(formTemplateId: string, fieldId: string): Promise<void> {
     await this.getFieldOrThrow(formTemplateId, fieldId);
+
+    const otherFields = await this.prisma.formTemplateField.findMany({
+      where: { formTemplateId, id: { not: fieldId } },
+      select: { id: true, condition: true },
+    });
+    const referencingFields = otherFields.filter((otherField) =>
+      getReferencedFieldIds(
+        otherField.condition as ConditionNode | null,
+      ).includes(fieldId),
+    );
+    if (referencingFields.length > 0) {
+      throw new BadRequestException(
+        `Cannot remove field ${fieldId}: ${referencingFields.length} other field(s) depend on it in their condition.`,
+      );
+    }
+
     await this.prisma.formTemplateField.delete({ where: { id: fieldId } });
   }
 
@@ -161,6 +200,41 @@ export class FormTemplatesService {
       );
     }
     return field;
+  }
+
+  private async assertValidCondition(
+    formTemplateId: string,
+    fieldId: string,
+    condition: ConditionNode,
+  ): Promise<void> {
+    const existingFields = await this.prisma.formTemplateField.findMany({
+      where: { formTemplateId },
+    });
+
+    validateCondition(
+      condition,
+      existingFields.map((field) => ({
+        id: field.id,
+        fieldType: field.fieldType,
+        options: field.options as string[] | null,
+      })),
+    );
+
+    const fieldsForCycleCheck = existingFields.map((field) => ({
+      id: field.id,
+      condition:
+        field.id === fieldId
+          ? condition
+          : (field.condition as ConditionNode | null),
+    }));
+    if (!existingFields.some((field) => field.id === fieldId)) {
+      fieldsForCycleCheck.push({ id: fieldId, condition });
+    }
+    if (hasCycle(fieldsForCycleCheck)) {
+      throw new BadRequestException(
+        'This condition would create a circular dependency between fields.',
+      );
+    }
   }
 
   private validateOptions(

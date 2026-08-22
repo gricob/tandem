@@ -193,6 +193,59 @@ describe('FormTemplatesService', () => {
         }),
       ).resolves.toBeDefined();
     });
+
+    it('accepts a valid condition referencing an existing field', async () => {
+      prisma.formTemplateField.findMany.mockResolvedValue([
+        {
+          id: 'trigger',
+          fieldType: FormFieldType.boolean,
+          options: null,
+          condition: null,
+        },
+      ]);
+      prisma.formTemplateField.findFirst.mockResolvedValue(null);
+      prisma.formTemplateField.create.mockResolvedValue({});
+
+      await expect(
+        service.addField(formTemplate.id, {
+          label: 'Notes',
+          fieldType: FormFieldType.text,
+          condition: { field: 'trigger', operator: 'equals', value: true },
+        }),
+      ).resolves.toBeDefined();
+    });
+
+    it('rejects a condition referencing a field outside the form template', async () => {
+      prisma.formTemplateField.findMany.mockResolvedValue([]);
+
+      await expect(
+        service.addField(formTemplate.id, {
+          label: 'Notes',
+          fieldType: FormFieldType.text,
+          condition: { field: 'unknown', operator: 'equals', value: true },
+        }),
+      ).rejects.toThrow(BadRequestException);
+      expect(prisma.formTemplateField.create).not.toHaveBeenCalled();
+    });
+
+    it('rejects a condition operator invalid for the referenced field type', async () => {
+      prisma.formTemplateField.findMany.mockResolvedValue([
+        {
+          id: 'trigger',
+          fieldType: FormFieldType.text,
+          options: null,
+          condition: null,
+        },
+      ]);
+
+      await expect(
+        service.addField(formTemplate.id, {
+          label: 'Notes',
+          fieldType: FormFieldType.text,
+          condition: { field: 'trigger', operator: 'gt', value: 5 },
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
   });
 
   describe('updateField', () => {
@@ -241,6 +294,79 @@ describe('FormTemplatesService', () => {
           options: null,
         }),
       ).resolves.toBeDefined();
+    });
+
+    it('clears a condition when set to null, without re-validating it', async () => {
+      prisma.formTemplateField.findUnique.mockResolvedValue(existingField);
+      prisma.formTemplateField.update.mockResolvedValue({});
+
+      await expect(
+        service.updateField(formTemplate.id, existingField.id, {
+          condition: null,
+        }),
+      ).resolves.toBeDefined();
+      expect(prisma.formTemplateField.findMany).not.toHaveBeenCalled();
+    });
+
+    it('rejects a condition that would create a circular dependency', async () => {
+      prisma.formTemplateField.findUnique.mockResolvedValue(existingField);
+      prisma.formTemplateField.findMany.mockResolvedValue([
+        { ...existingField, condition: null },
+        {
+          id: 'field-2',
+          fieldType: FormFieldType.boolean,
+          options: null,
+          condition: {
+            field: existingField.id,
+            operator: 'equals',
+            value: true,
+          },
+        },
+      ]);
+
+      await expect(
+        service.updateField(formTemplate.id, existingField.id, {
+          condition: { field: 'field-2', operator: 'equals', value: true },
+        }),
+      ).rejects.toThrow(BadRequestException);
+      expect(prisma.formTemplateField.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('removeField', () => {
+    it('deletes a field that no other field depends on', async () => {
+      prisma.formTemplateField.findUnique.mockResolvedValue({
+        id: 'field-1',
+        formTemplateId: formTemplate.id,
+      });
+      prisma.formTemplateField.findMany.mockResolvedValue([
+        { id: 'field-2', condition: null },
+      ]);
+      prisma.formTemplateField.delete.mockResolvedValue({});
+
+      await service.removeField(formTemplate.id, 'field-1');
+
+      expect(prisma.formTemplateField.delete).toHaveBeenCalledWith({
+        where: { id: 'field-1' },
+      });
+    });
+
+    it('rejects removing a field that another field depends on', async () => {
+      prisma.formTemplateField.findUnique.mockResolvedValue({
+        id: 'field-1',
+        formTemplateId: formTemplate.id,
+      });
+      prisma.formTemplateField.findMany.mockResolvedValue([
+        {
+          id: 'field-2',
+          condition: { field: 'field-1', operator: 'is_not_empty' },
+        },
+      ]);
+
+      await expect(
+        service.removeField(formTemplate.id, 'field-1'),
+      ).rejects.toThrow(BadRequestException);
+      expect(prisma.formTemplateField.delete).not.toHaveBeenCalled();
     });
   });
 

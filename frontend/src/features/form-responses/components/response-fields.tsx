@@ -9,6 +9,7 @@ import {
 } from '@mantine/core';
 import type { UseFormReturnType } from '@mantine/form';
 import type { FormField } from '../../forms/api';
+import { resolveVisibility, type ConditionNode } from '../../forms/condition';
 import type { ResponseValues } from '../value-utils';
 
 interface ResponseFieldsProps {
@@ -17,9 +18,18 @@ interface ResponseFieldsProps {
 }
 
 export function ResponseFields({ fields, form }: ResponseFieldsProps) {
+  const visibility = resolveVisibility(
+    fields.map((field) => ({
+      id: field.id,
+      condition: field.condition as ConditionNode | null,
+    })),
+    form.values,
+  );
+  const visibleFields = fields.filter((field) => visibility.get(field.id));
+
   return (
     <Stack gap="sm">
-      {fields.map((field) => (
+      {visibleFields.map((field) => (
         <ResponseFieldInput key={field.id} field={field} form={form} />
       ))}
     </Stack>

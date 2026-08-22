@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { ConditionNode } from '../forms/condition';
 import type { FieldType } from './api';
 
 export const fieldTypeOptions: { value: FieldType; label: string }[] = [
@@ -36,6 +37,7 @@ export const fieldFormSchema = z
     ]),
     isRequired: z.boolean(),
     options: z.array(z.string().trim().min(1)),
+    condition: z.custom<ConditionNode | null>().nullable(),
   })
   .refine((data) => !needsOptions(data.fieldType) || data.options.length > 0, {
     message: 'Add at least one option',

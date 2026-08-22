@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 import { Form, FormField, Prisma } from '@prisma/client';
 import { ulid } from 'ulid';
+import { mapConditionFieldIds } from '../../condition/condition-tree';
+import { ConditionNode } from '../../condition/condition.types';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateFormDto } from './dto/create-form.dto';
 import { UpdateFormDto } from './dto/update-form.dto';
@@ -52,6 +54,12 @@ export class FormsService {
       );
     }
 
+    // Built upfront so a field's condition can reference any other cloned
+    // field's new id, regardless of which field is processed first.
+    const idMap = new Map(
+      formTemplate.templateFields.map((field) => [field.id, ulid()]),
+    );
+
     return [
       this.prisma.form.create({
         data: {
@@ -62,19 +70,27 @@ export class FormsService {
           description: dto.description,
         },
       }),
-      ...formTemplate.templateFields.map((field) =>
-        this.prisma.formField.create({
+      ...formTemplate.templateFields.map((field) => {
+        const condition = mapConditionFieldIds(
+          field.condition as ConditionNode | null,
+          idMap,
+        );
+        return this.prisma.formField.create({
           data: {
-            id: ulid(),
+            id: idMap.get(field.id)!,
             formId,
             label: field.label,
             fieldType: field.fieldType,
             isRequired: field.isRequired,
             options: field.options === null ? Prisma.JsonNull : field.options,
+            condition:
+              condition === null
+                ? Prisma.JsonNull
+                : (condition as unknown as Prisma.InputJsonValue),
             orderIndex: field.orderIndex,
           },
-        }),
-      ),
+        });
+      }),
     ];
   }
 

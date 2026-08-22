@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { FormFieldType } from '@prisma/client';
+import type { ConditionNode } from '../../../condition/condition.types';
 
 export class FormTemplateFieldResponseDto {
   @ApiProperty() id!: string;
@@ -9,6 +10,12 @@ export class FormTemplateFieldResponseDto {
   @ApiProperty() isRequired!: boolean;
   @ApiPropertyOptional({ type: [String], nullable: true }) options!:
     string[] | null;
+  @ApiPropertyOptional({
+    type: 'object',
+    additionalProperties: true,
+    nullable: true,
+  })
+  condition!: ConditionNode | null;
   @ApiProperty() orderIndex!: number;
   @ApiProperty() createdAt!: Date;
   @ApiProperty() updatedAt!: Date;

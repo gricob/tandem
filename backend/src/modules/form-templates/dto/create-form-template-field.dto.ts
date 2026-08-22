@@ -6,9 +6,11 @@ import {
   IsBoolean,
   IsEnum,
   IsNotEmpty,
+  IsObject,
   IsOptional,
   IsString,
 } from 'class-validator';
+import type { ConditionNode } from '../../../condition/condition.types';
 
 export class CreateFormTemplateFieldDto {
   @ApiProperty({ description: 'Label shown for the field.' })
@@ -38,4 +40,16 @@ export class CreateFormTemplateFieldDto {
   @ArrayNotEmpty()
   @IsString({ each: true })
   options?: string[];
+
+  @ApiPropertyOptional({
+    description:
+      'Visibility condition tree. Referenced fields must belong to the same ' +
+      "form template, operators must match the referenced field's type, and " +
+      'the reference graph must stay acyclic. Omitted means always visible.',
+    type: 'object',
+    additionalProperties: true,
+  })
+  @IsOptional()
+  @IsObject()
+  condition?: ConditionNode;
 }

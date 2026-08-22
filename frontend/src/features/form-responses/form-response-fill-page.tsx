@@ -11,6 +11,7 @@ import { useForm } from '@mantine/form';
 import { Link, useParams } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import type { Form } from '../forms/api';
+import { resolveVisibility, type ConditionNode } from '../forms/condition';
 import { useForm as useFormQuery } from '../forms/queries';
 import { ResponseFields } from './components/response-fields';
 import type { FormResponse } from './api';
@@ -86,8 +87,18 @@ function FormResponseFillForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [response]);
 
+  const visibility = resolveVisibility(
+    fields.map((field) => ({
+      id: field.id,
+      condition: field.condition as ConditionNode | null,
+    })),
+    savedResponseData,
+  );
   const missingRequiredFields = fields.filter(
-    (field) => field.isRequired && isEmptyValue(savedResponseData[field.id]),
+    (field) =>
+      field.isRequired &&
+      visibility.get(field.id) &&
+      isEmptyValue(savedResponseData[field.id]),
   );
 
   function handleSubmit(values: ResponseValues) {

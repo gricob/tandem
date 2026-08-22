@@ -10,6 +10,7 @@ import {
   Title,
 } from '@mantine/core';
 import { Link, useParams } from '@tanstack/react-router';
+import { resolveVisibility, type ConditionNode } from '../forms/condition';
 import { useForm as useFormQuery } from '../forms/queries';
 import { useFormResponse } from './queries';
 import { formatValueForDisplay } from './value-utils';
@@ -45,6 +46,14 @@ export function FormResponseViewPage() {
     );
   }
 
+  const visibility = resolveVisibility(
+    form.fields.map((field) => ({
+      id: field.id,
+      condition: field.condition as ConditionNode | null,
+    })),
+    response?.responseData ?? {},
+  );
+
   return (
     <Container py="xl">
       <Link to="/forms/$formId" params={{ formId }}>
@@ -74,7 +83,11 @@ export function FormResponseViewPage() {
 
           <Stack gap="sm">
             {form.fields
-              .filter((field) => response.responseData[field.id] != null)
+              .filter(
+                (field) =>
+                  visibility.get(field.id) &&
+                  response.responseData[field.id] != null,
+              )
               .map((field) => (
                 <div key={field.id}>
                   <Text size="sm" fw={500}>

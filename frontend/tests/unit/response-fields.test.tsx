@@ -116,4 +116,32 @@ describe('ResponseFields', () => {
 
     expect(getInput('due')).toHaveAttribute('type', 'date');
   });
+
+  describe('conditional visibility', () => {
+    const trigger = makeField({
+      id: 'agreed',
+      fieldType: 'boolean',
+      label: 'Agreed',
+    });
+    const dependent = makeField({
+      id: 'reason',
+      fieldType: 'text',
+      label: 'Reason',
+      condition: { field: 'agreed', operator: 'equals', value: true } as unknown as FormField['condition'],
+    });
+
+    it('hides a field whose condition is not currently met', () => {
+      renderFields([trigger, dependent]);
+
+      expect(document.querySelector('[data-path="reason"]')).not.toBeInTheDocument();
+    });
+
+    it('shows the field once its trigger is toggled to match the condition', async () => {
+      renderFields([trigger, dependent]);
+
+      await userEvent.click(screen.getByLabelText('Agreed'));
+
+      expect(getInput('reason')).toBeInTheDocument();
+    });
+  });
 });

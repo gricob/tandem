@@ -65,6 +65,27 @@ describe('FormResponsesService', () => {
     fields: [requiredTextField, optionalSelectField],
   };
 
+  const conditionalRequiredField = {
+    id: 'field-plan-details',
+    formId: 'form-1',
+    label: 'Plan details',
+    fieldType: FormFieldType.text,
+    isRequired: true,
+    options: null,
+    condition: {
+      field: optionalSelectField.id,
+      operator: 'equals',
+      value: 'High',
+    },
+    orderIndex: 2,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+  const formWithConditionalField = {
+    ...form,
+    fields: [requiredTextField, optionalSelectField, conditionalRequiredField],
+  };
+
   beforeEach(async () => {
     prisma = createMockPrisma();
 
@@ -201,6 +222,38 @@ describe('FormResponsesService', () => {
         data: { responseData: { [requiredTextField.id]: 'Alice' } },
       });
     });
+
+    it('accepts a value for a field that is currently hidden by its condition', async () => {
+      prisma.form.findUnique.mockResolvedValue(formWithConditionalField);
+      prisma.formResponse.findUnique.mockResolvedValue(null);
+      prisma.formResponse.create.mockResolvedValue({
+        id: 'response-1',
+        formId: form.id,
+        responseData: {
+          [optionalSelectField.id]: 'Low',
+          [conditionalRequiredField.id]: 'Some plan',
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      // severity is 'Low', so plan-details' `equals High` condition is not
+      // met and the field is hidden - saving a value for it is still accepted.
+      await expect(
+        service.saveResponse(form.id, {
+          [optionalSelectField.id]: 'Low',
+          [conditionalRequiredField.id]: 'Some plan',
+        }),
+      ).resolves.toBeDefined();
+      expect(prisma.formResponse.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          responseData: {
+            [optionalSelectField.id]: 'Low',
+            [conditionalRequiredField.id]: 'Some plan',
+          },
+        }) as unknown,
+      });
+    });
   });
 
   describe('getResponse', () => {
@@ -233,6 +286,68 @@ describe('FormResponsesService', () => {
 
       await expect(service.getResponse(form.id)).resolves.toMatchObject({
         responseData: { [requiredTextField.id]: 'Alice' },
+        isComplete: true,
+      });
+    });
+
+    it('does not let a hidden required field block completeness', async () => {
+      prisma.form.findUnique.mockResolvedValue(formWithConditionalField);
+      prisma.formResponse.findUnique.mockResolvedValue({
+        id: 'response-1',
+        formId: form.id,
+        // severity is 'Low' -> plan-details' condition is unmet -> hidden,
+        // and its own `is_required` never gets evaluated despite no value.
+        responseData: {
+          [requiredTextField.id]: 'Alice',
+          [optionalSelectField.id]: 'Low',
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      await expect(service.getResponse(form.id)).resolves.toMatchObject({
+        isComplete: true,
+      });
+    });
+
+    it('still blocks completeness for a visible required field', async () => {
+      prisma.form.findUnique.mockResolvedValue(formWithConditionalField);
+      prisma.formResponse.findUnique.mockResolvedValue({
+        id: 'response-1',
+        formId: form.id,
+        // severity is 'High' -> plan-details' condition is met -> visible
+        // and required, but left unanswered.
+        responseData: {
+          [requiredTextField.id]: 'Alice',
+          [optionalSelectField.id]: 'High',
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      await expect(service.getResponse(form.id)).resolves.toMatchObject({
+        isComplete: false,
+      });
+    });
+
+    it("does not let a since-hidden field's stale value satisfy completeness on its own", async () => {
+      prisma.form.findUnique.mockResolvedValue(formWithConditionalField);
+      prisma.formResponse.findUnique.mockResolvedValue({
+        id: 'response-1',
+        formId: form.id,
+        // plan-details was answered while severity was 'High', but severity
+        // has since changed to 'Low' - plan-details is hidden again, and its
+        // stale answer must not be required or counted either way.
+        responseData: {
+          [requiredTextField.id]: 'Alice',
+          [optionalSelectField.id]: 'Low',
+          [conditionalRequiredField.id]: 'Old plan',
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      await expect(service.getResponse(form.id)).resolves.toMatchObject({
         isComplete: true,
       });
     });

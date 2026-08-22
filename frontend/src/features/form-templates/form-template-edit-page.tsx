@@ -15,6 +15,9 @@ import { useForm } from '@mantine/form';
 import { Link, useParams } from '@tanstack/react-router';
 import { zod4Resolver } from 'mantine-form-zod-resolver';
 import { useEffect, useState } from 'react';
+import { ApiError } from '../../api/client';
+import type { ConditionNode } from '../forms/condition';
+import type { AvailableConditionField } from './components/condition-builder';
 import { ConfirmDeleteModal } from './components/confirm-delete-modal';
 import { FieldForm } from './components/field-form';
 import { FieldList } from './components/field-list';
@@ -53,6 +56,7 @@ export function FormTemplateEditPage() {
   const [pendingRemove, setPendingRemove] = useState<FormTemplateField | null>(
     null,
   );
+  const [removeError, setRemoveError] = useState<string | null>(null);
 
   const form = useForm<FormTemplateFormValues>({
     initialValues: { name: '', description: '' },
@@ -101,6 +105,9 @@ export function FormTemplateEditPage() {
         fieldType: values.fieldType,
         isRequired: values.isRequired,
         options: values.options.length > 0 ? values.options : undefined,
+        condition:
+          (values.condition as unknown as Record<string, unknown>) ??
+          undefined,
       },
       { onSuccess: () => setAddingField(false) },
     );
@@ -118,6 +125,7 @@ export function FormTemplateEditPage() {
           fieldType: values.fieldType,
           isRequired: values.isRequired,
           options: values.options.length > 0 ? values.options : null,
+          condition: values.condition as unknown as Record<string, unknown> | null,
         },
       },
       { onSuccess: () => setEditingField(null) },
@@ -128,10 +136,29 @@ export function FormTemplateEditPage() {
     if (!pendingRemove) {
       return;
     }
+    setRemoveError(null);
     removeField.mutate(pendingRemove.id, {
       onSuccess: () => setPendingRemove(null),
+      onError: (error) => {
+        if (error instanceof ApiError && error.status === 400) {
+          setRemoveError(
+            "This field can't be removed: one or more other fields' " +
+              'conditions depend on it. Update or remove those first.',
+          );
+        }
+      },
     });
   }
+
+  const otherFields = (excludeFieldId?: string): AvailableConditionField[] =>
+    formTemplate.templateFields
+      .filter((field) => field.id !== excludeFieldId)
+      .map((field) => ({
+        id: field.id,
+        label: field.label,
+        fieldType: field.fieldType,
+        options: field.options ?? null,
+      }));
 
   return (
     <Container py="xl">
@@ -175,7 +202,10 @@ export function FormTemplateEditPage() {
             fields={formTemplate.templateFields}
             onReorder={(fieldIds) => reorderFields.mutate(fieldIds)}
             onEdit={(field) => setEditingField(field)}
-            onRemove={(field) => setPendingRemove(field)}
+            onRemove={(field) => {
+              setRemoveError(null);
+              setPendingRemove(field);
+            }}
           />
         </div>
       </Stack>
@@ -187,6 +217,7 @@ export function FormTemplateEditPage() {
         centered
       >
         <FieldForm
+          availableFields={otherFields()}
           submitLabel="Add"
           submitting={addField.isPending}
           onSubmit={handleAddField}
@@ -207,7 +238,11 @@ export function FormTemplateEditPage() {
               fieldType: editingField.fieldType,
               isRequired: editingField.isRequired,
               options: editingField.options ?? [],
+              condition:
+                (editingField.condition as unknown as ConditionNode | null) ??
+                null,
             }}
+            availableFields={otherFields(editingField.id)}
             submitLabel="Save"
             submitting={updateField.isPending}
             onSubmit={handleEditField}
@@ -218,10 +253,14 @@ export function FormTemplateEditPage() {
 
       <ConfirmDeleteModal
         opened={pendingRemove !== null}
+        error={removeError}
         title="Remove field"
         description={`Remove "${pendingRemove?.label}" from this form template?`}
         loading={removeField.isPending}
-        onCancel={() => setPendingRemove(null)}
+        onCancel={() => {
+          setPendingRemove(null);
+          setRemoveError(null);
+        }}
         onConfirm={handleConfirmRemove}
       />
     </Container>

@@ -16,9 +16,14 @@ import {
   needsOptions,
   type FieldFormValues,
 } from '../schemas';
+import {
+  ConditionBuilder,
+  type AvailableConditionField,
+} from './condition-builder';
 
 interface FieldFormProps {
   initialValues?: FieldFormValues;
+  availableFields: AvailableConditionField[];
   submitLabel: string;
   submitting?: boolean;
   onSubmit: (values: FieldFormValues) => void;
@@ -30,10 +35,12 @@ const emptyValues: FieldFormValues = {
   fieldType: 'text',
   isRequired: false,
   options: [],
+  condition: null,
 };
 
 export function FieldForm({
   initialValues,
+  availableFields,
   submitLabel,
   submitting,
   onSubmit,
@@ -69,6 +76,11 @@ export function FieldForm({
           onChange={(event) =>
             form.setFieldValue('isRequired', event.currentTarget.checked)
           }
+        />
+        <ConditionBuilder
+          value={form.values.condition}
+          onChange={(condition) => form.setFieldValue('condition', condition)}
+          availableFields={availableFields}
         />
         <Group justify="flex-end">
           {onCancel && (

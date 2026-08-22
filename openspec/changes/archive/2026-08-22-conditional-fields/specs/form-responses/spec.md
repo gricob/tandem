@@ -1,10 +1,4 @@
-# form-responses Specification
-
-## Purpose
-
-TBD - created by syncing change create-form-response. Update Purpose after archive.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Save a form's response
 The backend SHALL expose `PUT /api/v1/forms/:formId/response`, requiring a valid session token, that upserts the `FormResponse` for the given `Form`: creates it on the first call and updates the same row on every subsequent call. The request body carries a `response_data` object mapping `field_id` to value; each key is merged into the stored `response_data`, leaving previously saved keys not present in the request untouched, and clearing a field when its value is explicitly `null`. Each submitted key must reference an existing `FormField` owned by the `Form` itself, and its value must match that field's `field_type` (string for `text`/`textarea`, number for `number`, boolean for `boolean`, one of the field's `options` for `select`, a subset of the field's `options` for `multi_select`, ISO date string for `date`). A response is never rejected for leaving `is_required` fields unanswered, and a value for a field whose `condition` does not currently evaluate to true (i.e. the field is currently hidden) is accepted and stored the same as any other field's value.

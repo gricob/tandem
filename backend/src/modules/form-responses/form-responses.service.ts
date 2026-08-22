@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 import { Form, FormField, FormFieldType, Prisma } from '@prisma/client';
 import { ulid } from 'ulid';
+import { resolveVisibility } from '../../condition/condition-evaluator';
+import { ConditionNode } from '../../condition/condition.types';
 import { PrismaService } from '../../prisma/prisma.service';
 
 type FormWithFields = Form & { fields: FormField[] };
@@ -136,8 +138,15 @@ export class FormResponsesService {
 
   private toResponse(response: StoredResponse, fields: FormField[]) {
     const responseData = response.responseData as Record<string, unknown>;
+    const visibility = resolveVisibility(
+      fields.map((field) => ({
+        id: field.id,
+        condition: field.condition as ConditionNode | null,
+      })),
+      responseData,
+    );
     const isComplete = fields
-      .filter((field) => field.isRequired)
+      .filter((field) => field.isRequired && visibility.get(field.id))
       .every((field) => responseData[field.id] != null);
     return { ...response, isComplete };
   }

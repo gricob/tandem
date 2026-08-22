@@ -36,6 +36,7 @@ model FormTemplateField {
   fieldType      FormFieldType @map("field_type")
   isRequired     Boolean       @default(false) @map("is_required")
   options        Json?
+  condition      Json?
   orderIndex     Int           @map("order_index")
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
@@ -69,6 +70,7 @@ model FormField {
   fieldType  FormFieldType @map("field_type")
   isRequired Boolean       @default(false) @map("is_required")
   options    Json?
+  condition  Json?
   orderIndex Int           @map("order_index")
   createdAt  DateTime      @default(now()) @map("created_at")
   updatedAt  DateTime      @updatedAt @map("updated_at")

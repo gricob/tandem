@@ -49,4 +49,22 @@ describe('ConfirmDeleteModal (form templates)', () => {
     expect(onConfirm).toHaveBeenCalledTimes(1);
     expect(onCancel).not.toHaveBeenCalled();
   });
+
+  it('does not show an error alert by default', () => {
+    renderModal();
+
+    expect(screen.queryByText("Can't delete")).not.toBeInTheDocument();
+  });
+
+  it('shows the error explaining why deletion was blocked', () => {
+    renderModal({
+      error:
+        "This field can't be removed: one or more other fields' conditions depend on it.",
+    });
+
+    expect(screen.getByText("Can't delete")).toBeInTheDocument();
+    expect(
+      screen.getByText(/one or more other fields' conditions depend on it/),
+    ).toBeInTheDocument();
+  });
 });

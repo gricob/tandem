@@ -318,6 +318,9 @@ export interface components {
             fieldType: "text" | "textarea" | "number" | "boolean" | "select" | "multi_select" | "date";
             isRequired: boolean;
             options?: string[] | null;
+            condition?: {
+                [key: string]: unknown;
+            } | null;
             orderIndex: number;
             /** Format: date-time */
             createdAt: string;
@@ -355,6 +358,10 @@ export interface components {
             isRequired: boolean;
             /** @description Available options. Required (non-empty) for `select`/`multi_select`; must be omitted otherwise. */
             options?: string[];
+            /** @description Visibility condition tree. Referenced fields must belong to the same form template, operators must match the referenced field's type, and the reference graph must stay acyclic. Omitted means always visible. */
+            condition?: {
+                [key: string]: unknown;
+            };
         };
         ReorderFieldsDto: {
             /** @description Ordered list of field ids: must contain exactly the form template's current field ids, in the desired order. */
@@ -372,6 +379,10 @@ export interface components {
             isRequired?: boolean;
             /** @description Available options. Required (non-empty) for `select`/`multi_select`; must be null/omitted otherwise. */
             options?: string[] | null;
+            /** @description Visibility condition tree. Referenced fields must belong to the same form template, operators must match the referenced field's type, and the reference graph must stay acyclic. Set to null to make the field always visible. */
+            condition?: {
+                [key: string]: unknown;
+            } | null;
         };
         CreateFormDto: {
             /** @description Id of the form template this form is created from. */
@@ -389,6 +400,9 @@ export interface components {
             fieldType: "text" | "textarea" | "number" | "boolean" | "select" | "multi_select" | "date";
             isRequired: boolean;
             options?: string[] | null;
+            condition?: {
+                [key: string]: unknown;
+            } | null;
             orderIndex: number;
             /** Format: date-time */
             createdAt: string;
