@@ -1,24 +1,13 @@
-import { Button, Container, Group, Text, Title } from '@mantine/core';
-import { Link } from '@tanstack/react-router';
+import { Container, Text, Title } from '@mantine/core';
 
 export function IndexPage() {
   return (
     <Container py="xl">
       <Title order={1}>Tandem</Title>
-      <Text c="dimmed" mb="md">
+      <Text c="dimmed">
         Create configurable forms, share them, and review the responses you
         receive.
       </Text>
-      <Group>
-        <Link to="/form-templates">
-          <Button component="span">Form templates</Button>
-        </Link>
-        <Link to="/forms">
-          <Button component="span" variant="default">
-            Forms
-          </Button>
-        </Link>
-      </Group>
     </Container>
   );
 }

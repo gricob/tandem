@@ -9,9 +9,12 @@ import { FormTemplateEditPage } from '../features/form-templates/form-template-e
 import { FormTemplatesListPage } from '../features/form-templates/form-templates-list-page';
 import { FormEditPage } from '../features/forms/form-edit-page';
 import { FormsListPage } from '../features/forms/forms-list-page';
+import { RootLayout } from '../features/navigation/root-layout';
 import { IndexPage } from './index-page';
 
-const rootRoute = createRootRoute();
+const rootRoute = createRootRoute({
+  component: RootLayout,
+});
 
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
