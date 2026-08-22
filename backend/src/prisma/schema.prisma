@@ -45,15 +45,17 @@ model FormTemplateField {
 }
 
 model Form {
-  id             String        @id @db.Char(26)
-  formTemplateId String?       @map("form_template_id") @db.Char(26)
-  formTemplate   FormTemplate? @relation(fields: [formTemplateId], references: [id], onDelete: SetNull)
-  name           String
-  description    String?
-  createdAt      DateTime      @default(now()) @map("created_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
-  fields         FormField[]
-  formResponse   FormResponse?
+  id                  String               @id @db.Char(26)
+  formTemplateId      String?              @map("form_template_id") @db.Char(26)
+  formTemplate        FormTemplate?        @relation(fields: [formTemplateId], references: [id], onDelete: SetNull)
+  name                String
+  description         String?
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  fields              FormField[]
+  formResponse        FormResponse?
+  userStory           UserStory?
+  acceptanceCriterion AcceptanceCriterion?
 
   @@index([formTemplateId])
   @@map("forms")
@@ -87,11 +89,35 @@ model FormResponse {
 }
 
 model Deliverable {
-  id          String   @id @db.Char(26)
+  id          String      @id @db.Char(26)
   name        String
   description String?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  userStories UserStory[]
 
   @@map("deliverables")
+}
+
+model UserStory {
+  id                 String                @id @db.Char(26)
+  form               Form                  @relation(fields: [id], references: [id], onDelete: Cascade)
+  deliverableId      String                @map("deliverable_id") @db.Char(26)
+  deliverable        Deliverable           @relation(fields: [deliverableId], references: [id], onDelete: Cascade)
+  orderIndex         Int                   @map("order_index")
+  acceptanceCriteria AcceptanceCriterion[]
+
+  @@index([deliverableId])
+  @@map("user_stories")
+}
+
+model AcceptanceCriterion {
+  id          String    @id @db.Char(26)
+  form        Form      @relation(fields: [id], references: [id], onDelete: Cascade)
+  userStoryId String    @map("user_story_id") @db.Char(26)
+  userStory   UserStory @relation(fields: [userStoryId], references: [id], onDelete: Cascade)
+  orderIndex  Int       @map("order_index")
+
+  @@index([userStoryId])
+  @@map("acceptance_criteria")
 }

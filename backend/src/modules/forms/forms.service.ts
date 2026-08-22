@@ -9,14 +9,21 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateFormDto } from './dto/create-form.dto';
 import { UpdateFormDto } from './dto/update-form.dto';
 
-type FormWithRelations = Form & {
+export type FormWithRelations = Form & {
   formTemplate: { name: string } | null;
   fields: FormField[];
 };
 
-const FORM_INCLUDE = {
+export const FORM_INCLUDE = {
   formTemplate: { select: { name: true } },
   fields: { orderBy: { orderIndex: 'asc' as const } },
+};
+
+type CreateFormFields = Pick<
+  CreateFormDto,
+  'formTemplateId' | 'description'
+> & {
+  name?: string;
 };
 
 @Injectable()
@@ -24,6 +31,17 @@ export class FormsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createForm(dto: CreateFormDto) {
+    const formId = ulid();
+    const operations = await this.buildCreateFormOperations(formId, dto);
+    await this.prisma.$transaction(operations);
+    return this.getForm(formId);
+  }
+
+  // Unexecuted ops, so callers sharing this id (UserStory/AcceptanceCriterion) can compose their own transaction.
+  async buildCreateFormOperations(
+    formId: string,
+    dto: CreateFormFields,
+  ): Promise<Prisma.PrismaPromise<unknown>[]> {
     const formTemplate = await this.prisma.formTemplate.findUnique({
       where: { id: dto.formTemplateId },
       include: { templateFields: { orderBy: { orderIndex: 'asc' } } },
@@ -34,13 +52,13 @@ export class FormsService {
       );
     }
 
-    const formId = ulid();
-    await this.prisma.$transaction([
+    return [
       this.prisma.form.create({
         data: {
           id: formId,
           formTemplateId: dto.formTemplateId,
-          name: dto.name,
+          // Falls back to the template's name when the caller has none (AcceptanceCriterion).
+          name: dto.name ?? formTemplate.name,
           description: dto.description,
         },
       }),
@@ -57,9 +75,7 @@ export class FormsService {
           },
         }),
       ),
-    ]);
-
-    return this.getForm(formId);
+    ];
   }
 
   async findAllForms(name?: string) {
@@ -70,7 +86,7 @@ export class FormsService {
       include: FORM_INCLUDE,
       orderBy: { createdAt: 'asc' },
     });
-    return forms.map((form) => this.toResponse(form));
+    return forms.map((form) => this.toFormResponse(form));
   }
 
   async getForm(formId: string) {
@@ -81,7 +97,7 @@ export class FormsService {
     if (!form) {
       throw new NotFoundException(`Form ${formId} not found.`);
     }
-    return this.toResponse(form);
+    return this.toFormResponse(form);
   }
 
   async updateForm(formId: string, dto: UpdateFormDto) {
@@ -91,12 +107,32 @@ export class FormsService {
       data: { name: dto.name, description: dto.description },
       include: FORM_INCLUDE,
     });
-    return this.toResponse(form);
+    return this.toFormResponse(form);
   }
 
+  // If this form backs a UserStory, its acceptance criteria's own forms are deleted
+  // first - deleting a Form only cascades to the UserStory/AcceptanceCriterion row
+  // sharing its id, never to an AcceptanceCriterion's own form (see design.md).
   async deleteForm(formId: string): Promise<void> {
     await this.assertFormExists(formId);
-    await this.prisma.form.delete({ where: { id: formId } });
+    const acceptanceCriteria = await this.prisma.acceptanceCriterion.findMany({
+      where: { userStoryId: formId },
+      select: { id: true },
+    });
+    const acceptanceCriteriaIds = acceptanceCriteria.map(
+      (acceptanceCriterion) => acceptanceCriterion.id,
+    );
+
+    await this.prisma.$transaction([
+      ...(acceptanceCriteriaIds.length
+        ? [
+            this.prisma.form.deleteMany({
+              where: { id: { in: acceptanceCriteriaIds } },
+            }),
+          ]
+        : []),
+      this.prisma.form.delete({ where: { id: formId } }),
+    ]);
   }
 
   private async assertFormExists(formId: string): Promise<void> {
@@ -106,7 +142,7 @@ export class FormsService {
     }
   }
 
-  private toResponse(form: FormWithRelations) {
+  toFormResponse(form: FormWithRelations) {
     const { formTemplate, ...rest } = form;
     return { ...rest, formTemplateName: formTemplate?.name ?? null };
   }

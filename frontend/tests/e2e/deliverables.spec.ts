@@ -4,6 +4,7 @@ interface Deliverable {
   id: string;
   name: string;
   description: string | null;
+  userStories: unknown[];
 }
 
 let nextId = 1;
@@ -32,6 +33,7 @@ test('creates a deliverable, edits it, and deletes it', async ({ page }) => {
         id: id(),
         name: body.name,
         description: body.description ?? null,
+        userStories: [],
       };
       deliverables.push(deliverable);
       await route.fulfill({ status: 201, json: deliverable });

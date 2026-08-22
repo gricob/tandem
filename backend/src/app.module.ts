@@ -5,6 +5,7 @@ import { FormResponsesModule } from './modules/form-responses/form-responses.mod
 import { FormTemplatesModule } from './modules/form-templates/form-templates.module';
 import { FormsModule } from './modules/forms/forms.module';
 import { HealthModule } from './modules/health/health.module';
+import { UserStoriesModule } from './modules/user-stories/user-stories.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -16,6 +17,7 @@ import { PrismaModule } from './prisma/prisma.module';
     FormsModule,
     FormResponsesModule,
     DeliverablesModule,
+    UserStoriesModule,
   ],
 })
 export class AppModule {}

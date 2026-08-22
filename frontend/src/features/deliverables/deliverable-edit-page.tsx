@@ -13,16 +13,27 @@ import {
 import { useForm } from '@mantine/form';
 import { Link, useParams } from '@tanstack/react-router';
 import { zod4Resolver } from 'mantine-form-zod-resolver';
-import { useEffect } from 'react';
-import { useDeliverable, useUpdateDeliverable } from './queries';
+import { useEffect, useState } from 'react';
+import { CreateUserStoryModal } from './components/create-user-story-modal';
+import { UserStoryList } from './components/user-story-list';
+import {
+  useAddUserStory,
+  useDeliverable,
+  useUpdateDeliverable,
+} from './queries';
 import { deliverableSchema, type DeliverableFormValues } from './schemas';
 
 export function DeliverableEditPage() {
   const { deliverableId } = useParams({ from: '/deliverables/$deliverableId' });
-  const { data: deliverable, isPending, isError } =
-    useDeliverable(deliverableId);
+  const {
+    data: deliverable,
+    isPending,
+    isError,
+  } = useDeliverable(deliverableId);
 
   const updateDeliverable = useUpdateDeliverable(deliverableId);
+  const addUserStory = useAddUserStory(deliverableId);
+  const [createUserStoryOpened, setCreateUserStoryOpened] = useState(false);
 
   const form = useForm<DeliverableFormValues>({
     initialValues: { name: '', description: '' },
@@ -64,6 +75,14 @@ export function DeliverableEditPage() {
     });
   }
 
+  function handleCreateUserStory(
+    values: Parameters<typeof addUserStory.mutate>[0],
+  ) {
+    addUserStory.mutate(values, {
+      onSuccess: () => setCreateUserStoryOpened(false),
+    });
+  }
+
   return (
     <Container py="xl">
       <Link to="/deliverables">
@@ -91,7 +110,28 @@ export function DeliverableEditPage() {
             </Group>
           </Stack>
         </form>
+
+        <div>
+          <Group justify="space-between" mb="sm">
+            <Title order={2}>User stories</Title>
+            <Button onClick={() => setCreateUserStoryOpened(true)}>
+              New user story
+            </Button>
+          </Group>
+
+          <UserStoryList
+            deliverableId={deliverableId}
+            userStories={deliverable.userStories}
+          />
+        </div>
       </Stack>
+
+      <CreateUserStoryModal
+        opened={createUserStoryOpened}
+        submitting={addUserStory.isPending}
+        onClose={() => setCreateUserStoryOpened(false)}
+        onSubmit={handleCreateUserStory}
+      />
     </Container>
   );
 }

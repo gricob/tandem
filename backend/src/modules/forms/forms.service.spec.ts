@@ -17,6 +17,9 @@ type MockPrismaService = {
   formField: {
     create: jest.Mock;
   };
+  acceptanceCriterion: {
+    findMany: jest.Mock;
+  };
   $transaction: jest.Mock;
 };
 
@@ -35,7 +38,12 @@ function createMockPrisma(): MockPrismaService {
     formField: {
       create: jest.fn(),
     },
-    $transaction: jest.fn(),
+    acceptanceCriterion: {
+      findMany: jest.fn().mockResolvedValue([]),
+    },
+    $transaction: jest.fn(async (operations: Promise<unknown>[]) =>
+      Promise.all(operations),
+    ),
   };
 }
 

@@ -196,6 +196,102 @@ export interface paths {
         patch: operations["DeliverablesController_updateDeliverable"];
         trace?: never;
     };
+    "/api/v1/deliverables/{deliverableId}/user-stories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["UserStoriesController_addUserStory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/deliverables/{deliverableId}/user-stories/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["UserStoriesController_reorderUserStories"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/deliverables/{deliverableId}/user-stories/{userStoryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["UserStoriesController_removeUserStory"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/user-stories/{userStoryId}/acceptance-criteria": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AcceptanceCriteriaController_addAcceptanceCriterion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/user-stories/{userStoryId}/acceptance-criteria/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["AcceptanceCriteriaController_reorderAcceptanceCriteria"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/user-stories/{userStoryId}/acceptance-criteria/{acceptanceCriterionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["AcceptanceCriteriaController_removeAcceptanceCriterion"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -344,6 +440,35 @@ export interface components {
             /** @description Description of the deliverable. */
             description?: string;
         };
+        AcceptanceCriterionResponseDto: {
+            id: string;
+            formTemplateId?: string | null;
+            /** @description The source form template's name, or null if that template was deleted. */
+            formTemplateName?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            fields: components["schemas"]["FormFieldResponseDto"][];
+            userStoryId: string;
+            orderIndex: number;
+        };
+        UserStoryResponseDto: {
+            id: string;
+            formTemplateId?: string | null;
+            /** @description The source form template's name, or null if that template was deleted. */
+            formTemplateName?: string | null;
+            name: string;
+            description?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            fields: components["schemas"]["FormFieldResponseDto"][];
+            deliverableId: string;
+            orderIndex: number;
+            acceptanceCriteria: components["schemas"]["AcceptanceCriterionResponseDto"][];
+        };
         DeliverableResponseDto: {
             id: string;
             name: string;
@@ -352,12 +477,33 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
+            userStories: components["schemas"]["UserStoryResponseDto"][];
         };
         UpdateDeliverableDto: {
             /** @description Name of the deliverable. */
             name?: string;
             /** @description Description of the deliverable. */
             description?: string;
+        };
+        CreateUserStoryDto: {
+            /** @description Id of the form template this user story is created from. */
+            formTemplateId: string;
+            /** @description Name of the user story. */
+            name: string;
+            /** @description Description of the user story. */
+            description?: string;
+        };
+        ReorderUserStoriesDto: {
+            /** @description Ordered list of user story ids: must contain exactly the deliverable's current user story ids, in the desired order. */
+            userStoryIds: string[];
+        };
+        CreateAcceptanceCriterionDto: {
+            /** @description Id of the form template this acceptance criterion is created from. */
+            formTemplateId: string;
+        };
+        ReorderAcceptanceCriteriaDto: {
+            /** @description Ordered list of acceptance criterion ids: must contain exactly the user story's current acceptance criterion ids, in the desired order. */
+            acceptanceCriteriaIds: string[];
         };
     };
     responses: never;
@@ -976,6 +1122,206 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["DeliverableResponseDto"];
                 };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UserStoriesController_addUserStory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                deliverableId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateUserStoryDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserStoryResponseDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UserStoriesController_reorderUserStories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                deliverableId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReorderUserStoriesDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserStoryResponseDto"][];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UserStoriesController_removeUserStory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                deliverableId: string;
+                userStoryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AcceptanceCriteriaController_addAcceptanceCriterion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userStoryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAcceptanceCriterionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AcceptanceCriterionResponseDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AcceptanceCriteriaController_reorderAcceptanceCriteria: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userStoryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReorderAcceptanceCriteriaDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AcceptanceCriterionResponseDto"][];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AcceptanceCriteriaController_removeAcceptanceCriterion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userStoryId: string;
+                acceptanceCriterionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             404: {
                 headers: {
