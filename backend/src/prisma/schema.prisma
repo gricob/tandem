@@ -90,14 +90,29 @@ model FormResponse {
   @@map("form_responses")
 }
 
-model Deliverable {
-  id          String      @id @db.Char(26)
-  name        String
-  description String?
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
-  userStories UserStory[]
+model Workstream {
+  id           String        @id @db.Char(26)
+  name         String
+  description  String?
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  deliverables Deliverable[]
 
+  @@map("workstreams")
+}
+
+model Deliverable {
+  id            String      @id @db.Char(26)
+  workstreamId  String      @map("workstream_id") @db.Char(26)
+  workstream    Workstream  @relation(fields: [workstreamId], references: [id], onDelete: Cascade)
+  orderIndex    Int         @map("order_index")
+  name          String
+  description   String?
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  userStories   UserStory[]
+
+  @@index([workstreamId])
   @@map("deliverables")
 }
 

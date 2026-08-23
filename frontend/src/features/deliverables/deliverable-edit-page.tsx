@@ -85,9 +85,12 @@ export function DeliverableEditPage() {
 
   return (
     <Container py="xl">
-      <Link to="/deliverables">
+      <Link
+        to="/workstreams/$workstreamId"
+        params={{ workstreamId: deliverable.workstreamId }}
+      >
         <Anchor component="span" size="sm">
-          ← Deliverables
+          ← Workstream
         </Anchor>
       </Link>
 

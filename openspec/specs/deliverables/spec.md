@@ -6,23 +6,19 @@ TBD - created by syncing change add-deliverable-model. Update Purpose after arch
 
 ## Requirements
 
-### Requirement: Create a deliverable
-The backend SHALL expose `POST /api/v1/deliverables`, requiring a valid session token, that creates a `Deliverable` given a `name` (required, non-empty string) and an optional `description`.
+### Requirement: A deliverable belongs to a workstream
+Every `Deliverable` SHALL belong to exactly one `Workstream` via a required `workstreamId`, set at creation time and carrying an `order_index` reflecting its position within that workstream. `workstreamId` is immutable after creation — `PATCH /api/v1/deliverables/:deliverableId` SHALL NOT change it.
 
-#### Scenario: Valid deliverable is created
-- **WHEN** an authenticated client calls `POST /api/v1/deliverables` with a non-empty `name`
-- **THEN** the response is `201 Created` with the new `Deliverable`, including a generated `id`, `created_at`, and `updated_at`
+#### Scenario: A deliverable's workstream is included in its representation
+- **WHEN** an authenticated client fetches a `Deliverable` (individually or embedded in its workstream)
+- **THEN** the response includes its `workstreamId` and `order_index`
 
-#### Scenario: Missing name is rejected
-- **WHEN** an authenticated client calls `POST /api/v1/deliverables` without a `name` or with an empty `name`
-- **THEN** the response is `400 Bad Request` and no `Deliverable` is created
+#### Scenario: Attempting to change a deliverable's workstream via edit is ignored
+- **WHEN** an authenticated client calls `PATCH /api/v1/deliverables/:deliverableId` with a `workstreamId` in the payload
+- **THEN** the response is `200 OK` with the deliverable's `workstreamId` unchanged from before the request
 
 ### Requirement: List and view deliverables
-The backend SHALL expose `GET /api/v1/deliverables` (list of all deliverables) and `GET /api/v1/deliverables/:deliverableId` (single deliverable), both requiring a valid session token. Each returned `Deliverable` SHALL include its `userStories`, sorted by `order_index` ascending; each `UserStory` is shaped like a `Form` (name, description, source form template, fields, response) plus its `order_index`, and includes its own `acceptanceCriteria`, sorted by `order_index` ascending and shaped the same way.
-
-#### Scenario: List returns all deliverables
-- **WHEN** an authenticated client calls `GET /api/v1/deliverables`
-- **THEN** the response is `200 OK` with every existing `Deliverable`, each including its `userStories` (with their `acceptanceCriteria`) sorted by `order_index`
+The backend SHALL expose `GET /api/v1/deliverables/:deliverableId`, requiring a valid session token, to fetch a single deliverable. The response SHALL include its `userStories`, sorted by `order_index` ascending; each `UserStory` is shaped like a `Form` (name, description, source form template, fields, response) plus its `order_index`, and includes its own `acceptanceCriteria`, sorted by `order_index` ascending and shaped the same way. There is no flat "list all deliverables" endpoint — deliverables are listed via their workstream (`GET /api/v1/workstreams` and `GET /api/v1/workstreams/:workstreamId`).
 
 #### Scenario: Fetching a single deliverable
 - **WHEN** an authenticated client calls `GET /api/v1/deliverables/:deliverableId` for an existing deliverable
@@ -61,21 +57,6 @@ The backend SHALL expose `DELETE /api/v1/deliverables/:deliverableId`, requiring
 #### Scenario: Deleting a deliverable with user stories and acceptance criteria leaves nothing orphaned
 - **WHEN** an authenticated client calls `DELETE /api/v1/deliverables/:deliverableId` for a deliverable that has user stories, some with acceptance criteria
 - **THEN** the response is `204 No Content`, and none of its former user stories, their acceptance criteria, or the forms backing either are retrievable afterward
-
-### Requirement: Frontend lists, creates, and deletes deliverables
-The frontend SHALL provide a screen listing all deliverables (name, description) with actions to create a new deliverable and delete an existing one (after confirmation).
-
-#### Scenario: Deliverables list loads
-- **WHEN** a user navigates to the deliverables screen
-- **THEN** the frontend fetches and displays all deliverables from `GET /api/v1/deliverables`
-
-#### Scenario: Creating a deliverable from the list screen
-- **WHEN** a user submits the "new deliverable" form with a non-empty name
-- **THEN** the frontend calls `POST /api/v1/deliverables`, and on success navigates to that deliverable's edit screen
-
-#### Scenario: Deleting a deliverable requires confirmation
-- **WHEN** a user chooses to delete a deliverable from the list
-- **THEN** the frontend shows a confirmation prompt before calling `DELETE /api/v1/deliverables/:deliverableId`, and removes it from the list only after a successful response
 
 ### Requirement: Frontend edits a deliverable's name and description
 The frontend SHALL provide a screen to edit an existing deliverable's `name` and `description`.

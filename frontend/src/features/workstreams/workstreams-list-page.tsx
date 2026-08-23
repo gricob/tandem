@@ -11,33 +11,33 @@ import {
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { ConfirmDeleteModal } from './components/confirm-delete-modal';
-import { CreateDeliverableModal } from './components/create-deliverable-modal';
-import type { Deliverable } from './api';
+import { CreateWorkstreamModal } from './components/create-workstream-modal';
+import type { Workstream } from './api';
 import {
-  useCreateDeliverable,
-  useDeleteDeliverable,
-  useDeliverables,
+  useCreateWorkstream,
+  useDeleteWorkstream,
+  useWorkstreams,
 } from './queries';
-import type { DeliverableFormValues } from './schemas';
+import type { WorkstreamFormValues } from './schemas';
 
-export function DeliverablesListPage() {
-  const { data: deliverables, isPending, isError } = useDeliverables();
-  const createDeliverable = useCreateDeliverable();
-  const deleteDeliverable = useDeleteDeliverable();
+export function WorkstreamsListPage() {
+  const { data: workstreams, isPending, isError } = useWorkstreams();
+  const createWorkstream = useCreateWorkstream();
+  const deleteWorkstream = useDeleteWorkstream();
   const navigate = useNavigate();
 
   const [createModalOpened, setCreateModalOpened] = useState(false);
-  const [pendingDelete, setPendingDelete] = useState<Deliverable | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<Workstream | null>(null);
 
-  function handleCreate(values: DeliverableFormValues) {
-    createDeliverable.mutate(
+  function handleCreate(values: WorkstreamFormValues) {
+    createWorkstream.mutate(
       { name: values.name, description: values.description || undefined },
       {
         onSuccess: (created) => {
           setCreateModalOpened(false);
           void navigate({
-            to: '/deliverables/$deliverableId',
-            params: { deliverableId: created.id },
+            to: '/workstreams/$workstreamId',
+            params: { workstreamId: created.id },
           });
         },
       },
@@ -48,7 +48,7 @@ export function DeliverablesListPage() {
     if (!pendingDelete) {
       return;
     }
-    deleteDeliverable.mutate(pendingDelete.id, {
+    deleteWorkstream.mutate(pendingDelete.id, {
       onSuccess: () => setPendingDelete(null),
     });
   }
@@ -56,24 +56,24 @@ export function DeliverablesListPage() {
   return (
     <Container py="xl">
       <Group justify="space-between" mb="md">
-        <Title order={1}>Deliverables</Title>
+        <Title order={1}>Workstreams</Title>
         <Button onClick={() => setCreateModalOpened(true)}>
-          New deliverable
+          New workstream
         </Button>
       </Group>
 
-      {isPending && <Text c="dimmed">Loading deliverables…</Text>}
+      {isPending && <Text c="dimmed">Loading workstreams…</Text>}
       {isError && (
-        <Alert color="red" title="Couldn't load deliverables">
+        <Alert color="red" title="Couldn't load workstreams">
           Something went wrong. Try refreshing the page.
         </Alert>
       )}
 
-      {deliverables && deliverables.length === 0 && (
-        <Text c="dimmed">No deliverables yet. Create one to get started.</Text>
+      {workstreams && workstreams.length === 0 && (
+        <Text c="dimmed">No workstreams yet. Create one to get started.</Text>
       )}
 
-      {deliverables && deliverables.length > 0 && (
+      {workstreams && workstreams.length > 0 && (
         <Table>
           <Table.Thead>
             <Table.Tr>
@@ -83,22 +83,22 @@ export function DeliverablesListPage() {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {deliverables.map((deliverable) => (
-              <Table.Tr key={deliverable.id}>
+            {workstreams.map((workstream) => (
+              <Table.Tr key={workstream.id}>
                 <Table.Td>
                   <Link
-                    to="/deliverables/$deliverableId"
-                    params={{ deliverableId: deliverable.id }}
+                    to="/workstreams/$workstreamId"
+                    params={{ workstreamId: workstream.id }}
                   >
-                    <Anchor component="span">{deliverable.name}</Anchor>
+                    <Anchor component="span">{workstream.name}</Anchor>
                   </Link>
                 </Table.Td>
-                <Table.Td>{deliverable.description}</Table.Td>
+                <Table.Td>{workstream.description}</Table.Td>
                 <Table.Td>
                   <Group gap="xs" justify="flex-end">
                     <Link
-                      to="/deliverables/$deliverableId"
-                      params={{ deliverableId: deliverable.id }}
+                      to="/workstreams/$workstreamId"
+                      params={{ workstreamId: workstream.id }}
                     >
                       <Button component="span" variant="subtle" size="xs">
                         Edit
@@ -108,7 +108,7 @@ export function DeliverablesListPage() {
                       variant="subtle"
                       color="red"
                       size="xs"
-                      onClick={() => setPendingDelete(deliverable)}
+                      onClick={() => setPendingDelete(workstream)}
                     >
                       Delete
                     </Button>
@@ -120,18 +120,18 @@ export function DeliverablesListPage() {
         </Table>
       )}
 
-      <CreateDeliverableModal
+      <CreateWorkstreamModal
         opened={createModalOpened}
-        submitting={createDeliverable.isPending}
+        submitting={createWorkstream.isPending}
         onClose={() => setCreateModalOpened(false)}
         onSubmit={handleCreate}
       />
 
       <ConfirmDeleteModal
         opened={pendingDelete !== null}
-        title="Delete deliverable"
-        description={`Delete "${pendingDelete?.name}"?`}
-        loading={deleteDeliverable.isPending}
+        title="Delete workstream"
+        description={`Delete "${pendingDelete?.name}"? This also deletes all of its deliverables.`}
+        loading={deleteWorkstream.isPending}
         onCancel={() => setPendingDelete(null)}
         onConfirm={handleConfirmDelete}
       />

@@ -8,24 +8,24 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { zod4Resolver } from 'mantine-form-zod-resolver';
-import { deliverableSchema, type DeliverableFormValues } from '../schemas';
+import { workstreamSchema, type WorkstreamFormValues } from '../schemas';
 
-interface CreateDeliverableModalProps {
+interface CreateWorkstreamModalProps {
   opened: boolean;
   submitting?: boolean;
   onClose: () => void;
-  onSubmit: (values: DeliverableFormValues) => void;
+  onSubmit: (values: WorkstreamFormValues) => void;
 }
 
-export function CreateDeliverableModal({
+export function CreateWorkstreamModal({
   opened,
   submitting,
   onClose,
   onSubmit,
-}: CreateDeliverableModalProps) {
-  const form = useForm<DeliverableFormValues>({
+}: CreateWorkstreamModalProps) {
+  const form = useForm<WorkstreamFormValues>({
     initialValues: { name: '', description: '' },
-    validate: zod4Resolver(deliverableSchema),
+    validate: zod4Resolver(workstreamSchema),
   });
 
   function handleClose() {
@@ -34,7 +34,7 @@ export function CreateDeliverableModal({
   }
 
   return (
-    <Modal opened={opened} onClose={handleClose} title="New deliverable" centered>
+    <Modal opened={opened} onClose={handleClose} title="New workstream" centered>
       <form onSubmit={form.onSubmit(onSubmit)}>
         <Stack gap="sm">
           <TextInput

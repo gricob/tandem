@@ -4,7 +4,6 @@ import {
   createRouter,
 } from '@tanstack/react-router';
 import { DeliverableEditPage } from '../features/deliverables/deliverable-edit-page';
-import { DeliverablesListPage } from '../features/deliverables/deliverables-list-page';
 import { FormResponseFillPage } from '../features/form-responses/form-response-fill-page';
 import { FormResponseViewPage } from '../features/form-responses/form-response-view-page';
 import { FormTemplateEditPage } from '../features/form-templates/form-template-edit-page';
@@ -12,6 +11,8 @@ import { FormTemplatesListPage } from '../features/form-templates/form-templates
 import { FormEditPage } from '../features/forms/form-edit-page';
 import { FormsListPage } from '../features/forms/forms-list-page';
 import { RootLayout } from '../features/navigation/root-layout';
+import { WorkstreamDetailPage } from '../features/workstreams/workstream-detail-page';
+import { WorkstreamsListPage } from '../features/workstreams/workstreams-list-page';
 import { IndexPage } from './index-page';
 
 const rootRoute = createRootRoute({
@@ -60,16 +61,22 @@ const formResponseViewRoute = createRoute({
   component: FormResponseViewPage,
 });
 
-const deliverablesRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/deliverables',
-  component: DeliverablesListPage,
-});
-
 const deliverableEditRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/deliverables/$deliverableId',
   component: DeliverableEditPage,
+});
+
+const workstreamsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/workstreams',
+  component: WorkstreamsListPage,
+});
+
+const workstreamDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/workstreams/$workstreamId',
+  component: WorkstreamDetailPage,
 });
 
 const routeTree = rootRoute.addChildren([
@@ -80,8 +87,9 @@ const routeTree = rootRoute.addChildren([
   formEditRoute,
   formResponseFillRoute,
   formResponseViewRoute,
-  deliverablesRoute,
   deliverableEditRoute,
+  workstreamsRoute,
+  workstreamDetailRoute,
 ]);
 
 export const router = createRouter({ routeTree });

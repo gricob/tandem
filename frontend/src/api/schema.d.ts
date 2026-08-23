@@ -164,22 +164,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/deliverables": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["DeliverablesController_findAllDeliverables"];
-        put?: never;
-        post: operations["DeliverablesController_createDeliverable"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/deliverables/{deliverableId}": {
         parameters: {
             query?: never;
@@ -287,6 +271,70 @@ export interface paths {
         put?: never;
         post?: never;
         delete: operations["AcceptanceCriteriaController_removeAcceptanceCriterion"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workstreams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["WorkstreamsController_findAllWorkstreams"];
+        put?: never;
+        post: operations["WorkstreamsController_createWorkstream"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workstreams/{workstreamId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["WorkstreamsController_getWorkstream"];
+        put?: never;
+        post?: never;
+        delete: operations["WorkstreamsController_deleteWorkstream"];
+        options?: never;
+        head?: never;
+        patch: operations["WorkstreamsController_updateWorkstream"];
+        trace?: never;
+    };
+    "/api/v1/workstreams/{workstreamId}/deliverables": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["WorkstreamsController_addDeliverable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workstreams/{workstreamId}/deliverables/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["WorkstreamsController_reorderDeliverables"];
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -448,12 +496,6 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
-        CreateDeliverableDto: {
-            /** @description Name of the deliverable. */
-            name: string;
-            /** @description Description of the deliverable. */
-            description?: string;
-        };
         AcceptanceCriterionResponseDto: {
             id: string;
             formTemplateId?: string | null;
@@ -485,6 +527,8 @@ export interface components {
         };
         DeliverableResponseDto: {
             id: string;
+            workstreamId: string;
+            orderIndex: number;
             name: string;
             description?: string | null;
             /** Format: date-time */
@@ -518,6 +562,38 @@ export interface components {
         ReorderAcceptanceCriteriaDto: {
             /** @description Ordered list of acceptance criterion ids: must contain exactly the user story's current acceptance criterion ids, in the desired order. */
             acceptanceCriteriaIds: string[];
+        };
+        CreateWorkstreamDto: {
+            /** @description Name of the workstream. */
+            name: string;
+            /** @description Description of the workstream. */
+            description?: string;
+        };
+        WorkstreamResponseDto: {
+            id: string;
+            name: string;
+            description?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            deliverables: components["schemas"]["DeliverableResponseDto"][];
+        };
+        UpdateWorkstreamDto: {
+            /** @description Name of the workstream. */
+            name?: string;
+            /** @description Description of the workstream. */
+            description?: string;
+        };
+        CreateDeliverableDto: {
+            /** @description Name of the deliverable. */
+            name: string;
+            /** @description Description of the deliverable. */
+            description?: string;
+        };
+        ReorderDeliverablesDto: {
+            /** @description Ordered list of deliverable ids: must contain exactly the workstream's current deliverable ids, in the desired order. */
+            deliverableIds: string[];
         };
     };
     responses: never;
@@ -1020,48 +1096,6 @@ export interface operations {
             };
         };
     };
-    DeliverablesController_findAllDeliverables: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DeliverableResponseDto"][];
-                };
-            };
-        };
-    };
-    DeliverablesController_createDeliverable: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateDeliverableDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DeliverableResponseDto"];
-                };
-            };
-        };
-    };
     DeliverablesController_getDeliverable: {
         parameters: {
             query?: never;
@@ -1332,6 +1366,199 @@ export interface operations {
         requestBody?: never;
         responses: {
             204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    WorkstreamsController_findAllWorkstreams: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkstreamResponseDto"][];
+                };
+            };
+        };
+    };
+    WorkstreamsController_createWorkstream: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateWorkstreamDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkstreamResponseDto"];
+                };
+            };
+        };
+    };
+    WorkstreamsController_getWorkstream: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workstreamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkstreamResponseDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    WorkstreamsController_deleteWorkstream: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workstreamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    WorkstreamsController_updateWorkstream: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workstreamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateWorkstreamDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkstreamResponseDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    WorkstreamsController_addDeliverable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workstreamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateDeliverableDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeliverableResponseDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    WorkstreamsController_reorderDeliverables: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workstreamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReorderDeliverablesDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeliverableResponseDto"][];
+                };
+            };
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

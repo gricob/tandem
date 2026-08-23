@@ -2,7 +2,7 @@ import { MantineProvider } from '@mantine/core';
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { CreateDeliverableModal } from '../../src/features/workstreams/components/create-deliverable-modal';
+import { CreateWorkstreamModal } from '../../src/features/workstreams/components/create-workstream-modal';
 
 function renderModal() {
   const onClose = vi.fn();
@@ -10,7 +10,7 @@ function renderModal() {
 
   render(
     <MantineProvider>
-      <CreateDeliverableModal opened onClose={onClose} onSubmit={onSubmit} />
+      <CreateWorkstreamModal opened onClose={onClose} onSubmit={onSubmit} />
     </MantineProvider>,
   );
 
@@ -33,7 +33,7 @@ function getInput(path: string): HTMLElement {
   return input as HTMLElement;
 }
 
-describe('CreateDeliverableModal (workstreams)', () => {
+describe('CreateWorkstreamModal', () => {
   it('rejects submitting with an empty name', async () => {
     const { onSubmit } = renderModal();
 
@@ -46,13 +46,13 @@ describe('CreateDeliverableModal (workstreams)', () => {
   it('submits the entered name and description', async () => {
     const { onSubmit } = renderModal();
 
-    await userEvent.type(getInput('name'), 'Reporting dashboard');
-    await userEvent.type(getInput('description'), 'Internal metrics');
+    await userEvent.type(getInput('name'), 'Platform');
+    await userEvent.type(getInput('description'), 'Core platform work');
     submitForm();
 
     expect(onSubmit.mock.calls[0]?.[0]).toEqual({
-      name: 'Reporting dashboard',
-      description: 'Internal metrics',
+      name: 'Platform',
+      description: 'Core platform work',
     });
   });
 });

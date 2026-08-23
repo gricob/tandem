@@ -35,35 +35,50 @@ describe('Deliverables (e2e)', () => {
       .set('Authorization', `Bearer ${token}`);
   }
 
-  it('rejects requests without a session token', () => {
-    return request(app.getHttpServer()).get('/api/v1/deliverables').expect(401);
-  });
+  async function createWorkstream(name: string) {
+    const response = await authed('post', '/api/v1/workstreams')
+      .send({ name })
+      .expect(201);
+    return (response.body as { id: string }).id;
+  }
 
-  it('rejects creating a deliverable without a name', () => {
-    return authed('post', '/api/v1/deliverables').send({}).expect(400);
+  async function createDeliverable(workstreamId: string, name: string) {
+    const response = await authed(
+      'post',
+      `/api/v1/workstreams/${workstreamId}/deliverables`,
+    )
+      .send({ name })
+      .expect(201);
+    return (response.body as { id: string }).id;
+  }
+
+  it('rejects requests without a session token', () => {
+    return request(app.getHttpServer())
+      .get('/api/v1/deliverables/missing')
+      .expect(401);
   });
 
   it('returns 404 for a non-existent deliverable', () => {
     return authed('get', '/api/v1/deliverables/missing').expect(404);
   });
 
-  it('covers the full lifecycle: create, list, view, edit, delete', async () => {
-    const createResponse = await authed('post', '/api/v1/deliverables')
+  it('covers the full lifecycle: create, view, edit, delete', async () => {
+    const workstreamId = await createWorkstream('Platform');
+
+    const createResponse = await authed(
+      'post',
+      `/api/v1/workstreams/${workstreamId}/deliverables`,
+    )
       .send({ name: 'Reporting dashboard', description: 'Internal metrics' })
       .expect(201);
 
     const deliverableId = (createResponse.body as { id: string }).id;
     expect(createResponse.body).toMatchObject({
+      workstreamId,
+      orderIndex: 0,
       name: 'Reporting dashboard',
       description: 'Internal metrics',
     });
-
-    const listResponse = await authed('get', '/api/v1/deliverables').expect(
-      200,
-    );
-    expect(listResponse.body).toEqual(
-      expect.arrayContaining([expect.objectContaining({ id: deliverableId })]),
-    );
 
     await authed('get', `/api/v1/deliverables/${deliverableId}`)
       .expect(200)
@@ -85,5 +100,23 @@ describe('Deliverables (e2e)', () => {
     await authed('delete', `/api/v1/deliverables/${deliverableId}`).expect(204);
 
     await authed('get', `/api/v1/deliverables/${deliverableId}`).expect(404);
+  });
+
+  it('leaves a deliverable unaffected by a workstreamId in the edit payload', async () => {
+    const workstreamId = await createWorkstream('Platform');
+    const otherWorkstreamId = await createWorkstream('Growth');
+    const deliverableId = await createDeliverable(
+      workstreamId,
+      'Reporting dashboard',
+    );
+
+    const response = await authed(
+      'patch',
+      `/api/v1/deliverables/${deliverableId}`,
+    )
+      .send({ name: 'Reporting dashboard v2', workstreamId: otherWorkstreamId })
+      .expect(200);
+
+    expect(response.body).toMatchObject({ workstreamId });
   });
 });

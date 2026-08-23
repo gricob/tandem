@@ -60,12 +60,17 @@ function renderNavbarAt(pathname: string) {
     }),
     createRoute({
       getParentRoute: () => rootRoute,
-      path: '/deliverables',
+      path: '/deliverables/$deliverableId',
       component: Page,
     }),
     createRoute({
       getParentRoute: () => rootRoute,
-      path: '/deliverables/$deliverableId',
+      path: '/workstreams',
+      component: Page,
+    }),
+    createRoute({
+      getParentRoute: () => rootRoute,
+      path: '/workstreams/$workstreamId',
       component: Page,
     }),
   ]);
@@ -96,7 +101,7 @@ describe('AppNavbar', () => {
 
     expect(await screen.findByRole('link', { name: 'Form templates' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Forms' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Deliverables' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Workstreams' })).toBeInTheDocument();
   });
 
   it('highlights "Form templates" as active on its edit route', async () => {
@@ -104,7 +109,7 @@ describe('AppNavbar', () => {
 
     expect(await variantOfLink('Form templates')).toBe('light');
     expect(await variantOfLink('Forms')).toBe('subtle');
-    expect(await variantOfLink('Deliverables')).toBe('subtle');
+    expect(await variantOfLink('Workstreams')).toBe('subtle');
   });
 
   it('marks neither section as active on the home page', async () => {
@@ -112,7 +117,7 @@ describe('AppNavbar', () => {
 
     expect(await variantOfLink('Form templates')).toBe('subtle');
     expect(await variantOfLink('Forms')).toBe('subtle');
-    expect(await variantOfLink('Deliverables')).toBe('subtle');
+    expect(await variantOfLink('Workstreams')).toBe('subtle');
   });
 
   it.each(['/forms', '/forms/f1', '/forms/f1/fill', '/forms/f1/response'])(
@@ -122,16 +127,16 @@ describe('AppNavbar', () => {
 
       expect(await variantOfLink('Forms')).toBe('light');
       expect(await variantOfLink('Form templates')).toBe('subtle');
-      expect(await variantOfLink('Deliverables')).toBe('subtle');
+      expect(await variantOfLink('Workstreams')).toBe('subtle');
     },
   );
 
-  it.each(['/deliverables', '/deliverables/d1'])(
-    'highlights "Deliverables" as active on %s',
+  it.each(['/workstreams', '/workstreams/w1'])(
+    'highlights "Workstreams" as active on %s',
     async (path) => {
       renderNavbarAt(path);
 
-      expect(await variantOfLink('Deliverables')).toBe('light');
+      expect(await variantOfLink('Workstreams')).toBe('light');
       expect(await variantOfLink('Form templates')).toBe('subtle');
       expect(await variantOfLink('Forms')).toBe('subtle');
     },

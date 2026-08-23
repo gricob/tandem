@@ -45,8 +45,19 @@ describe('User stories and acceptance criteria (e2e)', () => {
     return (response.body as { id: string }).id;
   }
 
+  async function createWorkstream(name: string) {
+    const response = await authed('post', '/api/v1/workstreams')
+      .send({ name })
+      .expect(201);
+    return (response.body as { id: string }).id;
+  }
+
   async function createDeliverable(name: string) {
-    const response = await authed('post', '/api/v1/deliverables')
+    const workstreamId = await createWorkstream(name);
+    const response = await authed(
+      'post',
+      `/api/v1/workstreams/${workstreamId}/deliverables`,
+    )
       .send({ name })
       .expect(201);
     return (response.body as { id: string }).id;

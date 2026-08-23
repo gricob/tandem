@@ -7,16 +7,13 @@ import {
   HttpStatus,
   Param,
   Patch,
-  Post,
 } from '@nestjs/common';
 import {
-  ApiCreatedResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { CreateDeliverableDto } from './dto/create-deliverable.dto';
 import { DeliverableResponseDto } from './dto/deliverable-response.dto';
 import { UpdateDeliverableDto } from './dto/update-deliverable.dto';
 import { DeliverablesService } from './deliverables.service';
@@ -25,18 +22,6 @@ import { DeliverablesService } from './deliverables.service';
 @Controller('deliverables')
 export class DeliverablesController {
   constructor(private readonly deliverablesService: DeliverablesService) {}
-
-  @Post()
-  @ApiCreatedResponse({ type: DeliverableResponseDto })
-  createDeliverable(@Body() dto: CreateDeliverableDto) {
-    return this.deliverablesService.createDeliverable(dto);
-  }
-
-  @Get()
-  @ApiOkResponse({ type: [DeliverableResponseDto] })
-  findAllDeliverables() {
-    return this.deliverablesService.findAllDeliverables();
-  }
 
   @Get(':deliverableId')
   @ApiOkResponse({ type: DeliverableResponseDto })

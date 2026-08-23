@@ -7,5 +7,6 @@ import { DeliverablesService } from './deliverables.service';
   imports: [UserStoriesModule],
   controllers: [DeliverablesController],
   providers: [DeliverablesService],
+  exports: [DeliverablesService],
 })
 export class DeliverablesModule {}

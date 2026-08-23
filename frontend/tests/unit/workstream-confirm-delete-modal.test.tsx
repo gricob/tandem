@@ -2,9 +2,11 @@ import { MantineProvider } from '@mantine/core';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { ConfirmDeleteModal } from '../../src/features/deliverables/components/confirm-delete-modal';
+import { ConfirmDeleteModal } from '../../src/features/workstreams/components/confirm-delete-modal';
 
-function renderModal(overrides: Partial<Parameters<typeof ConfirmDeleteModal>[0]> = {}) {
+function renderModal(
+  overrides: Partial<Parameters<typeof ConfirmDeleteModal>[0]> = {},
+) {
   const onCancel = vi.fn();
   const onConfirm = vi.fn();
 
@@ -12,8 +14,8 @@ function renderModal(overrides: Partial<Parameters<typeof ConfirmDeleteModal>[0]
     <MantineProvider>
       <ConfirmDeleteModal
         opened
-        title="Delete deliverable"
-        description='Delete "Reporting dashboard"?'
+        title="Delete workstream"
+        description='Delete "Platform"?'
         onCancel={onCancel}
         onConfirm={onConfirm}
         {...overrides}
@@ -24,12 +26,12 @@ function renderModal(overrides: Partial<Parameters<typeof ConfirmDeleteModal>[0]
   return { onCancel, onConfirm };
 }
 
-describe('ConfirmDeleteModal (deliverables)', () => {
+describe('ConfirmDeleteModal (workstreams)', () => {
   it('shows the title and description', () => {
     renderModal();
 
-    expect(screen.getByText('Delete deliverable')).toBeInTheDocument();
-    expect(screen.getByText('Delete "Reporting dashboard"?')).toBeInTheDocument();
+    expect(screen.getByText('Delete workstream')).toBeInTheDocument();
+    expect(screen.getByText('Delete "Platform"?')).toBeInTheDocument();
   });
 
   it('calls onCancel when Cancel is clicked', async () => {

@@ -6,6 +6,7 @@ import { FormTemplatesModule } from './modules/form-templates/form-templates.mod
 import { FormsModule } from './modules/forms/forms.module';
 import { HealthModule } from './modules/health/health.module';
 import { UserStoriesModule } from './modules/user-stories/user-stories.module';
+import { WorkstreamsModule } from './modules/workstreams/workstreams.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -18,6 +19,7 @@ import { PrismaModule } from './prisma/prisma.module';
     FormResponsesModule,
     DeliverablesModule,
     UserStoriesModule,
+    WorkstreamsModule,
   ],
 })
 export class AppModule {}
