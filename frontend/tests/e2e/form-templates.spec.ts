@@ -152,8 +152,9 @@ test('creates a form template, adds a select field, removes a field, and deletes
   );
 
   await page.goto('/');
-  await page.getByLabel(/password/i).fill('correct-password');
-  await page.getByRole('button', { name: 'Enter' }).click();
+  await page.getByLabel('Email').fill('admin@example.com');
+  await page.getByLabel('Password').fill('correct-password');
+  await page.getByRole('button', { name: 'Log in' }).click();
 
   await page.getByRole('link', { name: 'Form templates' }).click();
   await expect(

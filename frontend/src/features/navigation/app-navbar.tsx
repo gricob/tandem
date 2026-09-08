@@ -1,12 +1,15 @@
 import { AppShell, Button, Group, Text } from '@mantine/core';
 import { Link, useLocation } from '@tanstack/react-router';
 import { clearSessionToken } from '../auth/session-store';
+import { useCurrentUser } from '../users/queries';
 
 export function AppNavbar() {
   const { pathname } = useLocation();
+  const { data: currentUser } = useCurrentUser();
   const isFormTemplatesActive = pathname.startsWith('/form-templates');
   const isFormsActive = pathname.startsWith('/forms');
   const isWorkstreamsActive = pathname.startsWith('/workstreams');
+  const isInvitesActive = pathname.startsWith('/invites');
 
   return (
     <AppShell.Header>
@@ -39,6 +42,16 @@ export function AppNavbar() {
                 Workstreams
               </Button>
             </Link>
+            {currentUser?.role === 'admin' && (
+              <Link to="/invites">
+                <Button
+                  component="span"
+                  variant={isInvitesActive ? 'light' : 'subtle'}
+                >
+                  Invite users
+                </Button>
+              </Link>
+            )}
           </Group>
         </Group>
         <Button variant="default" onClick={() => clearSessionToken()}>

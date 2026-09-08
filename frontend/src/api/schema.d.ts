@@ -20,6 +20,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_register"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UsersController_me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/invites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["InvitesController_createInvite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -345,12 +393,69 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         LoginDto: {
-            /** @description The shared application password. */
+            /** @description The user's email address. */
+            email: string;
+            /** @description The user's password. */
             password: string;
         };
         LoginResponseDto: {
             /** @description Signed JWT session token. */
             accessToken: string;
+        };
+        RegisterDto: {
+            /** @description Invite token received out of band. */
+            token: string;
+            /** @description Email address the invite was issued to. */
+            email: string;
+            /** @description The new account's password. */
+            password: string;
+            /** @description The new account's display name. */
+            name: string;
+        };
+        MeResponseDto: {
+            /** @description The current user's id. */
+            id: string;
+            /** @description The current user's email address. */
+            email: string;
+            /** @description The current user's display name. */
+            name: string;
+            /**
+             * @description The current user's role.
+             * @enum {string}
+             */
+            role: "admin" | "member";
+        };
+        CreateInviteDto: {
+            /** @description Email address the invite is issued to. */
+            email: string;
+            /**
+             * @description Role the new account will be granted on registration.
+             * @enum {string}
+             */
+            role: "admin" | "member";
+        };
+        InviteResponseDto: {
+            /** @description Identifier of the invite. */
+            id: string;
+            /** @description Email address the invite was issued to. */
+            email: string;
+            /**
+             * @description Role the new account will be granted on registration.
+             * @enum {string}
+             */
+            role: "admin" | "member";
+            /** @description One-time invite token. Only returned here; not recoverable afterwards. */
+            token: string;
+            /**
+             * Format: date-time
+             * @description When the invite stops being usable.
+             */
+            expiresAt: string;
+            /**
+             * Format: date-time
+             * @description When the invite was created.
+             */
+            createdAt: string;
         };
         CreateFormTemplateDto: {
             /** @description Name of the form template. */
@@ -617,7 +722,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Password matched the shared app password; returns a session token. */
+            /** @description Email and password matched an account; returns a session token. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -626,8 +731,89 @@ export interface operations {
                     "application/json": components["schemas"]["LoginResponseDto"];
                 };
             };
-            /** @description Password didn't match the shared app password. */
+            /** @description Email/password did not match an existing account. */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_register: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterDto"];
+            };
+        };
+        responses: {
+            /** @description Invite was valid; account created and a session token returned. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginResponseDto"];
+                };
+            };
+            /** @description Invite token is unknown, used, expired, or email mismatched. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The currently authenticated user. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeResponseDto"];
+                };
+            };
+        };
+    };
+    InvitesController_createInvite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateInviteDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InviteResponseDto"];
+                };
+            };
+            /** @description Caller is not an admin. */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

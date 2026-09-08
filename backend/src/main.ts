@@ -3,10 +3,13 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { UsersService } from './modules/users/users.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api/v1');
+
+  await app.get(UsersService).ensureBootstrapAdmin();
   app.enableCors({
     origin: process.env.CORS_ORIGIN?.split(',') ?? 'http://localhost:5173',
   });

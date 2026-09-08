@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
+import { AuthenticatedRequest } from './authenticated-request';
 import { IS_PUBLIC_KEY } from './public.decorator';
 
 @Injectable()
@@ -25,14 +25,15 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest<Request>();
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const token = this.extractToken(request);
     if (!token) {
       throw new UnauthorizedException('Missing session token.');
     }
 
     try {
-      await this.jwtService.verifyAsync(token);
+      const payload = await this.jwtService.verifyAsync<{ sub: string }>(token);
+      request.userId = payload.sub;
     } catch {
       throw new UnauthorizedException('Invalid or expired session token.');
     }
@@ -40,7 +41,7 @@ export class AuthGuard implements CanActivate {
     return true;
   }
 
-  private extractToken(request: Request): string | undefined {
+  private extractToken(request: AuthenticatedRequest): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
   }

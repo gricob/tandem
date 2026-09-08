@@ -5,7 +5,9 @@ import { FormResponsesModule } from './modules/form-responses/form-responses.mod
 import { FormTemplatesModule } from './modules/form-templates/form-templates.module';
 import { FormsModule } from './modules/forms/forms.module';
 import { HealthModule } from './modules/health/health.module';
+import { InvitesModule } from './modules/invites/invites.module';
 import { UserStoriesModule } from './modules/user-stories/user-stories.module';
+import { UsersModule } from './modules/users/users.module';
 import { WorkstreamsModule } from './modules/workstreams/workstreams.module';
 import { PrismaModule } from './prisma/prisma.module';
 
@@ -20,6 +22,8 @@ import { PrismaModule } from './prisma/prisma.module';
     DeliverablesModule,
     UserStoriesModule,
     WorkstreamsModule,
+    UsersModule,
+    InvitesModule,
   ],
 })
 export class AppModule {}

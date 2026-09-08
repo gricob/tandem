@@ -36,10 +36,7 @@ export async function apiFetch<T>(
   }
 
   if (!response.ok) {
-    throw new ApiError(
-      response.status,
-      `API request to ${path} failed with status ${response.status}`,
-    );
+    throw new ApiError(response.status, await extractErrorMessage(response, path));
   }
 
   if (response.status === 204) {
@@ -47,6 +44,23 @@ export async function apiFetch<T>(
   }
 
   return response.json() as Promise<T>;
+}
+
+async function extractErrorMessage(response: Response, path: string): Promise<string> {
+  const fallback = `API request to ${path} failed with status ${response.status}`;
+  try {
+    const body: unknown = await response.json();
+    const message = (body as { message?: unknown } | null)?.message;
+    if (typeof message === 'string') {
+      return message;
+    }
+    if (Array.isArray(message)) {
+      return message.join(' ');
+    }
+  } catch {
+    // Response body wasn't JSON (or was empty); fall back to the generic message.
+  }
+  return fallback;
 }
 
 export type ApiPaths = paths;

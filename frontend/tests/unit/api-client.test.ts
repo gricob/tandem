@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { apiFetch } from '../../src/api/client';
+import { apiFetch, ApiError } from '../../src/api/client';
 import {
   clearSessionToken,
   getSessionToken,
@@ -44,5 +44,53 @@ describe('apiFetch', () => {
 
     await expect(apiFetch('/api/v1/health')).rejects.toThrow();
     expect(getSessionToken()).toBeNull();
+  });
+
+  it('surfaces the backend-provided message on failure', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        json: () => Promise.resolve({ message: 'This invite has expired.' }),
+      }),
+    );
+
+    await expect(apiFetch('/api/v1/auth/register')).rejects.toThrow(
+      new ApiError(400, 'This invite has expired.'),
+    );
+  });
+
+  it('joins an array of validation messages from the backend', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        json: () =>
+          Promise.resolve({
+            message: ['password must be longer than or equal to 8 characters'],
+          }),
+      }),
+    );
+
+    await expect(apiFetch('/api/v1/auth/register')).rejects.toThrow(
+      new ApiError(400, 'password must be longer than or equal to 8 characters'),
+    );
+  });
+
+  it('falls back to a generic message when the error body has no message', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: () => Promise.resolve({}),
+      }),
+    );
+
+    await expect(apiFetch('/api/v1/health')).rejects.toThrow(
+      'API request to /api/v1/health failed with status 500',
+    );
   });
 });

@@ -10,6 +10,7 @@ import { FormTemplateEditPage } from '../features/form-templates/form-template-e
 import { FormTemplatesListPage } from '../features/form-templates/form-templates-list-page';
 import { FormEditPage } from '../features/forms/form-edit-page';
 import { FormsListPage } from '../features/forms/forms-list-page';
+import { InviteUsersPage } from '../features/invites/invite-users-page';
 import { RootLayout } from '../features/navigation/root-layout';
 import { WorkstreamDetailPage } from '../features/workstreams/workstream-detail-page';
 import { WorkstreamsListPage } from '../features/workstreams/workstreams-list-page';
@@ -79,6 +80,12 @@ const workstreamDetailRoute = createRoute({
   component: WorkstreamDetailPage,
 });
 
+const invitesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/invites',
+  component: InviteUsersPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   formTemplatesRoute,
@@ -90,6 +97,7 @@ const routeTree = rootRoute.addChildren([
   deliverableEditRoute,
   workstreamsRoute,
   workstreamDetailRoute,
+  invitesRoute,
 ]);
 
 export const router = createRouter({ routeTree });
