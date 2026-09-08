@@ -8,13 +8,19 @@ import {
 } from '@tanstack/react-router';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppNavbar } from '../../src/features/navigation/app-navbar';
 import {
   clearSessionToken,
   getSessionToken,
   setSessionToken,
 } from '../../src/features/auth/session-store';
+
+const useCurrentUserMock = vi.fn();
+
+vi.mock('../../src/features/users/queries', () => ({
+  useCurrentUser: () => useCurrentUserMock(),
+}));
 
 function Page() {
   return null;
@@ -73,6 +79,7 @@ function renderNavbarAt(pathname: string) {
       path: '/workstreams/$workstreamId',
       component: Page,
     }),
+    createRoute({ getParentRoute: () => rootRoute, path: '/invites', component: Page }),
   ]);
   const router = createRouter({
     routeTree,
@@ -92,6 +99,13 @@ async function variantOfLink(name: string): Promise<string | null> {
 }
 
 describe('AppNavbar', () => {
+  beforeEach(() => {
+    useCurrentUserMock.mockReturnValue({
+      data: { id: 'user-1', email: 'admin@example.com', name: 'Admin', role: 'admin' },
+      isPending: false,
+    });
+  });
+
   afterEach(() => {
     clearSessionToken();
   });
@@ -102,6 +116,16 @@ describe('AppNavbar', () => {
     expect(await screen.findByRole('link', { name: 'Form templates' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Forms' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Workstreams' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Invite users' })).toBeInTheDocument();
+  });
+
+  it.each(['/invites'])('highlights "Invite users" as active on %s', async (path) => {
+    renderNavbarAt(path);
+
+    expect(await variantOfLink('Invite users')).toBe('light');
+    expect(await variantOfLink('Form templates')).toBe('subtle');
+    expect(await variantOfLink('Forms')).toBe('subtle');
+    expect(await variantOfLink('Workstreams')).toBe('subtle');
   });
 
   it('highlights "Form templates" as active on its edit route', async () => {
@@ -118,6 +142,7 @@ describe('AppNavbar', () => {
     expect(await variantOfLink('Form templates')).toBe('subtle');
     expect(await variantOfLink('Forms')).toBe('subtle');
     expect(await variantOfLink('Workstreams')).toBe('subtle');
+    expect(await variantOfLink('Invite users')).toBe('subtle');
   });
 
   it.each(['/forms', '/forms/f1', '/forms/f1/fill', '/forms/f1/response'])(
@@ -141,6 +166,17 @@ describe('AppNavbar', () => {
       expect(await variantOfLink('Forms')).toBe('subtle');
     },
   );
+
+  it('hides "Invite users" for a member account', async () => {
+    useCurrentUserMock.mockReturnValue({
+      data: { id: 'user-2', email: 'member@example.com', name: 'Member', role: 'member' },
+      isPending: false,
+    });
+    renderNavbarAt('/');
+
+    expect(await screen.findByRole('link', { name: 'Form templates' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Invite users' })).not.toBeInTheDocument();
+  });
 
   it('clears the session token when "Log out" is clicked', async () => {
     setSessionToken('some-token');

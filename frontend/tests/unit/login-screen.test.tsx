@@ -2,18 +2,18 @@ import { MantineProvider } from '@mantine/core';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { PasswordScreen } from '../../src/features/auth/password-screen';
+import { LoginScreen } from '../../src/features/auth/login-screen';
 import { clearSessionToken, getSessionToken } from '../../src/features/auth/session-store';
 
-function renderPasswordScreen() {
+function renderLoginScreen() {
   return render(
     <MantineProvider>
-      <PasswordScreen />
+      <LoginScreen />
     </MantineProvider>,
   );
 }
 
-describe('PasswordScreen', () => {
+describe('LoginScreen', () => {
   beforeEach(() => {
     clearSessionToken();
   });
@@ -23,7 +23,7 @@ describe('PasswordScreen', () => {
     vi.unstubAllGlobals();
   });
 
-  it('stores the session token and clears the form on a successful login', async () => {
+  it('stores the session token on a successful login', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
@@ -33,10 +33,11 @@ describe('PasswordScreen', () => {
       }),
     );
 
-    renderPasswordScreen();
+    renderLoginScreen();
 
+    await userEvent.type(screen.getByLabelText(/email/i), 'alice@example.com');
     await userEvent.type(screen.getByLabelText(/password/i), 'correct-password');
-    await userEvent.click(screen.getByRole('button', { name: 'Enter' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Log in' }));
 
     await waitFor(() => expect(getSessionToken()).toBe('issued-token'));
   });
@@ -51,12 +52,15 @@ describe('PasswordScreen', () => {
       }),
     );
 
-    renderPasswordScreen();
+    renderLoginScreen();
 
+    await userEvent.type(screen.getByLabelText(/email/i), 'alice@example.com');
     await userEvent.type(screen.getByLabelText(/password/i), 'wrong-password');
-    await userEvent.click(screen.getByRole('button', { name: 'Enter' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Log in' }));
 
-    expect(await screen.findByText('Incorrect password.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Incorrect email or password.'),
+    ).toBeInTheDocument();
     expect(getSessionToken()).toBeNull();
   });
 });

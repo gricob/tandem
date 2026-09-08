@@ -16,6 +16,39 @@ enum FormFieldType {
   date
 }
 
+enum Role {
+  admin
+  member
+}
+
+model User {
+  id           String   @id @db.Char(26)
+  email        String   @unique
+  name         String
+  passwordHash String   @map("password_hash")
+  role         Role     @default(member)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  invitesSent  Invite[] @relation("InvitesCreatedBy")
+
+  @@map("users")
+}
+
+model Invite {
+  id              String    @id @db.Char(26)
+  email           String
+  tokenHash       String    @unique @map("token_hash")
+  role            Role
+  createdByUserId String    @map("created_by_user_id") @db.Char(26)
+  createdBy       User      @relation("InvitesCreatedBy", fields: [createdByUserId], references: [id], onDelete: Cascade)
+  expiresAt       DateTime  @map("expires_at")
+  usedAt          DateTime? @map("used_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@index([createdByUserId])
+  @@map("invites")
+}
+
 model FormTemplate {
   id             String              @id @db.Char(26)
   name           String

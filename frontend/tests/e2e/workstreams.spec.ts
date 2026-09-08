@@ -175,8 +175,9 @@ test('creates a workstream, manages its deliverables, and deletes it', async ({
   });
 
   await page.goto('/');
-  await page.getByLabel(/password/i).fill('correct-password');
-  await page.getByRole('button', { name: 'Enter' }).click();
+  await page.getByLabel('Email').fill('admin@example.com');
+  await page.getByLabel('Password').fill('correct-password');
+  await page.getByRole('button', { name: 'Log in' }).click();
 
   await page.getByRole('link', { name: 'Workstreams' }).click();
   await expect(
