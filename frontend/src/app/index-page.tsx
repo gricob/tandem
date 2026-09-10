@@ -5,8 +5,8 @@ export function IndexPage() {
     <Container py="xl">
       <Title order={1}>Tandem</Title>
       <Text c="dimmed">
-        Create configurable forms, share them, and review the responses you
-        receive.
+        Plan and track your team&apos;s workstreams and deliverables in one
+        place.
       </Text>
     </Container>
   );

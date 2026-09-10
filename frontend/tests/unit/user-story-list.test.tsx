@@ -10,7 +10,6 @@ const addAcceptanceCriterionMutate = vi.fn(
     options?.onSuccess?.();
   },
 );
-const removeUserStoryMutate = vi.fn();
 const reorderUserStoriesMutate = vi.fn();
 const updateUserStoryDetailsMutate = vi.fn();
 
@@ -19,7 +18,6 @@ vi.mock('../../src/features/deliverables/queries', () => ({
     mutate: addAcceptanceCriterionMutate,
     isPending: false,
   }),
-  useRemoveUserStory: () => ({ mutate: removeUserStoryMutate }),
   useReorderUserStories: () => ({ mutate: reorderUserStoriesMutate }),
   useUpdateUserStoryDetails: () => ({
     mutate: updateUserStoryDetailsMutate,
@@ -131,16 +129,6 @@ describe('UserStoryList', () => {
     expect(
       screen.queryByRole('textbox', { name: 'Name' }),
     ).not.toBeInTheDocument();
-  });
-
-  it('removes a user story when its remove button is clicked', async () => {
-    renderList([userStory]);
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Remove Sign up' }),
-    );
-
-    expect(removeUserStoryMutate).toHaveBeenCalledWith('story-1');
   });
 
   it('opens the "New acceptance criterion" modal from the "+ Acceptance criterion" button', async () => {

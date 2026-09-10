@@ -22,6 +22,12 @@ export function useUpdateDeliverable(deliverableId: string) {
       api.updateDeliverable(deliverableId, body),
     onSuccess: (data) => {
       queryClient.setQueryData(deliverableKey(deliverableId), data);
+      // The Work section's deliverables panel renders this deliverable's
+      // name/description from the parent workstream's own query, not this
+      // one — keep it in sync too.
+      void queryClient.invalidateQueries({
+        queryKey: ['workstreams', data.workstreamId],
+      });
     },
   });
 }

@@ -48,38 +48,8 @@ function renderNavbarAt(pathname: string) {
       path: '/form-templates/$formTemplateId',
       component: Page,
     }),
-    createRoute({ getParentRoute: () => rootRoute, path: '/forms', component: Page }),
-    createRoute({
-      getParentRoute: () => rootRoute,
-      path: '/forms/$formId',
-      component: Page,
-    }),
-    createRoute({
-      getParentRoute: () => rootRoute,
-      path: '/forms/$formId/fill',
-      component: Page,
-    }),
-    createRoute({
-      getParentRoute: () => rootRoute,
-      path: '/forms/$formId/response',
-      component: Page,
-    }),
-    createRoute({
-      getParentRoute: () => rootRoute,
-      path: '/deliverables/$deliverableId',
-      component: Page,
-    }),
-    createRoute({
-      getParentRoute: () => rootRoute,
-      path: '/workstreams',
-      component: Page,
-    }),
-    createRoute({
-      getParentRoute: () => rootRoute,
-      path: '/workstreams/$workstreamId',
-      component: Page,
-    }),
     createRoute({ getParentRoute: () => rootRoute, path: '/invites', component: Page }),
+    createRoute({ getParentRoute: () => rootRoute, path: '/work', component: Page }),
   ]);
   const router = createRouter({
     routeTree,
@@ -93,15 +63,16 @@ function renderNavbarAt(pathname: string) {
   );
 }
 
-async function variantOfLink(name: string): Promise<string | null> {
+async function isSectionActive(name: string): Promise<boolean> {
   const link = await screen.findByRole('link', { name });
-  return link.firstElementChild?.getAttribute('data-variant') ?? null;
+  const inner = link.firstElementChild as HTMLElement | null;
+  return inner?.style.background.includes('accent') ?? false;
 }
 
 describe('AppNavbar', () => {
   beforeEach(() => {
     useCurrentUserMock.mockReturnValue({
-      data: { id: 'user-1', email: 'admin@example.com', name: 'Admin', role: 'admin' },
+      data: { id: 'user-1', email: 'admin@example.com', name: 'Ada Admin', role: 'admin' },
       isPending: false,
     });
   });
@@ -110,79 +81,78 @@ describe('AppNavbar', () => {
     clearSessionToken();
   });
 
-  it('renders links to all top-level sections', async () => {
+  it('renders sections for Work and (for an admin) Admin', async () => {
     renderNavbarAt('/');
 
-    expect(await screen.findByRole('link', { name: 'Form templates' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Forms' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Workstreams' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Invite users' })).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'Work' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Admin' })).toBeInTheDocument();
   });
 
-  it.each(['/invites'])('highlights "Invite users" as active on %s', async (path) => {
-    renderNavbarAt(path);
+  it('highlights "Work" as active on /work', async () => {
+    renderNavbarAt('/work');
 
-    expect(await variantOfLink('Invite users')).toBe('light');
-    expect(await variantOfLink('Form templates')).toBe('subtle');
-    expect(await variantOfLink('Forms')).toBe('subtle');
-    expect(await variantOfLink('Workstreams')).toBe('subtle');
+    expect(await isSectionActive('Work')).toBe(true);
+    expect(await isSectionActive('Admin')).toBe(false);
   });
 
-  it('highlights "Form templates" as active on its edit route', async () => {
-    renderNavbarAt('/form-templates/abc123');
+  it.each(['/form-templates', '/form-templates/abc123', '/invites'])(
+    'highlights "Admin" as active on %s',
+    async (path) => {
+      renderNavbarAt(path);
 
-    expect(await variantOfLink('Form templates')).toBe('light');
-    expect(await variantOfLink('Forms')).toBe('subtle');
-    expect(await variantOfLink('Workstreams')).toBe('subtle');
-  });
+      expect(await isSectionActive('Admin')).toBe(true);
+      expect(await isSectionActive('Work')).toBe(false);
+    },
+  );
 
   it('marks neither section as active on the home page', async () => {
     renderNavbarAt('/');
 
-    expect(await variantOfLink('Form templates')).toBe('subtle');
-    expect(await variantOfLink('Forms')).toBe('subtle');
-    expect(await variantOfLink('Workstreams')).toBe('subtle');
-    expect(await variantOfLink('Invite users')).toBe('subtle');
+    expect(await isSectionActive('Work')).toBe(false);
+    expect(await isSectionActive('Admin')).toBe(false);
   });
 
-  it.each(['/forms', '/forms/f1', '/forms/f1/fill', '/forms/f1/response'])(
-    'highlights "Forms" as active on %s',
-    async (path) => {
-      renderNavbarAt(path);
-
-      expect(await variantOfLink('Forms')).toBe('light');
-      expect(await variantOfLink('Form templates')).toBe('subtle');
-      expect(await variantOfLink('Workstreams')).toBe('subtle');
-    },
-  );
-
-  it.each(['/workstreams', '/workstreams/w1'])(
-    'highlights "Workstreams" as active on %s',
-    async (path) => {
-      renderNavbarAt(path);
-
-      expect(await variantOfLink('Workstreams')).toBe('light');
-      expect(await variantOfLink('Form templates')).toBe('subtle');
-      expect(await variantOfLink('Forms')).toBe('subtle');
-    },
-  );
-
-  it('hides "Invite users" for a member account', async () => {
+  it('hides "Admin" for a member account', async () => {
     useCurrentUserMock.mockReturnValue({
-      data: { id: 'user-2', email: 'member@example.com', name: 'Member', role: 'member' },
+      data: { id: 'user-2', email: 'member@example.com', name: 'Mia Member', role: 'member' },
       isPending: false,
     });
     renderNavbarAt('/');
 
-    expect(await screen.findByRole('link', { name: 'Form templates' })).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Invite users' })).not.toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'Work' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Admin' })).not.toBeInTheDocument();
   });
 
-  it('clears the session token when "Log out" is clicked', async () => {
+  it('shows the signed-in user\'s name and role in the account menu', async () => {
+    renderNavbarAt('/');
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Account menu for Ada Admin' }),
+    );
+
+    expect(screen.getAllByText('Ada Admin').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Admin').length).toBeGreaterThan(0);
+  });
+
+  it('still offers "Log out" when currentUser has not loaded yet', async () => {
+    useCurrentUserMock.mockReturnValue({ data: undefined, isPending: true });
     setSessionToken('some-token');
     renderNavbarAt('/');
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Log out' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Account menu' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Log out' }));
+
+    expect(getSessionToken()).toBeNull();
+  });
+
+  it('clears the session token when "Log out" is clicked from the account menu', async () => {
+    setSessionToken('some-token');
+    renderNavbarAt('/');
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Account menu for Ada Admin' }),
+    );
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Log out' }));
 
     expect(getSessionToken()).toBeNull();
   });

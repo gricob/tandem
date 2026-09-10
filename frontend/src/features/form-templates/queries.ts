@@ -130,7 +130,10 @@ export function useReorderFields(formTemplateId: string) {
     },
     onError: (_error, _fieldIds, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(formTemplateKey(formTemplateId), context.previous);
+        queryClient.setQueryData(
+          formTemplateKey(formTemplateId),
+          context.previous,
+        );
       }
     },
     onSettled: () => {

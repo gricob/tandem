@@ -1,9 +1,8 @@
 import {
   Alert,
-  Anchor,
   Button,
-  Container,
   Group,
+  ScrollArea,
   Stack,
   Text,
   Textarea,
@@ -11,26 +10,32 @@ import {
   Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { Link, useParams } from '@tanstack/react-router';
 import { zod4Resolver } from 'mantine-form-zod-resolver';
 import { useEffect, useState } from 'react';
-import { CreateUserStoryModal } from './components/create-user-story-modal';
-import { UserStoryList } from './components/user-story-list';
+import { CreateUserStoryModal } from '../../deliverables/components/create-user-story-modal';
+import { UserStoryList } from '../../deliverables/components/user-story-list';
 import {
   useAddUserStory,
   useDeliverable,
   useUpdateDeliverable,
-} from './queries';
-import { deliverableSchema, type DeliverableFormValues } from './schemas';
+} from '../../deliverables/queries';
+import {
+  deliverableSchema,
+  type DeliverableFormValues,
+} from '../../deliverables/schemas';
 
-export function DeliverableEditPage() {
-  const { deliverableId } = useParams({ from: '/deliverables/$deliverableId' });
+interface DeliverableDetailPanelProps {
+  deliverableId: string;
+}
+
+export function DeliverableDetailPanel({
+  deliverableId,
+}: DeliverableDetailPanelProps) {
   const {
     data: deliverable,
     isPending,
     isError,
   } = useDeliverable(deliverableId);
-
   const updateDeliverable = useUpdateDeliverable(deliverableId);
   const addUserStory = useAddUserStory(deliverableId);
   const [createUserStoryOpened, setCreateUserStoryOpened] = useState(false);
@@ -52,19 +57,17 @@ export function DeliverableEditPage() {
 
   if (isPending) {
     return (
-      <Container py="xl">
-        <Text c="dimmed">Loading deliverable…</Text>
-      </Container>
+      <Text c="dimmed" p="lg">
+        Loading deliverable…
+      </Text>
     );
   }
 
   if (isError || !deliverable) {
     return (
-      <Container py="xl">
-        <Alert color="red" title="Couldn't load deliverable">
-          Something went wrong. Try refreshing the page.
-        </Alert>
-      </Container>
+      <Alert color="red" title="Couldn't load deliverable" m="lg">
+        Something went wrong. Try refreshing the page.
+      </Alert>
     );
   }
 
@@ -84,30 +87,21 @@ export function DeliverableEditPage() {
   }
 
   return (
-    <Container py="xl">
-      <Link
-        to="/workstreams/$workstreamId"
-        params={{ workstreamId: deliverable.workstreamId }}
-      >
-        <Anchor component="span" size="sm">
-          ← Workstream
-        </Anchor>
-      </Link>
-
-      <Title order={1} mt="xs" mb="lg">
-        Edit deliverable
-      </Title>
-
-      <Stack gap="lg">
+    <ScrollArea style={{ height: '100%' }}>
+      <Stack gap="lg" maw={760} p="lg">
         <form onSubmit={form.onSubmit(handleSaveDetails)}>
-          <Stack gap="sm" maw={480}>
+          <Stack gap="sm">
             <TextInput label="Name" required {...form.getInputProps('name')} />
             <Textarea
               label="Description"
               {...form.getInputProps('description')}
             />
             <Group>
-              <Button type="submit" loading={updateDeliverable.isPending}>
+              <Button
+                type="submit"
+                size="xs"
+                loading={updateDeliverable.isPending}
+              >
                 Save
               </Button>
             </Group>
@@ -116,12 +110,11 @@ export function DeliverableEditPage() {
 
         <div>
           <Group justify="space-between" mb="sm">
-            <Title order={2}>User stories</Title>
-            <Button onClick={() => setCreateUserStoryOpened(true)}>
-              New user story
+            <Title order={4}>User stories</Title>
+            <Button size="xs" onClick={() => setCreateUserStoryOpened(true)}>
+              + User story
             </Button>
           </Group>
-
           <UserStoryList
             deliverableId={deliverableId}
             userStories={deliverable.userStories}
@@ -135,6 +128,6 @@ export function DeliverableEditPage() {
         onClose={() => setCreateUserStoryOpened(false)}
         onSubmit={handleCreateUserStory}
       />
-    </Container>
+    </ScrollArea>
   );
 }

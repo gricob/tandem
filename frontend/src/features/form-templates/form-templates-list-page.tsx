@@ -27,9 +27,7 @@ export function FormTemplatesListPage() {
   const navigate = useNavigate();
 
   const [createModalOpened, setCreateModalOpened] = useState(false);
-  const [pendingDelete, setPendingDelete] = useState<FormTemplate | null>(
-    null,
-  );
+  const [pendingDelete, setPendingDelete] = useState<FormTemplate | null>(null);
 
   function handleCreate(values: FormTemplateFormValues) {
     createFormTemplate.mutate(

@@ -9,7 +9,7 @@ const queryClient = new QueryClient();
 
 export function App() {
   return (
-    <MantineProvider theme={theme}>
+    <MantineProvider theme={theme} defaultColorScheme="dark">
       <QueryClientProvider client={queryClient}>
         <SessionGate>
           <RouterProvider router={router} />

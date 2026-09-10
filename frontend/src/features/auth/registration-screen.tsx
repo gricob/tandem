@@ -1,9 +1,11 @@
 import {
   Alert,
   Button,
-  Container,
+  Group,
+  Paper,
   PasswordInput,
   Stack,
+  Text,
   TextInput,
   Title,
 } from '@mantine/core';
@@ -43,44 +45,85 @@ export function RegistrationScreen() {
   }
 
   return (
-    <Container size="xs" py="xl">
-      <form onSubmit={(event) => void handleSubmit(event)}>
-        <Stack gap="md">
-          <Title order={1}>Create your account</Title>
-          <TextInput
-            type="email"
-            label="Email"
-            value={email}
-            onChange={(event) => setEmail(event.currentTarget.value)}
-            readOnly={emailFromInvite !== null}
-            autoFocus={emailFromInvite === null}
-            required
-          />
-          <TextInput
-            label="Name"
-            value={name}
-            onChange={(event) => setName(event.currentTarget.value)}
-            autoFocus={emailFromInvite !== null}
-            required
-          />
-          <PasswordInput
-            label="Password"
-            description="At least 8 characters"
-            value={password}
-            onChange={(event) => setPassword(event.currentTarget.value)}
-            minLength={8}
-            required
-          />
-          {error && (
-            <Alert color="red" title="Couldn't create your account">
-              {error}
-            </Alert>
-          )}
-          <Button type="submit" loading={submitting}>
-            Create account
-          </Button>
-        </Stack>
-      </form>
-    </Container>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 26,
+        background:
+          'radial-gradient(120% 120% at 15% 0%, #2a2140 0%, #14131c 42%, #0a0a0d 100%)',
+      }}
+    >
+      <Paper
+        withBorder
+        p="xl"
+        w={420}
+        style={{
+          background: 'rgba(30, 30, 34, 0.82)',
+          boxShadow: '0 40px 90px rgba(0, 0, 0, 0.6)',
+        }}
+      >
+        <form onSubmit={(event) => void handleSubmit(event)}>
+          <Stack gap="md">
+            <Group gap={12} wrap="nowrap">
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 12,
+                  flex: 'none',
+                  background:
+                    'linear-gradient(150deg, var(--mantine-color-accent-6), #8b5cf6)',
+                  boxShadow: '0 8px 22px rgba(10, 132, 255, 0.35)',
+                }}
+              />
+              <div>
+                <Title order={1} fz={22} lh={1.2}>
+                  Tandem
+                </Title>
+                <Text size="xs" c="dimmed">
+                  Create your account
+                </Text>
+              </div>
+            </Group>
+
+            <TextInput
+              type="email"
+              label="Email"
+              value={email}
+              onChange={(event) => setEmail(event.currentTarget.value)}
+              readOnly={emailFromInvite !== null}
+              autoFocus={emailFromInvite === null}
+              required
+            />
+            <TextInput
+              label="Name"
+              value={name}
+              onChange={(event) => setName(event.currentTarget.value)}
+              autoFocus={emailFromInvite !== null}
+              required
+            />
+            <PasswordInput
+              label="Password"
+              description="At least 8 characters"
+              value={password}
+              onChange={(event) => setPassword(event.currentTarget.value)}
+              minLength={8}
+              required
+            />
+            {error && (
+              <Alert color="red" title="Couldn't create your account">
+                {error}
+              </Alert>
+            )}
+            <Button type="submit" loading={submitting}>
+              Create account
+            </Button>
+          </Stack>
+        </form>
+      </Paper>
+    </div>
   );
 }

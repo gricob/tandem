@@ -179,18 +179,18 @@ test('creates a workstream, manages its deliverables, and deletes it', async ({
   await page.getByLabel('Password').fill('correct-password');
   await page.getByRole('button', { name: 'Log in' }).click();
 
-  await page.getByRole('link', { name: 'Workstreams' }).click();
-  await expect(
-    page.getByRole('heading', { name: 'Workstreams' }),
-  ).toBeVisible();
+  await page.getByRole('link', { name: 'Work' }).click();
+  await expect(page.getByText('No workstreams yet.')).toBeVisible();
 
   await page.getByRole('button', { name: 'New workstream' }).click();
   await page.getByLabel('Name').fill('Platform');
   await page.getByLabel('Description').fill('Core platform work');
   await page.getByRole('button', { name: 'Create' }).click();
 
+  // Creating a workstream selects it, showing its (empty) deliverables
+  // panel and its own detail form since no deliverable is selected yet.
   await expect(
-    page.getByRole('heading', { name: 'Edit workstream' }),
+    page.getByRole('heading', { name: 'Workstream details' }),
   ).toBeVisible();
 
   await page.getByRole('button', { name: 'New deliverable' }).click();
@@ -203,36 +203,27 @@ test('creates a workstream, manages its deliverables, and deletes it', async ({
     .fill('Internal metrics');
   await newDeliverableDialog.getByRole('button', { name: 'Create' }).click();
 
-  await expect(page.getByText('Reporting dashboard')).toBeVisible();
-
-  await page.getByRole('link', { name: 'Reporting dashboard' }).click();
+  // Creating a deliverable selects it, switching the detail panel to it.
   await expect(
-    page.getByRole('heading', { name: 'Edit deliverable' }),
+    page.getByRole('heading', { name: 'User stories' }),
   ).toBeVisible();
 
   await page.getByLabel('Name').fill('Reporting dashboard v2');
   await page.getByRole('button', { name: 'Save' }).click();
 
-  await page.getByRole('link', { name: '← Workstream' }).click();
-  await expect(
-    page.getByRole('heading', { name: 'Edit workstream' }),
-  ).toBeVisible();
   await expect(page.getByText('Reporting dashboard v2')).toBeVisible();
 
-  await page.getByRole('button', { name: 'Remove Reporting dashboard v2' }).click();
+  await page
+    .getByRole('button', { name: 'Remove Reporting dashboard v2' })
+    .click();
   await expect(
     page.getByText('No deliverables yet. Add one above.'),
   ).toBeVisible();
 
-  await page.getByRole('link', { name: '← Workstreams' }).click();
-  await expect(page.getByRole('link', { name: 'Platform' })).toBeVisible();
-
-  await page.getByRole('button', { name: 'Delete' }).click();
+  await page.getByRole('button', { name: 'Delete Platform' }).click();
   await page
     .getByRole('dialog')
     .getByRole('button', { name: 'Delete' })
     .click();
-  await expect(
-    page.getByText('No workstreams yet. Create one to get started.'),
-  ).toBeVisible();
+  await expect(page.getByText('No workstreams yet.')).toBeVisible();
 });

@@ -1,40 +1,10 @@
-import { apiFetch, type ApiPaths } from '../../api/client';
+import type { ApiPaths } from '../../api/client';
 
+// Generic `Form`/`FormField` domain types, kept here even though the
+// standalone Forms browsing feature was retired: `UserStory` and
+// `AcceptanceCriterion` (see `deliverables/api.ts`) are themselves `Form`s,
+// and `FormField`-shaped values are what `form-responses`' `ResponseFields`
+// renders for a deliverable's user stories/acceptance criteria.
 export type Form =
   ApiPaths['/api/v1/forms']['get']['responses'][200]['content']['application/json'][number];
 export type FormField = Form['fields'][number];
-
-type CreateFormBody =
-  ApiPaths['/api/v1/forms']['post']['requestBody']['content']['application/json'];
-type UpdateFormBody =
-  ApiPaths['/api/v1/forms/{formId}']['patch']['requestBody']['content']['application/json'];
-
-export function listForms(name?: string): Promise<Form[]> {
-  const query = name ? `?name=${encodeURIComponent(name)}` : '';
-  return apiFetch(`/api/v1/forms${query}`);
-}
-
-export function getForm(formId: string): Promise<Form> {
-  return apiFetch(`/api/v1/forms/${formId}`);
-}
-
-export function createForm(body: CreateFormBody): Promise<Form> {
-  return apiFetch('/api/v1/forms', {
-    method: 'POST',
-    body: JSON.stringify(body),
-  });
-}
-
-export function updateForm(
-  formId: string,
-  body: UpdateFormBody,
-): Promise<Form> {
-  return apiFetch(`/api/v1/forms/${formId}`, {
-    method: 'PATCH',
-    body: JSON.stringify(body),
-  });
-}
-
-export function deleteForm(formId: string): Promise<void> {
-  return apiFetch(`/api/v1/forms/${formId}`, { method: 'DELETE' });
-}
