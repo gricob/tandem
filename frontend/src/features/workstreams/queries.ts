@@ -64,6 +64,9 @@ export function useAddDeliverable(workstreamId: string) {
       void queryClient.invalidateQueries({
         queryKey: workstreamKey(workstreamId),
       });
+      // The workstreams list (Work section's sidebar) shows each
+      // workstream's deliverable count from this query too.
+      void queryClient.invalidateQueries({ queryKey: workstreamsKey });
     },
   });
 }
@@ -76,6 +79,7 @@ export function useRemoveDeliverable(workstreamId: string) {
       void queryClient.invalidateQueries({
         queryKey: workstreamKey(workstreamId),
       });
+      void queryClient.invalidateQueries({ queryKey: workstreamsKey });
     },
   });
 }

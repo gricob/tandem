@@ -14,22 +14,31 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ActionIcon, Anchor, Group, Paper, Stack, Text } from '@mantine/core';
-import { Link } from '@tanstack/react-router';
+import {
+  ActionIcon,
+  Group,
+  Paper,
+  Stack,
+  Text,
+  UnstyledButton,
+} from '@mantine/core';
 import type { Deliverable } from '../../deliverables/api';
-import { useRemoveDeliverable, useReorderDeliverables } from '../queries';
+import { useReorderDeliverables } from '../queries';
 
 interface DeliverableListProps {
   workstreamId: string;
   deliverables: Deliverable[];
+  selectedId?: string | null;
+  onSelect: (deliverableId: string) => void;
 }
 
 export function DeliverableList({
   workstreamId,
   deliverables,
+  selectedId,
+  onSelect,
 }: DeliverableListProps) {
   const reorderDeliverables = useReorderDeliverables(workstreamId);
-  const removeDeliverable = useRemoveDeliverable(workstreamId);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -79,11 +88,8 @@ export function DeliverableList({
             <SortableDeliverableCard
               key={deliverable.id}
               deliverable={deliverable}
-              onRemove={() => removeDeliverable.mutate(deliverable.id)}
-              removing={
-                removeDeliverable.isPending &&
-                removeDeliverable.variables === deliverable.id
-              }
+              selected={deliverable.id === selectedId}
+              onSelect={() => onSelect(deliverable.id)}
             />
           ))}
         </Stack>
@@ -94,62 +100,56 @@ export function DeliverableList({
 
 interface SortableDeliverableCardProps {
   deliverable: Deliverable;
-  onRemove: () => void;
-  removing?: boolean;
+  selected?: boolean;
+  onSelect: () => void;
 }
 
 function SortableDeliverableCard({
   deliverable,
-  onRemove,
-  removing,
+  selected,
+  onSelect,
 }: SortableDeliverableCardProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: deliverable.id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: deliverable.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    background: selected ? 'rgba(10, 132, 255, 0.14)' : undefined,
+    borderColor: selected ? 'var(--mantine-color-accent-6)' : undefined,
   };
 
   return (
     <Paper ref={setNodeRef} style={style} withBorder p="md">
-      <Group justify="space-between" wrap="nowrap" align="flex-start">
-        <Group wrap="nowrap" align="flex-start" style={{ flex: 1, minWidth: 0 }}>
-          <ActionIcon
-            variant="subtle"
-            {...attributes}
-            {...listeners}
-            aria-label={`Reorder ${deliverable.name}`}
-            style={{ cursor: 'grab' }}
-          >
-            ⠿
-          </ActionIcon>
+      <Group wrap="nowrap" align="flex-start">
+        <ActionIcon
+          variant="subtle"
+          {...attributes}
+          {...listeners}
+          aria-label={`Reorder ${deliverable.name}`}
+          style={{ cursor: 'grab' }}
+        >
+          ⠿
+        </ActionIcon>
+        <UnstyledButton onClick={onSelect} style={{ flex: 1, minWidth: 0 }}>
           <Stack gap={0} style={{ minWidth: 0, flex: 1 }}>
-            <Link
-              to="/deliverables/$deliverableId"
-              params={{ deliverableId: deliverable.id }}
-            >
-              <Anchor component="span" fw={600} truncate>
-                {deliverable.name}
-              </Anchor>
-            </Link>
+            <Text fw={600} truncate>
+              {deliverable.name}
+            </Text>
             {deliverable.description && (
               <Text size="sm" c="dimmed">
                 {deliverable.description}
               </Text>
             )}
           </Stack>
-        </Group>
-        <ActionIcon
-          variant="subtle"
-          color="red"
-          loading={removing}
-          onClick={onRemove}
-          aria-label={`Remove ${deliverable.name}`}
-        >
-          🗑
-        </ActionIcon>
+        </UnstyledButton>
       </Group>
     </Paper>
   );

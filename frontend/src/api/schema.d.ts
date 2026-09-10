@@ -4,1758 +4,1786 @@
  */
 
 export interface paths {
-    "/api/v1/auth/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AuthController_login"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  '/api/v1/auth/login': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/auth/register": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AuthController_register"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['AuthController_login'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/auth/register': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/users/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["UsersController_me"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['AuthController_register'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/users/me': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/invites": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["InvitesController_createInvite"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations['UsersController_me'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/invites': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/health": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["HealthController_check"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['InvitesController_createInvite'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/health': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/form-templates": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["FormTemplatesController_findAllFormTemplates"];
-        put?: never;
-        post: operations["FormTemplatesController_createFormTemplate"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations['HealthController_check'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/form-templates': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/form-templates/{formTemplateId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["FormTemplatesController_getFormTemplate"];
-        put?: never;
-        post?: never;
-        delete: operations["FormTemplatesController_deleteFormTemplate"];
-        options?: never;
-        head?: never;
-        patch: operations["FormTemplatesController_updateFormTemplate"];
-        trace?: never;
+    get: operations['FormTemplatesController_findAllFormTemplates'];
+    put?: never;
+    post: operations['FormTemplatesController_createFormTemplate'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/form-templates/{formTemplateId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/form-templates/{formTemplateId}/fields": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["FormTemplatesController_addField"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations['FormTemplatesController_getFormTemplate'];
+    put?: never;
+    post?: never;
+    delete: operations['FormTemplatesController_deleteFormTemplate'];
+    options?: never;
+    head?: never;
+    patch: operations['FormTemplatesController_updateFormTemplate'];
+    trace?: never;
+  };
+  '/api/v1/form-templates/{formTemplateId}/fields': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/form-templates/{formTemplateId}/fields/order": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["FormTemplatesController_reorderFields"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['FormTemplatesController_addField'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/form-templates/{formTemplateId}/fields/order': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/form-templates/{formTemplateId}/fields/{fieldId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete: operations["FormTemplatesController_removeField"];
-        options?: never;
-        head?: never;
-        patch: operations["FormTemplatesController_updateField"];
-        trace?: never;
+    get?: never;
+    put: operations['FormTemplatesController_reorderFields'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/form-templates/{formTemplateId}/fields/{fieldId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/forms": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["FormsController_findAllForms"];
-        put?: never;
-        post: operations["FormsController_createForm"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post?: never;
+    delete: operations['FormTemplatesController_removeField'];
+    options?: never;
+    head?: never;
+    patch: operations['FormTemplatesController_updateField'];
+    trace?: never;
+  };
+  '/api/v1/forms': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/forms/{formId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["FormsController_getForm"];
-        put?: never;
-        post?: never;
-        delete: operations["FormsController_deleteForm"];
-        options?: never;
-        head?: never;
-        patch: operations["FormsController_updateForm"];
-        trace?: never;
+    get: operations['FormsController_findAllForms'];
+    put?: never;
+    post: operations['FormsController_createForm'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/forms/{formId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/forms/{formId}/response": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["FormResponsesController_getResponse"];
-        put: operations["FormResponsesController_saveResponse"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations['FormsController_getForm'];
+    put?: never;
+    post?: never;
+    delete: operations['FormsController_deleteForm'];
+    options?: never;
+    head?: never;
+    patch: operations['FormsController_updateForm'];
+    trace?: never;
+  };
+  '/api/v1/forms/{formId}/response': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/deliverables/{deliverableId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["DeliverablesController_getDeliverable"];
-        put?: never;
-        post?: never;
-        delete: operations["DeliverablesController_deleteDeliverable"];
-        options?: never;
-        head?: never;
-        patch: operations["DeliverablesController_updateDeliverable"];
-        trace?: never;
+    get: operations['FormResponsesController_getResponse'];
+    put: operations['FormResponsesController_saveResponse'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/deliverables/{deliverableId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/deliverables/{deliverableId}/user-stories": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["UserStoriesController_addUserStory"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations['DeliverablesController_getDeliverable'];
+    put?: never;
+    post?: never;
+    delete: operations['DeliverablesController_deleteDeliverable'];
+    options?: never;
+    head?: never;
+    patch: operations['DeliverablesController_updateDeliverable'];
+    trace?: never;
+  };
+  '/api/v1/deliverables/{deliverableId}/user-stories': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/deliverables/{deliverableId}/user-stories/order": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["UserStoriesController_reorderUserStories"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['UserStoriesController_addUserStory'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/deliverables/{deliverableId}/user-stories/order': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/deliverables/{deliverableId}/user-stories/{userStoryId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete: operations["UserStoriesController_removeUserStory"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put: operations['UserStoriesController_reorderUserStories'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/deliverables/{deliverableId}/user-stories/{userStoryId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/user-stories/{userStoryId}/acceptance-criteria": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AcceptanceCriteriaController_addAcceptanceCriterion"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post?: never;
+    delete: operations['UserStoriesController_removeUserStory'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/user-stories/{userStoryId}/acceptance-criteria': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/user-stories/{userStoryId}/acceptance-criteria/order": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["AcceptanceCriteriaController_reorderAcceptanceCriteria"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['AcceptanceCriteriaController_addAcceptanceCriterion'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/user-stories/{userStoryId}/acceptance-criteria/order': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/user-stories/{userStoryId}/acceptance-criteria/{acceptanceCriterionId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete: operations["AcceptanceCriteriaController_removeAcceptanceCriterion"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put: operations['AcceptanceCriteriaController_reorderAcceptanceCriteria'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/user-stories/{userStoryId}/acceptance-criteria/{acceptanceCriterionId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/workstreams": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["WorkstreamsController_findAllWorkstreams"];
-        put?: never;
-        post: operations["WorkstreamsController_createWorkstream"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post?: never;
+    delete: operations['AcceptanceCriteriaController_removeAcceptanceCriterion'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/workstreams': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/workstreams/{workstreamId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["WorkstreamsController_getWorkstream"];
-        put?: never;
-        post?: never;
-        delete: operations["WorkstreamsController_deleteWorkstream"];
-        options?: never;
-        head?: never;
-        patch: operations["WorkstreamsController_updateWorkstream"];
-        trace?: never;
+    get: operations['WorkstreamsController_findAllWorkstreams'];
+    put?: never;
+    post: operations['WorkstreamsController_createWorkstream'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/workstreams/{workstreamId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/workstreams/{workstreamId}/deliverables": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["WorkstreamsController_addDeliverable"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations['WorkstreamsController_getWorkstream'];
+    put?: never;
+    post?: never;
+    delete: operations['WorkstreamsController_deleteWorkstream'];
+    options?: never;
+    head?: never;
+    patch: operations['WorkstreamsController_updateWorkstream'];
+    trace?: never;
+  };
+  '/api/v1/workstreams/{workstreamId}/deliverables': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/workstreams/{workstreamId}/deliverables/order": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["WorkstreamsController_reorderDeliverables"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['WorkstreamsController_addDeliverable'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/workstreams/{workstreamId}/deliverables/order': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    get?: never;
+    put: operations['WorkstreamsController_reorderDeliverables'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        LoginDto: {
-            /** @description The user's email address. */
-            email: string;
-            /** @description The user's password. */
-            password: string;
-        };
-        LoginResponseDto: {
-            /** @description Signed JWT session token. */
-            accessToken: string;
-        };
-        RegisterDto: {
-            /** @description Invite token received out of band. */
-            token: string;
-            /** @description Email address the invite was issued to. */
-            email: string;
-            /** @description The new account's password. */
-            password: string;
-            /** @description The new account's display name. */
-            name: string;
-        };
-        MeResponseDto: {
-            /** @description The current user's id. */
-            id: string;
-            /** @description The current user's email address. */
-            email: string;
-            /** @description The current user's display name. */
-            name: string;
-            /**
-             * @description The current user's role.
-             * @enum {string}
-             */
-            role: "admin" | "member";
-        };
-        CreateInviteDto: {
-            /** @description Email address the invite is issued to. */
-            email: string;
-            /**
-             * @description Role the new account will be granted on registration.
-             * @enum {string}
-             */
-            role: "admin" | "member";
-        };
-        InviteResponseDto: {
-            /** @description Identifier of the invite. */
-            id: string;
-            /** @description Email address the invite was issued to. */
-            email: string;
-            /**
-             * @description Role the new account will be granted on registration.
-             * @enum {string}
-             */
-            role: "admin" | "member";
-            /** @description One-time invite token. Only returned here; not recoverable afterwards. */
-            token: string;
-            /**
-             * Format: date-time
-             * @description When the invite stops being usable.
-             */
-            expiresAt: string;
-            /**
-             * Format: date-time
-             * @description When the invite was created.
-             */
-            createdAt: string;
-        };
-        CreateFormTemplateDto: {
-            /** @description Name of the form template. */
-            name: string;
-            /** @description Description of the form template. */
-            description?: string;
-        };
-        FormTemplateFieldResponseDto: {
-            id: string;
-            formTemplateId: string;
-            label: string;
-            /** @enum {string} */
-            fieldType: "text" | "textarea" | "number" | "boolean" | "select" | "multi_select" | "date";
-            isRequired: boolean;
-            options?: string[] | null;
-            condition?: {
-                [key: string]: unknown;
-            } | null;
-            orderIndex: number;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-        };
-        FormTemplateResponseDto: {
-            id: string;
-            name: string;
-            description?: string | null;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            templateFields: components["schemas"]["FormTemplateFieldResponseDto"][];
-        };
-        UpdateFormTemplateDto: {
-            /** @description Name of the form template. */
-            name?: string;
-            /** @description Description of the form template. */
-            description?: string;
-        };
-        CreateFormTemplateFieldDto: {
-            /** @description Label shown for the field. */
-            label: string;
-            /**
-             * @description Data type of the field.
-             * @enum {string}
-             */
-            fieldType: "text" | "textarea" | "number" | "boolean" | "select" | "multi_select" | "date";
-            /**
-             * @description Whether the field must be filled in to complete a response.
-             * @default false
-             */
-            isRequired: boolean;
-            /** @description Available options. Required (non-empty) for `select`/`multi_select`; must be omitted otherwise. */
-            options?: string[];
-            /** @description Visibility condition tree. Referenced fields must belong to the same form template, operators must match the referenced field's type, and the reference graph must stay acyclic. Omitted means always visible. */
-            condition?: {
-                [key: string]: unknown;
-            };
-        };
-        ReorderFieldsDto: {
-            /** @description Ordered list of field ids: must contain exactly the form template's current field ids, in the desired order. */
-            fieldIds: string[];
-        };
-        UpdateFormTemplateFieldDto: {
-            /** @description Label shown for the field. */
-            label?: string;
-            /**
-             * @description Data type of the field.
-             * @enum {string}
-             */
-            fieldType?: "text" | "textarea" | "number" | "boolean" | "select" | "multi_select" | "date";
-            /** @description Whether the field must be filled in to complete a response. */
-            isRequired?: boolean;
-            /** @description Available options. Required (non-empty) for `select`/`multi_select`; must be null/omitted otherwise. */
-            options?: string[] | null;
-            /** @description Visibility condition tree. Referenced fields must belong to the same form template, operators must match the referenced field's type, and the reference graph must stay acyclic. Set to null to make the field always visible. */
-            condition?: {
-                [key: string]: unknown;
-            } | null;
-        };
-        CreateFormDto: {
-            /** @description Id of the form template this form is created from. */
-            formTemplateId: string;
-            /** @description Name of the form. */
-            name: string;
-            /** @description Description of the form. */
-            description?: string;
-        };
-        FormFieldResponseDto: {
-            id: string;
-            formId: string;
-            label: string;
-            /** @enum {string} */
-            fieldType: "text" | "textarea" | "number" | "boolean" | "select" | "multi_select" | "date";
-            isRequired: boolean;
-            options?: string[] | null;
-            condition?: {
-                [key: string]: unknown;
-            } | null;
-            orderIndex: number;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-        };
-        FormResponseDto: {
-            id: string;
-            formTemplateId?: string | null;
-            /** @description The source form template's name, or null if that template was deleted. */
-            formTemplateName?: string | null;
-            name: string;
-            description?: string | null;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            fields: components["schemas"]["FormFieldResponseDto"][];
-        };
-        UpdateFormDto: {
-            /** @description Name of the form. */
-            name?: string;
-            /** @description Description of the form. */
-            description?: string;
-        };
-        SaveFormResponseDto: {
-            /** @description Field values to save, keyed by field id. Only include the ids being set; ids not present keep their previously saved value. Set a value to null to clear that field. */
-            responseData: {
-                [key: string]: unknown;
-            };
-        };
-        FormResponseResponseDto: {
-            id: string;
-            formId: string;
-            /** @description Saved field values, keyed by field id. */
-            responseData: {
-                [key: string]: unknown;
-            };
-            /** @description Whether every required field has a saved value. */
-            isComplete: boolean;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-        };
-        AcceptanceCriterionResponseDto: {
-            id: string;
-            formTemplateId?: string | null;
-            /** @description The source form template's name, or null if that template was deleted. */
-            formTemplateName?: string | null;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            fields: components["schemas"]["FormFieldResponseDto"][];
-            userStoryId: string;
-            orderIndex: number;
-        };
-        UserStoryResponseDto: {
-            id: string;
-            formTemplateId?: string | null;
-            /** @description The source form template's name, or null if that template was deleted. */
-            formTemplateName?: string | null;
-            name: string;
-            description?: string | null;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            fields: components["schemas"]["FormFieldResponseDto"][];
-            deliverableId: string;
-            orderIndex: number;
-            acceptanceCriteria: components["schemas"]["AcceptanceCriterionResponseDto"][];
-        };
-        DeliverableResponseDto: {
-            id: string;
-            workstreamId: string;
-            orderIndex: number;
-            name: string;
-            description?: string | null;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            userStories: components["schemas"]["UserStoryResponseDto"][];
-        };
-        UpdateDeliverableDto: {
-            /** @description Name of the deliverable. */
-            name?: string;
-            /** @description Description of the deliverable. */
-            description?: string;
-        };
-        CreateUserStoryDto: {
-            /** @description Id of the form template this user story is created from. */
-            formTemplateId: string;
-            /** @description Name of the user story. */
-            name: string;
-            /** @description Description of the user story. */
-            description?: string;
-        };
-        ReorderUserStoriesDto: {
-            /** @description Ordered list of user story ids: must contain exactly the deliverable's current user story ids, in the desired order. */
-            userStoryIds: string[];
-        };
-        CreateAcceptanceCriterionDto: {
-            /** @description Id of the form template this acceptance criterion is created from. */
-            formTemplateId: string;
-        };
-        ReorderAcceptanceCriteriaDto: {
-            /** @description Ordered list of acceptance criterion ids: must contain exactly the user story's current acceptance criterion ids, in the desired order. */
-            acceptanceCriteriaIds: string[];
-        };
-        CreateWorkstreamDto: {
-            /** @description Name of the workstream. */
-            name: string;
-            /** @description Description of the workstream. */
-            description?: string;
-        };
-        WorkstreamResponseDto: {
-            id: string;
-            name: string;
-            description?: string | null;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            deliverables: components["schemas"]["DeliverableResponseDto"][];
-        };
-        UpdateWorkstreamDto: {
-            /** @description Name of the workstream. */
-            name?: string;
-            /** @description Description of the workstream. */
-            description?: string;
-        };
-        CreateDeliverableDto: {
-            /** @description Name of the deliverable. */
-            name: string;
-            /** @description Description of the deliverable. */
-            description?: string;
-        };
-        ReorderDeliverablesDto: {
-            /** @description Ordered list of deliverable ids: must contain exactly the workstream's current deliverable ids, in the desired order. */
-            deliverableIds: string[];
-        };
+  schemas: {
+    LoginDto: {
+      /** @description The user's email address. */
+      email: string;
+      /** @description The user's password. */
+      password: string;
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    LoginResponseDto: {
+      /** @description Signed JWT session token. */
+      accessToken: string;
+    };
+    RegisterDto: {
+      /** @description Invite token received out of band. */
+      token: string;
+      /** @description Email address the invite was issued to. */
+      email: string;
+      /** @description The new account's password. */
+      password: string;
+      /** @description The new account's display name. */
+      name: string;
+    };
+    MeResponseDto: {
+      /** @description The current user's id. */
+      id: string;
+      /** @description The current user's email address. */
+      email: string;
+      /** @description The current user's display name. */
+      name: string;
+      /**
+       * @description The current user's role.
+       * @enum {string}
+       */
+      role: 'admin' | 'member';
+    };
+    CreateInviteDto: {
+      /** @description Email address the invite is issued to. */
+      email: string;
+      /**
+       * @description Role the new account will be granted on registration.
+       * @enum {string}
+       */
+      role: 'admin' | 'member';
+    };
+    InviteResponseDto: {
+      /** @description Identifier of the invite. */
+      id: string;
+      /** @description Email address the invite was issued to. */
+      email: string;
+      /**
+       * @description Role the new account will be granted on registration.
+       * @enum {string}
+       */
+      role: 'admin' | 'member';
+      /** @description One-time invite token. Only returned here; not recoverable afterwards. */
+      token: string;
+      /**
+       * Format: date-time
+       * @description When the invite stops being usable.
+       */
+      expiresAt: string;
+      /**
+       * Format: date-time
+       * @description When the invite was created.
+       */
+      createdAt: string;
+    };
+    CreateFormTemplateDto: {
+      /** @description Name of the form template. */
+      name: string;
+      /** @description Description of the form template. */
+      description?: string;
+    };
+    FormTemplateFieldResponseDto: {
+      id: string;
+      formTemplateId: string;
+      label: string;
+      /** @enum {string} */
+      fieldType:
+        | 'text'
+        | 'textarea'
+        | 'number'
+        | 'boolean'
+        | 'select'
+        | 'multi_select'
+        | 'date';
+      isRequired: boolean;
+      options?: string[] | null;
+      condition?: {
+        [key: string]: unknown;
+      } | null;
+      orderIndex: number;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+    };
+    FormTemplateResponseDto: {
+      id: string;
+      name: string;
+      description?: string | null;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+      templateFields: components['schemas']['FormTemplateFieldResponseDto'][];
+    };
+    UpdateFormTemplateDto: {
+      /** @description Name of the form template. */
+      name?: string;
+      /** @description Description of the form template. */
+      description?: string;
+    };
+    CreateFormTemplateFieldDto: {
+      /** @description Label shown for the field. */
+      label: string;
+      /**
+       * @description Data type of the field.
+       * @enum {string}
+       */
+      fieldType:
+        | 'text'
+        | 'textarea'
+        | 'number'
+        | 'boolean'
+        | 'select'
+        | 'multi_select'
+        | 'date';
+      /**
+       * @description Whether the field must be filled in to complete a response.
+       * @default false
+       */
+      isRequired: boolean;
+      /** @description Available options. Required (non-empty) for `select`/`multi_select`; must be omitted otherwise. */
+      options?: string[];
+      /** @description Visibility condition tree. Referenced fields must belong to the same form template, operators must match the referenced field's type, and the reference graph must stay acyclic. Omitted means always visible. */
+      condition?: {
+        [key: string]: unknown;
+      };
+    };
+    ReorderFieldsDto: {
+      /** @description Ordered list of field ids: must contain exactly the form template's current field ids, in the desired order. */
+      fieldIds: string[];
+    };
+    UpdateFormTemplateFieldDto: {
+      /** @description Label shown for the field. */
+      label?: string;
+      /**
+       * @description Data type of the field.
+       * @enum {string}
+       */
+      fieldType?:
+        | 'text'
+        | 'textarea'
+        | 'number'
+        | 'boolean'
+        | 'select'
+        | 'multi_select'
+        | 'date';
+      /** @description Whether the field must be filled in to complete a response. */
+      isRequired?: boolean;
+      /** @description Available options. Required (non-empty) for `select`/`multi_select`; must be null/omitted otherwise. */
+      options?: string[] | null;
+      /** @description Visibility condition tree. Referenced fields must belong to the same form template, operators must match the referenced field's type, and the reference graph must stay acyclic. Set to null to make the field always visible. */
+      condition?: {
+        [key: string]: unknown;
+      } | null;
+    };
+    CreateFormDto: {
+      /** @description Id of the form template this form is created from. */
+      formTemplateId: string;
+      /** @description Name of the form. */
+      name: string;
+      /** @description Description of the form. */
+      description?: string;
+    };
+    FormFieldResponseDto: {
+      id: string;
+      formId: string;
+      label: string;
+      /** @enum {string} */
+      fieldType:
+        | 'text'
+        | 'textarea'
+        | 'number'
+        | 'boolean'
+        | 'select'
+        | 'multi_select'
+        | 'date';
+      isRequired: boolean;
+      options?: string[] | null;
+      condition?: {
+        [key: string]: unknown;
+      } | null;
+      orderIndex: number;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+    };
+    FormResponseDto: {
+      id: string;
+      formTemplateId?: string | null;
+      /** @description The source form template's name, or null if that template was deleted. */
+      formTemplateName?: string | null;
+      name: string;
+      description?: string | null;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+      fields: components['schemas']['FormFieldResponseDto'][];
+    };
+    UpdateFormDto: {
+      /** @description Name of the form. */
+      name?: string;
+      /** @description Description of the form. */
+      description?: string;
+    };
+    SaveFormResponseDto: {
+      /** @description Field values to save, keyed by field id. Only include the ids being set; ids not present keep their previously saved value. Set a value to null to clear that field. */
+      responseData: {
+        [key: string]: unknown;
+      };
+    };
+    FormResponseResponseDto: {
+      id: string;
+      formId: string;
+      /** @description Saved field values, keyed by field id. */
+      responseData: {
+        [key: string]: unknown;
+      };
+      /** @description Whether every required field has a saved value. */
+      isComplete: boolean;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+    };
+    AcceptanceCriterionResponseDto: {
+      id: string;
+      formTemplateId?: string | null;
+      /** @description The source form template's name, or null if that template was deleted. */
+      formTemplateName?: string | null;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+      fields: components['schemas']['FormFieldResponseDto'][];
+      userStoryId: string;
+      orderIndex: number;
+    };
+    UserStoryResponseDto: {
+      id: string;
+      formTemplateId?: string | null;
+      /** @description The source form template's name, or null if that template was deleted. */
+      formTemplateName?: string | null;
+      name: string;
+      description?: string | null;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+      fields: components['schemas']['FormFieldResponseDto'][];
+      deliverableId: string;
+      orderIndex: number;
+      acceptanceCriteria: components['schemas']['AcceptanceCriterionResponseDto'][];
+    };
+    DeliverableResponseDto: {
+      id: string;
+      workstreamId: string;
+      orderIndex: number;
+      name: string;
+      description?: string | null;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+      userStories: components['schemas']['UserStoryResponseDto'][];
+    };
+    UpdateDeliverableDto: {
+      /** @description Name of the deliverable. */
+      name?: string;
+      /** @description Description of the deliverable. */
+      description?: string;
+    };
+    CreateUserStoryDto: {
+      /** @description Id of the form template this user story is created from. */
+      formTemplateId: string;
+      /** @description Name of the user story. */
+      name: string;
+      /** @description Description of the user story. */
+      description?: string;
+    };
+    ReorderUserStoriesDto: {
+      /** @description Ordered list of user story ids: must contain exactly the deliverable's current user story ids, in the desired order. */
+      userStoryIds: string[];
+    };
+    CreateAcceptanceCriterionDto: {
+      /** @description Id of the form template this acceptance criterion is created from. */
+      formTemplateId: string;
+    };
+    ReorderAcceptanceCriteriaDto: {
+      /** @description Ordered list of acceptance criterion ids: must contain exactly the user story's current acceptance criterion ids, in the desired order. */
+      acceptanceCriteriaIds: string[];
+    };
+    CreateWorkstreamDto: {
+      /** @description Name of the workstream. */
+      name: string;
+      /** @description Description of the workstream. */
+      description?: string;
+    };
+    WorkstreamResponseDto: {
+      id: string;
+      name: string;
+      description?: string | null;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+      deliverables: components['schemas']['DeliverableResponseDto'][];
+    };
+    UpdateWorkstreamDto: {
+      /** @description Name of the workstream. */
+      name?: string;
+      /** @description Description of the workstream. */
+      description?: string;
+    };
+    CreateDeliverableDto: {
+      /** @description Name of the deliverable. */
+      name: string;
+      /** @description Description of the deliverable. */
+      description?: string;
+    };
+    ReorderDeliverablesDto: {
+      /** @description Ordered list of deliverable ids: must contain exactly the workstream's current deliverable ids, in the desired order. */
+      deliverableIds: string[];
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    AuthController_login: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["LoginDto"];
-            };
-        };
-        responses: {
-            /** @description Email and password matched an account; returns a session token. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LoginResponseDto"];
-                };
-            };
-            /** @description Email/password did not match an existing account. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  AuthController_login: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    AuthController_register: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RegisterDto"];
-            };
-        };
-        responses: {
-            /** @description Invite was valid; account created and a session token returned. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LoginResponseDto"];
-                };
-            };
-            /** @description Invite token is unknown, used, expired, or email mismatched. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LoginDto'];
+      };
     };
-    UsersController_me: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      /** @description Email and password matched an account; returns a session token. */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description The currently authenticated user. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MeResponseDto"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['LoginResponseDto'];
         };
+      };
+      /** @description Email/password did not match an existing account. */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
     };
-    InvitesController_createInvite: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateInviteDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InviteResponseDto"];
-                };
-            };
-            /** @description Caller is not an admin. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  AuthController_register: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    HealthController_check: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The API is up and reachable. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RegisterDto'];
+      };
     };
-    FormTemplatesController_findAllFormTemplates: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      /** @description Invite was valid; account created and a session token returned. */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FormTemplateResponseDto"][];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['LoginResponseDto'];
         };
+      };
+      /** @description Invite token is unknown, used, expired, or email mismatched. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
     };
-    FormTemplatesController_createFormTemplate: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateFormTemplateDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FormTemplateResponseDto"];
-                };
-            };
-        };
+  };
+  UsersController_me: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    FormTemplatesController_getFormTemplate: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                formTemplateId: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description The currently authenticated user. */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FormTemplateResponseDto"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
+        content: {
+          'application/json': components['schemas']['MeResponseDto'];
         };
+      };
     };
-    FormTemplatesController_deleteFormTemplate: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                formTemplateId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  InvitesController_createInvite: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    FormTemplatesController_updateFormTemplate: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                formTemplateId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateFormTemplateDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FormTemplateResponseDto"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateInviteDto'];
+      };
     };
-    FormTemplatesController_addField: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                formTemplateId: string;
-            };
-            cookie?: never;
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateFormTemplateFieldDto"];
-            };
+        content: {
+          'application/json': components['schemas']['InviteResponseDto'];
         };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FormTemplateFieldResponseDto"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
+      };
+      /** @description Caller is not an admin. */
+      403: {
+        headers: {
+          [name: string]: unknown;
         };
+        content?: never;
+      };
     };
-    FormTemplatesController_reorderFields: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                formTemplateId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ReorderFieldsDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FormTemplateResponseDto"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  HealthController_check: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    FormTemplatesController_removeField: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                formTemplateId: string;
-                fieldId: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description The API is up and reachable. */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+        content?: never;
+      };
     };
-    FormTemplatesController_updateField: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                formTemplateId: string;
-                fieldId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateFormTemplateFieldDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FormTemplateFieldResponseDto"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  FormTemplatesController_findAllFormTemplates: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    FormsController_findAllForms: {
-        parameters: {
-            query?: {
-                /** @description Case-insensitive substring filter on the form name. */
-                name?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FormResponseDto"][];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['FormTemplateResponseDto'][];
         };
+      };
     };
-    FormsController_createForm: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateFormDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FormResponseDto"];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  FormTemplatesController_createFormTemplate: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    FormsController_getForm: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                formId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FormResponseDto"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateFormTemplateDto'];
+      };
     };
-    FormsController_deleteForm: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                formId: string;
-            };
-            cookie?: never;
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
+        content: {
+          'application/json': components['schemas']['FormTemplateResponseDto'];
         };
+      };
     };
-    FormsController_updateForm: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                formId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateFormDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FormResponseDto"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  FormTemplatesController_getFormTemplate: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        formTemplateId: string;
+      };
+      cookie?: never;
     };
-    FormResponsesController_getResponse: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                formId: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FormResponseResponseDto"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
+        content: {
+          'application/json': components['schemas']['FormTemplateResponseDto'];
         };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
     };
-    FormResponsesController_saveResponse: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                formId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["SaveFormResponseDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FormResponseResponseDto"];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  FormTemplatesController_deleteFormTemplate: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        formTemplateId: string;
+      };
+      cookie?: never;
     };
-    DeliverablesController_getDeliverable: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                deliverableId: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DeliverableResponseDto"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
+        content?: never;
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
         };
+        content?: never;
+      };
     };
-    DeliverablesController_deleteDeliverable: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                deliverableId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  FormTemplatesController_updateFormTemplate: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        formTemplateId: string;
+      };
+      cookie?: never;
     };
-    DeliverablesController_updateDeliverable: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                deliverableId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateDeliverableDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DeliverableResponseDto"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateFormTemplateDto'];
+      };
     };
-    UserStoriesController_addUserStory: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                deliverableId: string;
-            };
-            cookie?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateUserStoryDto"];
-            };
+        content: {
+          'application/json': components['schemas']['FormTemplateResponseDto'];
         };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserStoryResponseDto"];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
         };
+        content?: never;
+      };
     };
-    UserStoriesController_reorderUserStories: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                deliverableId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ReorderUserStoriesDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserStoryResponseDto"][];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  FormTemplatesController_addField: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        formTemplateId: string;
+      };
+      cookie?: never;
     };
-    UserStoriesController_removeUserStory: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                deliverableId: string;
-                userStoryId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateFormTemplateFieldDto'];
+      };
     };
-    AcceptanceCriteriaController_addAcceptanceCriterion: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                userStoryId: string;
-            };
-            cookie?: never;
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateAcceptanceCriterionDto"];
-            };
+        content: {
+          'application/json': components['schemas']['FormTemplateFieldResponseDto'];
         };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AcceptanceCriterionResponseDto"];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
         };
+        content?: never;
+      };
     };
-    AcceptanceCriteriaController_reorderAcceptanceCriteria: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                userStoryId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ReorderAcceptanceCriteriaDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AcceptanceCriterionResponseDto"][];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  FormTemplatesController_reorderFields: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        formTemplateId: string;
+      };
+      cookie?: never;
     };
-    AcceptanceCriteriaController_removeAcceptanceCriterion: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                userStoryId: string;
-                acceptanceCriterionId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ReorderFieldsDto'];
+      };
     };
-    WorkstreamsController_findAllWorkstreams: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["WorkstreamResponseDto"][];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['FormTemplateResponseDto'];
         };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
     };
-    WorkstreamsController_createWorkstream: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateWorkstreamDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["WorkstreamResponseDto"];
-                };
-            };
-        };
+  };
+  FormTemplatesController_removeField: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        formTemplateId: string;
+        fieldId: string;
+      };
+      cookie?: never;
     };
-    WorkstreamsController_getWorkstream: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                workstreamId: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["WorkstreamResponseDto"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
+        content?: never;
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
         };
+        content?: never;
+      };
     };
-    WorkstreamsController_deleteWorkstream: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                workstreamId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  FormTemplatesController_updateField: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        formTemplateId: string;
+        fieldId: string;
+      };
+      cookie?: never;
     };
-    WorkstreamsController_updateWorkstream: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                workstreamId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateWorkstreamDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["WorkstreamResponseDto"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateFormTemplateFieldDto'];
+      };
     };
-    WorkstreamsController_addDeliverable: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                workstreamId: string;
-            };
-            cookie?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateDeliverableDto"];
-            };
+        content: {
+          'application/json': components['schemas']['FormTemplateFieldResponseDto'];
         };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DeliverableResponseDto"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
         };
+        content?: never;
+      };
     };
-    WorkstreamsController_reorderDeliverables: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                workstreamId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ReorderDeliverablesDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DeliverableResponseDto"][];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  FormsController_findAllForms: {
+    parameters: {
+      query?: {
+        /** @description Case-insensitive substring filter on the form name. */
+        name?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormResponseDto'][];
+        };
+      };
+    };
+  };
+  FormsController_createForm: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateFormDto'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormResponseDto'];
+        };
+      };
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  FormsController_getForm: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        formId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormResponseDto'];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  FormsController_deleteForm: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        formId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  FormsController_updateForm: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        formId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateFormDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormResponseDto'];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  FormResponsesController_getResponse: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        formId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormResponseResponseDto'];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  FormResponsesController_saveResponse: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        formId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SaveFormResponseDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FormResponseResponseDto'];
+        };
+      };
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  DeliverablesController_getDeliverable: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        deliverableId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DeliverableResponseDto'];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  DeliverablesController_deleteDeliverable: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        deliverableId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  DeliverablesController_updateDeliverable: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        deliverableId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateDeliverableDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DeliverableResponseDto'];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  UserStoriesController_addUserStory: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        deliverableId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateUserStoryDto'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserStoryResponseDto'];
+        };
+      };
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  UserStoriesController_reorderUserStories: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        deliverableId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ReorderUserStoriesDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserStoryResponseDto'][];
+        };
+      };
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  UserStoriesController_removeUserStory: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        deliverableId: string;
+        userStoryId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AcceptanceCriteriaController_addAcceptanceCriterion: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userStoryId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateAcceptanceCriterionDto'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AcceptanceCriterionResponseDto'];
+        };
+      };
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AcceptanceCriteriaController_reorderAcceptanceCriteria: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userStoryId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ReorderAcceptanceCriteriaDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AcceptanceCriterionResponseDto'][];
+        };
+      };
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AcceptanceCriteriaController_removeAcceptanceCriterion: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        userStoryId: string;
+        acceptanceCriterionId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  WorkstreamsController_findAllWorkstreams: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WorkstreamResponseDto'][];
+        };
+      };
+    };
+  };
+  WorkstreamsController_createWorkstream: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateWorkstreamDto'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WorkstreamResponseDto'];
+        };
+      };
+    };
+  };
+  WorkstreamsController_getWorkstream: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        workstreamId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WorkstreamResponseDto'];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  WorkstreamsController_deleteWorkstream: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        workstreamId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  WorkstreamsController_updateWorkstream: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        workstreamId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateWorkstreamDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WorkstreamResponseDto'];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  WorkstreamsController_addDeliverable: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        workstreamId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateDeliverableDto'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DeliverableResponseDto'];
+        };
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  WorkstreamsController_reorderDeliverables: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        workstreamId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ReorderDeliverablesDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DeliverableResponseDto'][];
+        };
+      };
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
 }

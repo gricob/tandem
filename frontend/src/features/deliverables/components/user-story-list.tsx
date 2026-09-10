@@ -32,7 +32,6 @@ import { useEffect, useState } from 'react';
 import type { UserStory } from '../api';
 import {
   useAddAcceptanceCriterion,
-  useRemoveUserStory,
   useReorderUserStories,
   useUpdateUserStoryDetails,
 } from '../queries';
@@ -126,7 +125,6 @@ function SortableUserStoryCard({
     transition,
     isDragging,
   } = useSortable({ id: userStory.id });
-  const removeUserStory = useRemoveUserStory(deliverableId);
   const addAcceptanceCriterion = useAddAcceptanceCriterion(
     deliverableId,
     userStory.id,
@@ -183,96 +181,82 @@ function SortableUserStoryCard({
 
   return (
     <Paper ref={setNodeRef} style={style} withBorder p="md">
-      <Group justify="space-between" wrap="nowrap" align="flex-start">
-        <Group
-          wrap="nowrap"
-          align="flex-start"
-          style={{ flex: 1, minWidth: 0 }}
-        >
-          <ActionIcon
-            variant="subtle"
-            {...attributes}
-            {...listeners}
-            aria-label={`Reorder ${userStory.name}`}
-            style={{ cursor: 'grab' }}
-          >
-            ⠿
-          </ActionIcon>
-          <Stack gap={4} style={{ minWidth: 0, flex: 1 }}>
-            {isEditingDetails ? (
-              <form onSubmit={detailsForm.onSubmit(handleSaveDetails)}>
-                <Group align="flex-end" wrap="nowrap">
-                  <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
-                    <TextInput
-                      size="sm"
-                      aria-label="Name"
-                      placeholder="Name"
-                      required
-                      {...detailsForm.getInputProps('name')}
-                    />
-                    <Textarea
-                      size="sm"
-                      aria-label="Description"
-                      placeholder="Description"
-                      autosize
-                      minRows={1}
-                      {...detailsForm.getInputProps('description')}
-                    />
-                  </Stack>
-                  <Button
-                    type="submit"
-                    size="xs"
-                    variant="subtle"
-                    loading={updateDetails.isPending}
-                  >
-                    Save
-                  </Button>
-                  <Button
-                    type="button"
-                    size="xs"
-                    variant="subtle"
-                    color="gray"
-                    onClick={handleCancelEditDetails}
-                  >
-                    Cancel
-                  </Button>
-                </Group>
-              </form>
-            ) : (
-              <Group wrap="nowrap" align="flex-start" gap="xs">
-                <Stack gap={0} style={{ minWidth: 0, flex: 1 }}>
-                  <Text fw={600} truncate>
-                    {userStory.name}
-                  </Text>
-                  {userStory.description && (
-                    <Text size="sm" c="dimmed">
-                      {userStory.description}
-                    </Text>
-                  )}
-                </Stack>
-                <ActionIcon
-                  variant="subtle"
-                  size="sm"
-                  onClick={() => setIsEditingDetails(true)}
-                  aria-label={`Edit ${userStory.name}`}
-                >
-                  ✎
-                </ActionIcon>
-              </Group>
-            )}
-            <Text size="xs" c="dimmed">
-              Template: {userStory.formTemplateName ?? '— deleted —'}
-            </Text>
-          </Stack>
-        </Group>
+      <Group wrap="nowrap" align="flex-start">
         <ActionIcon
           variant="subtle"
-          color="red"
-          onClick={() => removeUserStory.mutate(userStory.id)}
-          aria-label={`Remove ${userStory.name}`}
+          {...attributes}
+          {...listeners}
+          aria-label={`Reorder ${userStory.name}`}
+          style={{ cursor: 'grab' }}
         >
-          🗑
+          ⠿
         </ActionIcon>
+        <Stack gap={4} style={{ minWidth: 0, flex: 1 }}>
+          {isEditingDetails ? (
+            <form onSubmit={detailsForm.onSubmit(handleSaveDetails)}>
+              <Group align="flex-end" wrap="nowrap">
+                <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
+                  <TextInput
+                    size="sm"
+                    aria-label="Name"
+                    placeholder="Name"
+                    required
+                    {...detailsForm.getInputProps('name')}
+                  />
+                  <Textarea
+                    size="sm"
+                    aria-label="Description"
+                    placeholder="Description"
+                    autosize
+                    minRows={1}
+                    {...detailsForm.getInputProps('description')}
+                  />
+                </Stack>
+                <Button
+                  type="submit"
+                  size="xs"
+                  variant="subtle"
+                  loading={updateDetails.isPending}
+                >
+                  Save
+                </Button>
+                <Button
+                  type="button"
+                  size="xs"
+                  variant="subtle"
+                  color="gray"
+                  onClick={handleCancelEditDetails}
+                >
+                  Cancel
+                </Button>
+              </Group>
+            </form>
+          ) : (
+            <Group wrap="nowrap" align="flex-start" gap="xs">
+              <Stack gap={0} style={{ minWidth: 0, flex: 1 }}>
+                <Text fw={600} truncate>
+                  {userStory.name}
+                </Text>
+                {userStory.description && (
+                  <Text size="sm" c="dimmed">
+                    {userStory.description}
+                  </Text>
+                )}
+              </Stack>
+              <ActionIcon
+                variant="subtle"
+                size="sm"
+                onClick={() => setIsEditingDetails(true)}
+                aria-label={`Edit ${userStory.name}`}
+              >
+                ✎
+              </ActionIcon>
+            </Group>
+          )}
+          <Text size="xs" c="dimmed">
+            Template: {userStory.formTemplateName ?? '— deleted —'}
+          </Text>
+        </Stack>
       </Group>
 
       <InlineFields formId={userStory.id} fields={userStory.fields} />

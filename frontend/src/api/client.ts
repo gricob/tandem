@@ -36,7 +36,10 @@ export async function apiFetch<T>(
   }
 
   if (!response.ok) {
-    throw new ApiError(response.status, await extractErrorMessage(response, path));
+    throw new ApiError(
+      response.status,
+      await extractErrorMessage(response, path),
+    );
   }
 
   if (response.status === 204) {
@@ -46,7 +49,10 @@ export async function apiFetch<T>(
   return response.json() as Promise<T>;
 }
 
-async function extractErrorMessage(response: Response, path: string): Promise<string> {
+async function extractErrorMessage(
+  response: Response,
+  path: string,
+): Promise<string> {
   const fallback = `API request to ${path} failed with status ${response.status}`;
   try {
     const body: unknown = await response.json();

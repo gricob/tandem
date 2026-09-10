@@ -37,7 +37,12 @@ export function CreateDeliverableModal({
   }
 
   return (
-    <Modal opened={opened} onClose={handleClose} title="New deliverable" centered>
+    <Modal
+      opened={opened}
+      onClose={handleClose}
+      title="New deliverable"
+      centered
+    >
       <form onSubmit={form.onSubmit(onSubmit)}>
         <Stack gap="sm">
           <TextInput

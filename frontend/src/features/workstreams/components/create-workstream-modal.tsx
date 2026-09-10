@@ -34,7 +34,12 @@ export function CreateWorkstreamModal({
   }
 
   return (
-    <Modal opened={opened} onClose={handleClose} title="New workstream" centered>
+    <Modal
+      opened={opened}
+      onClose={handleClose}
+      title="New workstream"
+      centered
+    >
       <form onSubmit={form.onSubmit(onSubmit)}>
         <Stack gap="sm">
           <TextInput

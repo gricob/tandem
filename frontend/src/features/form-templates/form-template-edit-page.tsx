@@ -40,8 +40,11 @@ export function FormTemplateEditPage() {
   const { formTemplateId } = useParams({
     from: '/form-templates/$formTemplateId',
   });
-  const { data: formTemplate, isPending, isError } =
-    useFormTemplate(formTemplateId);
+  const {
+    data: formTemplate,
+    isPending,
+    isError,
+  } = useFormTemplate(formTemplateId);
 
   const updateFormTemplate = useUpdateFormTemplate(formTemplateId);
   const addField = useAddField(formTemplateId);
@@ -106,8 +109,7 @@ export function FormTemplateEditPage() {
         isRequired: values.isRequired,
         options: values.options.length > 0 ? values.options : undefined,
         condition:
-          (values.condition as unknown as Record<string, unknown>) ??
-          undefined,
+          (values.condition as unknown as Record<string, unknown>) ?? undefined,
       },
       { onSuccess: () => setAddingField(false) },
     );
@@ -125,7 +127,10 @@ export function FormTemplateEditPage() {
           fieldType: values.fieldType,
           isRequired: values.isRequired,
           options: values.options.length > 0 ? values.options : null,
-          condition: values.condition as unknown as Record<string, unknown> | null,
+          condition: values.condition as unknown as Record<
+            string,
+            unknown
+          > | null,
         },
       },
       { onSuccess: () => setEditingField(null) },

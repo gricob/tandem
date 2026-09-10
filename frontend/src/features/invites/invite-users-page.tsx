@@ -18,7 +18,8 @@ import { useCreateInvite } from './queries';
 import { inviteSchema, type InviteFormValues } from './schemas';
 
 export function InviteUsersPage() {
-  const { data: currentUser, isPending: isCurrentUserPending } = useCurrentUser();
+  const { data: currentUser, isPending: isCurrentUserPending } =
+    useCurrentUser();
   const createInvite = useCreateInvite();
   const form = useForm<InviteFormValues>({
     initialValues: { email: '', role: 'member' },

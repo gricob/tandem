@@ -83,7 +83,9 @@ function normalizeToGroup(
     : { op: 'AND', clauses: [condition] };
 }
 
-function defaultLeaf(availableFields: AvailableConditionField[]): ConditionLeaf {
+function defaultLeaf(
+  availableFields: AvailableConditionField[],
+): ConditionLeaf {
   const field = availableFields[0];
   const operator = OPERATORS_BY_FIELD_TYPE[field.fieldType][0].value;
   return {
@@ -93,7 +95,9 @@ function defaultLeaf(availableFields: AvailableConditionField[]): ConditionLeaf 
   };
 }
 
-function defaultGroup(availableFields: AvailableConditionField[]): ConditionGroup {
+function defaultGroup(
+  availableFields: AvailableConditionField[],
+): ConditionGroup {
   return { op: 'AND', clauses: [defaultLeaf(availableFields)] };
 }
 
@@ -161,7 +165,11 @@ function ConditionGroupEditor({
   }
 
   return (
-    <Paper withBorder p="sm" bg={depth > 0 ? 'var(--mantine-color-gray-0)' : undefined}>
+    <Paper
+      withBorder
+      p="sm"
+      bg={depth > 0 ? 'var(--mantine-color-gray-0)' : undefined}
+    >
       <Stack gap="xs">
         <Group justify="space-between">
           <SegmentedControl

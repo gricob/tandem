@@ -15,6 +15,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { ActionIcon, Group, Paper, Stack, Text } from '@mantine/core';
+import { useState } from 'react';
 import type { AcceptanceCriterion } from '../api';
 import {
   useRemoveAcceptanceCriterion,
@@ -133,9 +134,17 @@ function SortableAcceptanceCriterionRow({
   };
 
   const templateLabel = acceptanceCriterion.formTemplateName ?? '— deleted —';
+  const [actionsVisible, setActionsVisible] = useState(false);
 
   return (
-    <Paper ref={setNodeRef} style={style} withBorder p="sm">
+    <Paper
+      ref={setNodeRef}
+      style={style}
+      withBorder
+      p="sm"
+      onMouseEnter={() => setActionsVisible(true)}
+      onMouseLeave={() => setActionsVisible(false)}
+    >
       <Group justify="space-between" wrap="nowrap" align="center">
         <Group wrap="nowrap" align="center" style={{ flex: 1, minWidth: 0 }}>
           <ActionIcon
@@ -157,7 +166,13 @@ function SortableAcceptanceCriterionRow({
           onClick={() =>
             removeAcceptanceCriterion.mutate(acceptanceCriterion.id)
           }
+          onFocus={() => setActionsVisible(true)}
+          onBlur={() => setActionsVisible(false)}
           aria-label={`Remove ${templateLabel}`}
+          style={{
+            opacity: actionsVisible ? 1 : 0,
+            transition: 'opacity 120ms',
+          }}
         >
           🗑
         </ActionIcon>

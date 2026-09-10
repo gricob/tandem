@@ -28,11 +28,15 @@ test('gates the app behind a login screen', async ({ page }) => {
   await page.getByLabel('Password').fill('correct-password');
   await page.getByRole('button', { name: 'Log in' }).click();
   await expect(
-    page.getByText('Create configurable forms, share them, and review the responses you receive.'),
+    page.getByText(
+      "Plan and track your team's workstreams and deliverables in one place.",
+    ),
   ).toBeVisible();
 
   await page.reload();
   await expect(
-    page.getByText('Create configurable forms, share them, and review the responses you receive.'),
+    page.getByText(
+      "Plan and track your team's workstreams and deliverables in one place.",
+    ),
   ).toBeVisible();
 });

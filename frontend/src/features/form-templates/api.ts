@@ -62,19 +62,25 @@ export function updateField(
   fieldId: string,
   body: UpdateFormTemplateFieldBody,
 ): Promise<FormTemplateField> {
-  return apiFetch(`/api/v1/form-templates/${formTemplateId}/fields/${fieldId}`, {
-    method: 'PATCH',
-    body: JSON.stringify(body),
-  });
+  return apiFetch(
+    `/api/v1/form-templates/${formTemplateId}/fields/${fieldId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    },
+  );
 }
 
 export function removeField(
   formTemplateId: string,
   fieldId: string,
 ): Promise<void> {
-  return apiFetch(`/api/v1/form-templates/${formTemplateId}/fields/${fieldId}`, {
-    method: 'DELETE',
-  });
+  return apiFetch(
+    `/api/v1/form-templates/${formTemplateId}/fields/${fieldId}`,
+    {
+      method: 'DELETE',
+    },
+  );
 }
 
 export function reorderFields(
